@@ -1,31 +1,27 @@
-# Collecte quotidienne des donnees publiques de Repere — version 2.
+# =============================================================================
+# Collecte quotidienne de Repere — version 3, dite « lanceur ».
 #
-# CE QUI CHANGE PAR RAPPORT A LA VERSION 1 : la boucle est fermee. La version 1
-# collectait et commitait ; le resultat n'atteignait personne, parce qu'il fallait
-# reconstruire et redeployer a la main un fichier de 17 Mo. Depuis la v18.15, l'agenda
-# est SERVI A PART (650 Ko) et build_pwa prefere le fichier collecte a la copie figee
-# dans l'application. Reconstruire ne coute donc plus que quelques secondes de Python,
-# et Netlify n'envoie que les fichiers qui ont change — soit 650 Ko par jour, pas 17 Mo.
+# CE FICHIER NE DEVRAIT PLUS JAMAIS CHANGER. C'est tout son interet.
 #
-# CE QU'IL FAUT AVOIR DANS LE DEPOT pour que l'etape de reconstruction fonctionne :
-#   - app_repere_v18_18.html      (l'application ; le script prend la plus recente)
-#   - site/sw.js, site/manifest.webmanifest, site/icones/, site/confidentialite.html
-#   - site/index.html             (reference de la preuve)
-#   - app_repere_v18_9.html.bak   (source de la preuve)
-# Les deux derniers ne changent JAMAIS : ils servent a prouver, chaque matin, que la
-# transformation produit exactement le site fait a la main a l'origine. Sans eux,
-# build_pwa refuse de produire quoi que ce soit — et c'est voulu.
-
-# 19/08/2026 — checkout passe en v5 et setup-python en v6 : les versions precedentes
-# ciblent Node 20, que les runners GitHub forcent deja sur Node 24 depuis septembre 2025.
-# L'avertissement etait sans consequence aujourd'hui, et deviendra une panne le jour ou
-# Node 20 sera retire. Un avertissement qu'on laisse s'installer finit par etre du bruit
-# qu'on ne lit plus.
+# Le dossier .github/workflows/ est protege en ecriture contre les outils distants :
+# chaque evolution de la chaine obligeait a une manipulation manuelle — copier un
+# fichier, verifier, committer, pousser. Toute la logique vit desormais dans
+# outils/pipeline.sh, un fichier ordinaire du depot. Les evolutions futures s'y font
+# sans jamais retoucher a ce lanceur.
+#
+# CE QUI REND LA PUBLICATION AUTOMATIQUE ACCEPTABLE : outils/pipeline.sh fait tourner
+# le banc de 40 controles sur le site RECONSTRUIT, dans un vrai navigateur, avant tout
+# deploiement. Si un seul controle tombe, la pipeline s'arrete et rien n'est publie.
+# Publier sans relecture humaine n'est pas un pari tant que quelque chose dit non a
+# notre place.
+# =============================================================================
 
 name: Collecte quotidienne
 
 on:
   schedule:
+    # 05h47 UTC — heure creuse, et volontairement pas ronde : les runners GitHub
+    # sont satures a :00, et les serveurs de l'Assemblee aussi.
     - cron: "47 5 * * *"
   workflow_dispatch:
 
@@ -37,11 +33,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
-    # POURQUOI ces deux variables sont declarees ICI et pas dans l'etape de deploiement :
-    # le bloc `env:` d'une etape n'est pas visible dans le `if:` de cette meme etape.
-    # Ecrit au niveau de l'etape, le test « le secret existe-t-il ? » etait toujours faux
-    # et le deploiement etait saute meme apres avoir cree les secrets — une panne muette,
-    # la pire espece. Au niveau du job, `env` est lu par les `if:` des etapes.
+    # POURQUOI ICI et pas dans l'etape : le bloc env: d'une etape n'est pas visible
+    # dans le if: de cette meme etape. Ecrit au niveau de l'etape, le test « le secret
+    # existe-t-il ? » etait toujours faux et le deploiement etait saute meme apres
+    # creation des secrets — une panne muette, la pire espece.
     env:
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
@@ -55,96 +50,57 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Installer Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Installer le navigateur du banc
+        # Le banc mesure le rendu reel : sans navigateur, il ne prouve rien. Chromium
+        # seul suffit, --with-deps installe les bibliotheques systeme manquantes.
+        run: npm install --no-save playwright@1.49.0 && npx playwright install --with-deps chromium
+
       - name: Telecharger les sources
         id: collecte
+        # continue-on-error : une source indisponible ne doit empecher ni l'ingestion
+        # des autres, ni l'ecriture du journal. C'est le journal qui porte l'echec.
         continue-on-error: true
         run: python3 outils/collecte.py
 
-      - name: Depiler les archives
-        run: |
-          set -e
-          cd data
-          for z in *.zip; do
-            [ -e "$z" ] || continue
-            dossier="${z%.json.zip}"; dossier="${dossier%.zip}"
-            rm -rf "brut_$dossier"; mkdir -p "brut_$dossier"
-            unzip -oq "$z" -d "brut_$dossier"
-            echo "$z -> brut_$dossier"
-          done
+      - name: Executer la chaine
+        # Depiler, normaliser, decrire, verifier, reconstruire, eprouver.
+        # Tout est dans outils/pipeline.sh — c'est la qu'on modifie, pas ici.
+        run: bash outils/pipeline.sh
 
-      - name: Normaliser l'agenda parlementaire
-        run: |
-          set -e
-          python3 outils/agenda_an.py \
-            data/brut_Agenda/json \
-            data/brut_AMO30/json \
-            outils/agenda_an.json
-
-      - name: Verifier que la sortie est utilisable
-        # Un fichier produit n'est pas un fichier valide. On relit ce qui vient d'etre
-        # ecrit, sans reutiliser une ligne du script qui l'a ecrit.
-        run: |
-          python3 - <<'PY'
-          import json, datetime
-          d = json.load(open("outils/agenda_an.json", encoding="utf-8"))
-          assert d.get("v") == 1, "version de format inattendue"
-          assert len(d["r"]) > 5000, "trop peu de reunions : %d" % len(d["r"])
-          assert d["org"], "table des instances vide"
-          assert all(0 <= e["o"] < len(d["org"]) for e in d["r"]), "index d'instance hors table"
-          assert "acteurRef" not in json.dumps(d)[:2000000], "une presence nominative a fuite"
-          # La date de collecte doit etre celle du jour : un fichier non regenere qui
-          # passerait tous les autres controles serait invisible sans celui-ci.
-          today = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
-          assert d.get("maj") == today, "date de collecte %r au lieu de %s" % (d.get("maj"), today)
-          print("agenda : %d reunions, %d instances, collecte du %s" % (len(d["r"]), len(d["org"]), d["maj"]))
-          PY
-
-      - name: Committer si quelque chose a change
+      - name: Committer ce qui a change
         run: |
           set -e
           git config user.name "Collecte Repere"
           git config user.email "repere0@protonmail.com"
-          git add outils/agenda_an.json data/journal_collecte.json
+          git add outils/agenda_an.json data/journal_collecte.json docs/schema_scrutins.md
           if git diff --cached --quiet; then
             echo "Rien de nouveau aujourd'hui."
           else
             git commit -m "Collecte du $(date -u +%d/%m/%Y)"
+            # Se rebaser avant de pousser : si quelqu'un a pousse pendant l'execution,
+            # le push est refuse et le job tombe en rouge pour une raison etrangere
+            # a la collecte. C'est arrive le 19/08/2026.
+            git pull --rebase --autostash origin main
             git push
           fi
 
-      # ---------------------------------------------------------------- publication
-      - name: Reconstruire le site
-        id: build
-        run: |
-          set -e
-          APP=$(ls -1 app_repere_v18_*.html | grep -v '\.bak$' | sort -V | tail -1)
-          echo "application : $APP"
-          python3 outils/build_pwa_reconstruit.py "$APP" site site_engendre
-          # L'agenda servi DOIT etre celui de la collecte, pas la copie embarquee.
-          python3 - <<'PY'
-          import json, datetime
-          d = json.load(open("site_engendre/donnees/agenda_an.json", encoding="utf-8"))
-          today = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d")
-          assert d.get("maj") == today, \
-              "le site servirait un agenda du %r : la substitution n'a pas eu lieu" % d.get("maj")
-          print("site : agenda du %s, %d reunions" % (d["maj"], len(d["r"])))
-          PY
-
-      - name: Deployer sur Netlify
-        # Ne se declenche que si les deux secrets existent : sans eux, le job reste vert
-        # et la collecte reste utile, au lieu d'echouer tous les matins.
+      - name: Publier sur Netlify
         if: env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
         run: npx --yes netlify-cli deploy --dir=site_engendre --prod --message "Collecte du $(date -u +%d/%m/%Y)"
 
       - name: Dire ce qui a ete publie, ou pourquoi rien ne l'a ete
-        # Un deploiement saute en silence se lit comme un deploiement reussi. On ecrit
-        # laquelle des deux choses s'est produite, dans le journal, en clair.
+        # Un deploiement saute en silence se lit comme un deploiement reussi.
         if: always()
         run: |
           if [ -z "$NETLIFY_AUTH_TOKEN" ] || [ -z "$NETLIFY_SITE_ID" ]; then
             echo "::notice::Site reconstruit mais NON publie : les secrets NETLIFY_AUTH_TOKEN et/ou NETLIFY_SITE_ID sont absents."
           else
-            echo "::notice::Site reconstruit et publie sur Netlify."
+            echo "::notice::Site reconstruit, eprouve par le banc, et publie sur Netlify."
           fi
 
       - name: Signaler les echecs de collecte
@@ -156,8 +112,8 @@ jobs:
 
 # ---------------------------------------------------------------------------
 # LES DEUX SECRETS se creent dans Settings > Secrets and variables > Actions :
-#   NETLIFY_AUTH_TOKEN  — Netlify > User settings > Applications > Personal access token
-#   NETLIFY_SITE_ID     — Netlify > Site configuration > Site ID
+#   NETLIFY_AUTH_TOKEN — Netlify > User settings > Applications > Personal access tokens
+#   NETLIFY_SITE_ID    — Netlify > Site configuration > General > Site information
 # Personne d'autre que toi ne doit les voir : ne les colle jamais dans une
 # conversation, ici ou ailleurs.
 # ---------------------------------------------------------------------------
