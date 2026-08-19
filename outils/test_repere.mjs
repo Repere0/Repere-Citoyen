@@ -15,6 +15,7 @@
    ========================================================================== */
 import fs from "node:fs";
 import path from "node:path";
+import http from "node:http";
 import pkg from "/home/claude/.npm-global/lib/node_modules/playwright/index.js";
 const { chromium } = pkg;
 
@@ -57,11 +58,16 @@ console.log("\n--- statique --------------------------------------------------")
 /* Methode — le fichier n'utilise que des apostrophes ASCII : une ancre de patch
    contenant une apostrophe typographique echoue silencieusement. */
 {
-  /* Les lignes de donnees engendrees contiennent des apostrophes typographiques
-     parce que les noms officiels en contiennent (« Plateau d’Hauteville », INSEE).
-     L'invariant porte sur la partie ECRITE A LA MAIN, celle ou se posent les ancres
-     de patch : on ne regarde donc que les lignes de moins de 5 000 caracteres. */
-  const mainLignes = SRC.split("\n").filter(l => l.length < 5000);
+  /* Les donnees engendrees contiennent des apostrophes typographiques parce que les
+     noms officiels en contiennent (« Plateau d’Hauteville », « Commission d’enquête »).
+     L'invariant porte sur la partie ECRITE A LA MAIN, celle ou se posent les ancres.
+     Le premier critere retenu — « les lignes de plus de 5 000 caracteres sont des
+     donnees » — etait une heuristique, et elle a casse le jour ou l'agenda est passe
+     a une reunion par ligne pour que git puisse le deltifier. On retire donc les
+     blocs de donnees par ce qu'ils SONT, pas par leur mise en forme : toute
+     affectation window.REPERE_* est engendree par un script, jamais tapee. */
+  const mainLignes = SRC.replace(/window\.REPERE_[A-Z_]+\s*=[\s\S]*?;\n<\/script>/g, "")
+                        .split("\n").filter(l => l.length < 5000);
   const n = (mainLignes.join("\n").match(/’/g) || []).length;
   verif("methode — aucune apostrophe typographique dans le code ecrit a la main",
     n === 0, n + " occurrence(s)");
@@ -146,10 +152,39 @@ const erreursJS = [];
 const nav = await chromium.launch();
 const ctx = await nav.newContext({ viewport: { width: 420, height: 900 } });
 const page = await ctx.newPage();
+/* Toute adresse demandee par l'application pendant le parcours. Sert au controle
+   de l'architecture par departement : le reseau ne doit jamais porter un code de
+   commune. */
+const adresses = [];
+page.on("request", r => { try { adresses.push(new URL(r.url()).pathname + new URL(r.url()).search); } catch (e) {} });
 page.on("pageerror", e => erreursJS.push("pageerror: " + e.message));
 page.on("console", m => { if (m.type() === "error") erreursJS.push("console: " + m.text().slice(0, 160)); });
 
-await page.goto("file://" + path.resolve(CIBLE));
+/* Un index engendre par build_pwa.py va chercher son agenda sur le reseau. L'ouvrir
+   en file:// ferait echouer ce fetch pour une raison qui n'a rien a voir avec
+   l'application — le schema file n'est pas supporte. On le sert donc en HTTP, comme
+   il le sera reellement. Le fichier source, lui, reste teste en file:// : c'est son
+   usage, et il ne demande rien a personne. */
+let serveur = null, base = "file://" + path.resolve(CIBLE);
+if (/REPERE_AGENDA_URL\s*=/.test(SRC)) {
+  const dossier = path.dirname(path.resolve(CIBLE));
+  const TYPES = { ".html": "text/html", ".json": "application/json",
+                  ".js": "text/javascript", ".png": "image/png",
+                  ".webmanifest": "application/manifest+json" };
+  serveur = http.createServer((req, rep) => {
+    const p0 = decodeURIComponent(req.url.split("?")[0]);
+    const f = path.join(dossier, p0 === "/" ? path.basename(CIBLE) : p0);
+    if (!f.startsWith(dossier) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) {
+      rep.writeHead(404); return rep.end("non trouve");
+    }
+    rep.writeHead(200, { "content-type": TYPES[path.extname(f)] || "application/octet-stream" });
+    fs.createReadStream(f).pipe(rep);
+  });
+  await new Promise(r => serveur.listen(0, "127.0.0.1", r));
+  base = "http://127.0.0.1:" + serveur.address().port + "/";
+  console.log("  note | index engendre : servi en HTTP sur " + base);
+}
+await page.goto(base);
 await page.waitForTimeout(4500);
 
 /* Defaut du 12 aout — le bandeau de troncature se posait sur un fichier entier. */
@@ -308,10 +343,24 @@ verif("parcours — la commune saisie est bien celle retenue",
     texte.slice(0, 90));
 }
 
+/* Architecture par departement, arbitree le 18 aout 2026 : le departement est
+   l'unite la plus fine qui parte sur le reseau. Une adresse contenant un code INSEE
+   de commune revelerait au serveur la commune consultee — exactement ce que le
+   decoupage sert a eviter. Ce controle existe parce que la regle est facile a
+   trahir sans le vouloir, en ajoutant « juste une fonction » qui charge un fichier
+   par commune. */
+{
+  const fautives = adresses.filter(u =>
+    /[\/=](\d{5}|2[AB]\d{3})(\.json|\/|$|&)/.test(u) || /insee=|commune=/i.test(u));
+  verif("architecture — aucune adresse reseau ne porte un code de commune",
+    fautives.length === 0, [...new Set(fautives)].slice(0, 5).join(" | "));
+}
+
 verif("rendu — aucune erreur JavaScript sur tout le parcours",
   erreursJS.length === 0, erreursJS.slice(0, 4).join(" | "));
 
 await nav.close();
+if (serveur) serveur.close();
 
 /* ==========================================================================
    VERDICT
