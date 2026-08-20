@@ -1,5 +1,5 @@
 # =============================================================================
-# Collecte quotidienne de Repere — version 7, dite « lanceur ».
+# Collecte quotidienne de Repere — version 8, dite « lanceur ».
 #
 # CE FICHIER NE DEVRAIT PLUS JAMAIS CHANGER. C'est tout son interet.
 #
@@ -132,8 +132,32 @@ jobs:
             *)   echo "::warning::Sonde inattendue (HTTP $CODE). Reseau ? Reessayer." ;;
           esac
           echo "node $(node --version)"
-          npx --yes netlify-cli --version || true
-          npx --yes netlify-cli deploy --dir=site_engendre --prod --message "Collecte du $(date -u +%d/%m/%Y)"
+          npx --yes netlify-cli --version || echo "version de netlify-cli illisible"
+          # POURQUOI CES TROIS PRECAUTIONS, ajoutees le 20/08/2026 apres une etape RESTEE
+          # BLOQUEE au lieu d'echouer :
+          #  1. --auth et --site en clair plutot que par variables d'environnement. Quand
+          #     netlify-cli ne parvient pas a determiner le site, il POSE UNE QUESTION —
+          #     et sur un runner sans terminal, il attend une reponse qui ne viendra
+          #     jamais, jusqu'au delai de 30 minutes. Passer les valeurs en arguments
+          #     supprime la question.
+          #  2. --no-build : sans lui, la CLI cherche a deviner un outil de construction
+          #     dans le dossier, ce qui n'a aucun sens ici — le site est deja fabrique.
+          #  3. timeout 300 : une commande qui se bloque doit ECHOUER en cinq minutes avec
+          #     un message, pas consommer le quart d'heure et mourir sans rien dire. Un
+          #     echec rapide et lisible vaut mieux qu'un blocage silencieux.
+          # Les valeurs restent masquees par GitHub dans les journaux : elles viennent des
+          # secrets, et le masquage se fait sur la valeur, pas sur la facon de la passer.
+          set +e
+          timeout 300 npx --yes netlify-cli deploy \
+            --dir=site_engendre --prod --no-build \
+            --auth "$NETLIFY_AUTH_TOKEN" --site "$NETLIFY_SITE_ID" \
+            --message "Collecte du $(date -u +%d/%m/%Y)"
+          CODE_DEPLOI=$?
+          set -e
+          if [ "$CODE_DEPLOI" = "124" ]; then
+            echo "::error::La publication est restee BLOQUEE et a ete interrompue au bout de 5 minutes. netlify-cli attendait probablement une reponse a une question posee dans le vide."
+          fi
+          exit $CODE_DEPLOI
 
       - name: Dire si l'enregistrement a abouti
         if: always()
@@ -157,8 +181,10 @@ jobs:
             echo "::notice::Site reconstruit mais NON publie : les secrets NETLIFY_AUTH_TOKEN et/ou NETLIFY_SITE_ID sont absents."
           elif [ "${{ steps.deploy.outcome }}" = "success" ]; then
             echo "::notice::Site reconstruit, eprouve par le banc, et publie sur Netlify."
+          elif [ "${{ steps.deploy.outcome }}" = "skipped" ]; then
+            echo "::error::La publication n'a PAS ETE TENTEE : une etape precedente a echoue et GitHub a saute celle-ci. Cherche la croix rouge plus haut, pas ici."
           else
-            echo "::error::La publication sur Netlify a ECHOUE. Le site en ligne est inchange. Cause la plus frequente : le jeton NETLIFY_AUTH_TOKEN a ete revoque ou mal recopie. Voir le journal de l'etape « Publier sur Netlify »."
+            echo "::error::La publication sur Netlify a ECHOUE (le site en ligne est inchange). Lis la ligne « sonde Netlify » de l'etape : HTTP 200 = ni le jeton ni le site ne sont en cause, HTTP 401 = jeton, HTTP 403 = jeton d'un autre compte, HTTP 404 = identifiant du site."
           fi
 
       - name: Mettre le job au rouge si quelque chose a echoue
