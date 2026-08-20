@@ -1,5 +1,5 @@
 # =============================================================================
-# Collecte quotidienne de Repere — version 3, dite « lanceur ».
+# Collecte quotidienne de Repere — version 5, dite « lanceur ».
 #
 # CE FICHIER NE DEVRAIT PLUS JAMAIS CHANGER. C'est tout son interet.
 #
@@ -50,15 +50,18 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Installer Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
       - name: Installer le navigateur du banc
+        # Node n'est PAS installe par une action : l'image ubuntu-latest l'embarque.
+        # actions/setup-node@v4 ciblait Node 20, deprecie — et c'etait la troisieme
+        # action a mettre a jour en deux jours. Une dependance retiree ne se deprecie
+        # plus jamais. On verifie quand meme sa presence, pour que l'absence eventuelle
+        # se lise en une ligne au lieu d'une erreur obscure de npm.
         # Le banc mesure le rendu reel : sans navigateur, il ne prouve rien. Chromium
         # seul suffit, --with-deps installe les bibliotheques systeme manquantes.
-        run: npm install --no-save playwright@1.49.0 && npx playwright install --with-deps chromium
+        run: |
+          node --version || { echo "::error::Node absent de l'image du runner."; exit 1; }
+          npm install --no-save playwright@1.49.0
+          npx playwright install --with-deps chromium
 
       - name: Telecharger les sources
         id: collecte
@@ -90,18 +93,35 @@ jobs:
           fi
 
       - name: Publier sur Netlify
+        id: deploy
         if: env.NETLIFY_AUTH_TOKEN != '' && env.NETLIFY_SITE_ID != ''
+        # continue-on-error : on veut que l'etape suivante puisse LIRE le resultat et
+        # le dire. Le job est quand meme mis au rouge, plus bas, si la publication a
+        # echoue — mais apres avoir explique pourquoi.
+        continue-on-error: true
         run: npx --yes netlify-cli deploy --dir=site_engendre --prod --message "Collecte du $(date -u +%d/%m/%Y)"
 
       - name: Dire ce qui a ete publie, ou pourquoi rien ne l'a ete
-        # Un deploiement saute en silence se lit comme un deploiement reussi.
+        # VERSION 5. La version precedente annoncait « publie sur Netlify » des lors que
+        # les deux secrets EXISTAIENT — sans jamais regarder si la publication avait
+        # reussi. Le 20/08/2026 elle a donc annonce une publication qui avait echoue,
+        # pendant que le site en ligne restait celui de la veille. Une annotation qui
+        # ne mesure pas ce qu'elle affirme est pire que pas d'annotation du tout :
+        # elle fait perdre le temps qu'on aurait passe a chercher.
         if: always()
         run: |
           if [ -z "$NETLIFY_AUTH_TOKEN" ] || [ -z "$NETLIFY_SITE_ID" ]; then
             echo "::notice::Site reconstruit mais NON publie : les secrets NETLIFY_AUTH_TOKEN et/ou NETLIFY_SITE_ID sont absents."
-          else
+          elif [ "${{ steps.deploy.outcome }}" = "success" ]; then
             echo "::notice::Site reconstruit, eprouve par le banc, et publie sur Netlify."
+          else
+            echo "::error::La publication sur Netlify a ECHOUE. Le site en ligne est inchange. Cause la plus frequente : le jeton NETLIFY_AUTH_TOKEN a ete revoque ou mal recopie. Voir le journal de l'etape « Publier sur Netlify »."
           fi
+
+      - name: Mettre le job au rouge si la publication a echoue
+        # Apres l'explication, pas avant : un job rouge sans phrase est une enigme.
+        if: steps.deploy.outcome == 'failure'
+        run: exit 1
 
       - name: Signaler les echecs de collecte
         if: steps.collecte.outcome == 'failure'
