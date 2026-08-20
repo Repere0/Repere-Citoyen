@@ -1,5 +1,5 @@
 # =============================================================================
-# Collecte quotidienne de Repere — version 5, dite « lanceur ».
+# Collecte quotidienne de Repere — version 7, dite « lanceur ».
 #
 # CE FICHIER NE DEVRAIT PLUS JAMAIS CHANGER. C'est tout son interet.
 #
@@ -76,11 +76,23 @@ jobs:
         run: bash outils/pipeline.sh
 
       - name: Committer ce qui a change
+        id: commit
+        # continue-on-error, et c'est le correctif du 20/08/2026. Sans lui, un push
+        # refuse — parce qu'une main humaine avait pousse entre-temps — faisait tomber
+        # l'etape, et GitHub SAUTAIT alors « Publier sur Netlify » sans un mot. Le site
+        # validee par le banc restait a la porte pour une raison qui n'a rien a voir
+        # avec lui. Enregistrer et publier sont deux choses independantes : elles ne
+        # doivent plus se tenir en echec.
+        continue-on-error: true
         run: |
           set -e
           git config user.name "Collecte Repere"
           git config user.email "repere0@protonmail.com"
-          git add outils/agenda_an.json data/journal_collecte.json docs/schema_scrutins.md
+          # git add -A, et non une liste de chemins : chaque nouvel artefact de la
+          # chaine obligeait sinon a rouvrir CE fichier, le seul que Claude ne peut
+          # pas ecrire. Le .gitignore fait le tri — il exclut deja site_engendre/,
+          # les archives brutes et le journal de pousser.bat.
+          git add -A
           if git diff --cached --quiet; then
             echo "Rien de nouveau aujourd'hui."
           else
@@ -99,7 +111,38 @@ jobs:
         # le dire. Le job est quand meme mis au rouge, plus bas, si la publication a
         # echoue — mais apres avoir explique pourquoi.
         continue-on-error: true
-        run: npx --yes netlify-cli deploy --dir=site_engendre --prod --message "Collecte du $(date -u +%d/%m/%Y)"
+        run: |
+          # SONDE PREALABLE. On a perdu deux soirees a deviner entre « le jeton est
+          # mauvais » et « l'identifiant du site est mauvais ». L'API de Netlify tranche
+          # en un appel, et son CODE HTTP suffit :
+          #   200 -> le jeton est valide ET le site existe : la faute est ailleurs
+          #   401 -> le jeton est invalide, revoque, ou mal recopie
+          #   404 -> le jeton est valide mais l'identifiant du site ne correspond a rien
+          # POURQUOI PAS `netlify status` : il imprime le courriel du compte, et les
+          # journaux de ce depot sont publics. On n'affiche donc QUE le code.
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
+            "https://api.netlify.com/api/v1/sites/$NETLIFY_SITE_ID")
+          echo "sonde Netlify (jeton + identifiant du site) : HTTP $CODE"
+          case "$CODE" in
+            200) echo "::notice::Jeton valide et site trouve. Si la publication echoue malgre tout, la cause n'est ni le jeton ni l'identifiant." ;;
+            401) echo "::error::Jeton NETLIFY_AUTH_TOKEN refuse (HTTP 401). Il est revoque, expire, ou mal recopie. Remplace la valeur du secret." ;;
+            403) echo "::error::Jeton valide mais sans droit sur ce site (HTTP 403). Le jeton appartient peut-etre a un autre compte." ;;
+            404) echo "::error::Identifiant NETLIFY_SITE_ID introuvable (HTTP 404). Reprends le Site ID dans la configuration du site." ;;
+            *)   echo "::warning::Sonde inattendue (HTTP $CODE). Reseau ? Reessayer." ;;
+          esac
+          echo "node $(node --version)"
+          npx --yes netlify-cli --version || true
+          npx --yes netlify-cli deploy --dir=site_engendre --prod --message "Collecte du $(date -u +%d/%m/%Y)"
+
+      - name: Dire si l'enregistrement a abouti
+        if: always()
+        run: |
+          if [ "${{ steps.commit.outcome }}" = "success" ]; then
+            echo "::notice::Depot a jour."
+          else
+            echo "::warning::L'enregistrement dans le depot a echoue (push refuse ?). La publication, elle, n'en depend pas."
+          fi
 
       - name: Dire ce qui a ete publie, ou pourquoi rien ne l'a ete
         # VERSION 5. La version precedente annoncait « publie sur Netlify » des lors que
@@ -118,9 +161,9 @@ jobs:
             echo "::error::La publication sur Netlify a ECHOUE. Le site en ligne est inchange. Cause la plus frequente : le jeton NETLIFY_AUTH_TOKEN a ete revoque ou mal recopie. Voir le journal de l'etape « Publier sur Netlify »."
           fi
 
-      - name: Mettre le job au rouge si la publication a echoue
-        # Apres l'explication, pas avant : un job rouge sans phrase est une enigme.
-        if: steps.deploy.outcome == 'failure'
+      - name: Mettre le job au rouge si quelque chose a echoue
+        # Apres les explications, pas avant : un job rouge sans phrase est une enigme.
+        if: steps.deploy.outcome == 'failure' || steps.commit.outcome == 'failure'
         run: exit 1
 
       - name: Signaler les echecs de collecte
