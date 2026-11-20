@@ -36,5 +36,5 @@ Version déclarée dans `mono/apps/mobile/app.json`. Rien n'est publié sur les 
 
 Application PWA en un seul fichier HTML (`app_repere_v18_20.html`), collecte quotidienne des sources publiques à partir du 18/08/2026. Ses notes de version sont dans `docs/historique/RESUME-v*.md`.
 
-[Non publié]: https://github.com/Repere0/repere/commits/main
-[0.1.0]: https://github.com/Repere0/repere/blob/main/mono/apps/mobile/app.json
+[Non publié]: https://github.com/Repere0/repere-citoyen/commits/main
+[0.1.0]: https://github.com/Repere0/repere-citoyen/blob/main/mono/apps/mobile/app.json

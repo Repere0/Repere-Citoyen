@@ -70,7 +70,7 @@ explicite du porteur les change ; la PR qui l'applique met alors à jour
    l'impression de fluidité.
 <!-- INVARIANTS:FIN -->
 
-## Où vit quoi (état du 29/09/2026)
+## Où vit quoi (état du 29/09/2026 ; dépôt Repere0/repere-citoyen depuis le 20/11/2026, l'ancien est archivé)
 
 - **Production** : `mono/` (React/Vite, sortie statique). `outils/pipeline.sh` la
   construit et l'éprouve ; `.github/workflows/collecte.yml` la publie chaque matin

@@ -19,7 +19,7 @@ Dernier constat : le run `6bc4f41` sur `main` (31/10/2026, 00:55 UTC) a échoué
 
 ## 2. Mettre le jeton dans GitHub
 
-- Page : https://github.com/Repere0/repere/settings/secrets/actions
+- Page : https://github.com/Repere0/repere-citoyen/settings/secrets/actions
   (Settings > Secrets and variables > Actions).
 - Modifier `NETLIFY_AUTH_TOKEN` et coller la valeur. Ne pas la coller dans une conversation, un fichier ou un commit.
 - Vérifier aussi `NETLIFY_SITE_ID` (Netlify > Site configuration > General > Site information). Le workflow renvoie HTTP 404 si cet identifiant est faux.
@@ -29,7 +29,7 @@ Dernier constat : le run `6bc4f41` sur `main` (31/10/2026, 00:55 UTC) a échoué
 Depuis le terminal, avec la CLI GitHub (`gh`) connectée au dépôt :
 
 ```
-gh workflow run collecte.yml --repo Repere0/repere --ref main
+gh workflow run collecte.yml --repo Repere0/repere-citoyen --ref main
 ```
 
 Ou depuis l'interface : onglet Actions > « collecte » > « Run workflow » > branche `main`.

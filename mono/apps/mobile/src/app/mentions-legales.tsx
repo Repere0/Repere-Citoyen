@@ -50,7 +50,7 @@ export default function MentionsLegales() {
 
       <Carte titre="Code source">
         <Text style={TYPO.note}>Le code de Repère est publié sous licence AGPL-3.0.</Text>
-        <LienSortant url="https://github.com/Repere0/repere" texte="Le dépôt du code" />
+        <LienSortant url="https://github.com/Repere0/repere-citoyen" texte="Le dépôt du code" />
       </Carte>
 
       <Carte titre="Vos données">

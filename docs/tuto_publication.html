@@ -74,7 +74,7 @@ footer{border-top:2px solid var(--ink);margin-top:28px;padding-top:20px}
 
 <div class="etape">
   <div class="tete"><span class="n urg">2</span><h2>Lire l'erreur, et la reconnaître</h2><span class="duree">3 minutes</span></div>
-  <p>Va sur <a href="https://github.com/Repere0/repere/actions/workflows/collecte.yml">la page du workflow</a>,
+  <p>Va sur <a href="https://github.com/Repere0/repere-citoyen/actions/workflows/collecte.yml">la page du workflow</a>,
   ouvre la dernière exécution, clique sur l'étape <b>Publier sur Netlify</b>, et lis ses
   dernières lignes. Puis trouve ton symptôme :</p>
   <table>
@@ -121,7 +121,7 @@ footer{border-top:2px solid var(--ink);margin-top:28px;padding-top:20px}
   <ul>
     <li>Sur <a href="https://app.netlify.com/user/applications#personal-access-tokens">app.netlify.com/user/applications</a>, vérifie d'abord qu'il ne reste <b>aucun</b> jeton commençant par <code>nfp_1N4D</code>. S'il est encore là, révoque-le : il a été affiché dans une capture d'écran.</li>
     <li>Crée un jeton neuf. <b>Copie-le immédiatement</b> — la valeur ne s'affiche qu'une fois.</li>
-    <li>Sur <a href="https://github.com/Repere0/repere/settings/secrets/actions">la page des secrets</a>, ouvre <code>NETLIFY_AUTH_TOKEN</code>, colle la nouvelle valeur <b>seule</b> — pas le nom devant, pas d'espace, pas de retour à la ligne — et enregistre.</li>
+    <li>Sur <a href="https://github.com/Repere0/repere-citoyen/settings/secrets/actions">la page des secrets</a>, ouvre <code>NETLIFY_AUTH_TOKEN</code>, colle la nouvelle valeur <b>seule</b> — pas le nom devant, pas d'espace, pas de retour à la ligne — et enregistre.</li>
     <li>Relance le workflow.</li>
   </ul>
   <div class="bloc piege"><div class="l">Le piège du copier-coller</div>
