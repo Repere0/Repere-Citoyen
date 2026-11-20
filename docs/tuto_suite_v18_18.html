@@ -90,7 +90,7 @@ footer{border-top:2px solid var(--ink);margin-top:30px;padding-top:20px}
   <div class="bloc pourquoi"><div class="l">Pourquoi</div>
   <p>C'est le lancement qui répond à tout d'un coup : est-ce que la chaîne complète tourne,
   est-ce que tes secrets Netlify sont bons, et est-ce que j'obtiens le schéma des scrutins.</p></div>
-  <p><a href="https://github.com/Repere0/repere/actions/workflows/collecte.yml">github.com/Repere0/repere/actions/workflows/collecte.yml</a> → bouton <b>Run workflow</b>.</p>
+  <p><a href="https://github.com/Repere0/repere-citoyen/actions/workflows/collecte.yml">github.com/Repere0/repere-citoyen/actions/workflows/collecte.yml</a> → bouton <b>Run workflow</b>.</p>
   <div class="bloc reussi"><div class="l">Réussi si — les trois lignes à chercher</div>
   <ul>
     <li><code>schema ecrit : docs/schema_scrutins.md (…)</code></li>
@@ -110,7 +110,7 @@ footer{border-top:2px solid var(--ink);margin-top:30px;padding-top:20px}
   <ul>
     <li><b>Le jeton</b> — <a href="https://app.netlify.com/user/applications#personal-access-tokens">app.netlify.com/user/applications</a> → <b>New access token</b>, description « GitHub Actions Repère », avec une date d'expiration. <b>La valeur ne s'affiche qu'une fois</b> : garde l'onglet ouvert.</li>
     <li><b>L'identifiant du site</b> — <a href="https://app.netlify.com/sites/repereapp/configuration/general">app.netlify.com/sites/repereapp/configuration/general</a> → section <b>Site information</b> (ou <b>Project information</b> : Netlify renomme « Sites » en « Projects »). C'est le <b>Site ID</b>, une longue suite de lettres, chiffres et tirets.</li>
-    <li><b>Les déposer</b> — <a href="https://github.com/Repere0/repere/settings/secrets/actions">github.com/Repere0/repere/settings/secrets/actions</a> → <b>New repository secret</b>, deux fois.</li>
+    <li><b>Les déposer</b> — <a href="https://github.com/Repere0/repere-citoyen/settings/secrets/actions">github.com/Repere0/repere-citoyen/settings/secrets/actions</a> → <b>New repository secret</b>, deux fois.</li>
   </ul>
   <p style="margin-top:10px">Les noms doivent être <b>exactement</b> ceux-ci, majuscules et tirets bas compris :</p>
   <pre>NETLIFY_AUTH_TOKEN

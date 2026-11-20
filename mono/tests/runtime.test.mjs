@@ -2032,17 +2032,37 @@ console.log("\n--- absence chez nous vs absence dans le monde ----------------")
  * `paquet.manquantes`, pose par extract-html.js depuis le Code officiel
  * geographique. Le controle prouve les DEUX branches, pas seulement la corrigee :
  * une vraie faute de frappe ne doit pas se mettre a afficher la phrase inverse. */
+/* 20/11/2026 : la commune testee n'est plus figee. Ville-d'Avray (92077) etait
+ * absente du Repertoire des elus jusqu'a la collecte du 20/11/2026, qui l'a
+ * retrouvee : le test echouait parce que les donnees s'etaient AMELIOREES. On
+ * prend donc une commune que CETTE publication nomme comme manquante
+ * (communes-beta.json, `manquantes`). S'il n'y en a plus, la branche n'a rien a
+ * montrer : on le dit, sans pretendre l'avoir eprouvee. */
+const NOMS_DEP_BETA = { "75": "paris", "77": "seine-et-marne", "78": "yvelines", "91": "essonne",
+  "92": "hauts-de-seine", "93": "seine-saint-denis", "94": "val-de-marne", "95": "val-d'oise" };
+const manquantesPub = Object.entries(JSON.parse(fs.readFileSync(path.join(DIST, "data", "communes-beta.json"), "utf8")).manquantes || {})
+  .filter(([insee]) => NOMS_DEP_BETA[insee.slice(0, 2)]);
+const [inseeManq, nomManq] = manquantesPub[0] || [];
+const depManq = inseeManq ? inseeManq.slice(0, 2) : null;
+if (!inseeManq) console.log("  SANS OBJET | invariant 5 — aucune commune nommee manquante dans cette publication : branche « existe bien » non eprouvee");
+else console.log(`  commune manquante eprouvee : ${nomManq} (${inseeManq})`);
 const pageAbs = await (await nav.newContext()).newPage();
 await pageAbs.goto(base, { waitUntil: "networkidle" });
-await pageAbs.getByLabel(/Où habitez-vous/).fill("hauts-de-seine");
-await pageAbs.waitForTimeout(200);
-await pageAbs.getByRole("button", { name: /^92\b/ }).click();
-await pageAbs.getByLabel(/Votre commune/).fill("Ville-d'Avray");
-await pageAbs.waitForTimeout(300);
-const texteManquante = await pageAbs.evaluate(() => document.querySelector(".choix-commune")?.innerText || "");
-verif("invariant 5 — une commune officielle absente de nos donnees n'est jamais dite inexistante",
-  /existe bien dans ce département/.test(texteManquante) && !/ne porte ce nom/.test(texteManquante),
-  texteManquante.slice(0, 200).replace(/\n+/g, " / "));
+if (inseeManq) {
+  await pageAbs.getByLabel(/Où habitez-vous/).fill(NOMS_DEP_BETA[depManq]);
+  await pageAbs.waitForTimeout(200);
+  await pageAbs.getByRole("button", { name: new RegExp("^" + depManq + "\\b") }).click();
+  await pageAbs.getByLabel(/Votre commune/).fill(nomManq);
+  await pageAbs.waitForTimeout(300);
+  const texteManquante = await pageAbs.evaluate(() => document.querySelector(".choix-commune")?.innerText || "");
+  verif("invariant 5 — une commune officielle absente de nos donnees n'est jamais dite inexistante",
+    /existe bien dans ce département/.test(texteManquante) && !/ne porte ce nom/.test(texteManquante),
+    texteManquante.slice(0, 200).replace(/\n+/g, " / "));
+} else {
+  await pageAbs.getByLabel(/Où habitez-vous/).fill("hauts-de-seine");
+  await pageAbs.waitForTimeout(200);
+  await pageAbs.getByRole("button", { name: /^92\b/ }).click();
+}
 
 await pageAbs.getByLabel(/Votre commune/).fill("Zzznexistepas");
 await pageAbs.waitForTimeout(300);
@@ -2061,12 +2081,14 @@ await pageAbs.context().close();
  * celle-ci, la plus emprunte des deux. */
 const pageAbs1 = await (await nav.newContext()).newPage();
 await pageAbs1.goto(base, { waitUntil: "networkidle" });
-await pageAbs1.getByLabel(/Où habitez-vous/).fill("Ville-d'Avray");
-await pageAbs1.waitForTimeout(300);
-const texteEntree = await pageAbs1.evaluate(() => document.querySelector(".entree")?.innerText || "");
-verif("invariant 5 — le premier ecran distingue aussi une absence chez nous d'une commune inexistante",
-  /existe bien en Île-de-France/.test(texteEntree) && !/ne correspond à/.test(texteEntree),
-  texteEntree.slice(0, 200).replace(/\n+/g, " / "));
+if (inseeManq) {
+  await pageAbs1.getByLabel(/Où habitez-vous/).fill(nomManq);
+  await pageAbs1.waitForTimeout(300);
+  const texteEntree = await pageAbs1.evaluate(() => document.querySelector(".entree")?.innerText || "");
+  verif("invariant 5 — le premier ecran distingue aussi une absence chez nous d'une commune inexistante",
+    /existe bien en Île-de-France/.test(texteEntree) && !/ne correspond à/.test(texteEntree),
+    texteEntree.slice(0, 200).replace(/\n+/g, " / "));
+}
 
 await pageAbs1.getByLabel(/Où habitez-vous/).fill("Zzznexistepas");
 await pageAbs1.waitForTimeout(300);

@@ -10,7 +10,7 @@ Ce document est pour le porteur du projet. Il dit ce qui se vérifie **depuis un
 
 ## 1. Déclencher un run d'essai (depuis le téléphone)
 
-1. Ouvrir `github.com/Repere0/repere`, onglet **Actions**.
+1. Ouvrir `github.com/Repere0/repere-citoyen`, onglet **Actions**.
 2. Choisir **Collecte quotidienne**.
 3. **Run workflow**, branche **test/sdk58-expo-go**, puis **Run workflow**.
 4. Attendre environ 10 à 15 minutes.

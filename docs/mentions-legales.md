@@ -20,7 +20,7 @@ Les chiffres, les votes et les informations sur les élus viennent de sources pu
 
 ## Code source
 
-Le code de Repère est publié sous licence AGPL-3.0 : https://github.com/Repere0/repere
+Le code de Repère est publié sous licence AGPL-3.0 : https://github.com/Repere0/repere-citoyen
 
 ## Vos données
 

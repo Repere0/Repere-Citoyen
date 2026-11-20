@@ -2,8 +2,8 @@
 
 Application civique française et neutre : pour une commune, **qui décide chez moi** et **où va mon argent**, chaque chiffre avec sa source officielle et sa date.
 
-[![Collecte quotidienne](https://github.com/Repere0/repere/actions/workflows/collecte.yml/badge.svg?branch=main)](https://github.com/Repere0/repere/actions/workflows/collecte.yml)
-[![CodeQL](https://github.com/Repere0/repere/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Repere0/repere/actions/workflows/codeql.yml)
+[![Collecte quotidienne](https://github.com/Repere0/repere-citoyen/actions/workflows/collecte.yml/badge.svg?branch=main)](https://github.com/Repere0/repere-citoyen/actions/workflows/collecte.yml)
+[![CodeQL](https://github.com/Repere0/repere-citoyen/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Repere0/repere-citoyen/actions/workflows/codeql.yml)
 [![Licence : AGPL-3.0](https://img.shields.io/badge/licence-AGPL--3.0-blue.svg)](LICENSE)
 [![Node 22](https://img.shields.io/badge/node-22-339933.svg)](.github/workflows/mobile.yml)
 ![Statut : bêta Île-de-France](https://img.shields.io/badge/statut-b%C3%AAta%20%C3%8Ele--de--France-orange.svg)
@@ -24,8 +24,8 @@ Application civique française et neutre : pour une commune, **qui décide chez 
 Prérequis : Node.js 22 et npm ; Expo Go sur un téléphone pour l'essayer sur mobile.
 
 ```sh
-git clone https://github.com/Repere0/repere.git
-cd repere/mono/apps/mobile
+git clone https://github.com/Repere0/repere-citoyen.git
+cd repere-citoyen/mono/apps/mobile
 npm ci              # l'application a son propre package-lock.json, hors du workspace pnpm
 npm run start       # puis scanner le QR code avec Expo Go
 npm run web         # ou : version navigateur

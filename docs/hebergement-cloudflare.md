@@ -38,7 +38,7 @@ documentation, non éprouvée ici.
    → **Modifier**. Ressources du compte : ton compte. **Continuer**, **Créer le jeton**, copier la valeur (elle ne
    s'affiche qu'une fois).
 2. **Copier l'identifiant du compte** : **Workers & Pages** → colonne de droite, « ID de compte » → copier.
-3. **Les donner à GitHub** : dépôt `Repere0/repere` → **Settings** → **Secrets and variables** → **Actions** →
+3. **Les donner à GitHub** : dépôt `Repere0/repere-citoyen` → **Settings** → **Secrets and variables** → **Actions** →
    **New repository secret**, deux fois :
    - `CLOUDFLARE_API_TOKEN` = le jeton du geste 1 ;
    - `CLOUDFLARE_ACCOUNT_ID` = l'identifiant du geste 2.
@@ -60,8 +60,8 @@ Tout se fait dans le tableau de bord de Cloudflare, connecté à ton compte. Rie
 
 1. **Ouvrir** `dash.cloudflare.com`, menu de gauche **Workers & Pages**, bouton **Créer**, onglet **Pages**, puis
    **Se connecter à Git**.
-2. **Autoriser GitHub** quand Cloudflare le demande, en limitant l'accès au seul dépôt `Repere0/repere`.
-3. **Choisir le dépôt** `Repere0/repere`, puis **Commencer la configuration**.
+2. **Autoriser GitHub** quand Cloudflare le demande, en limitant l'accès au seul dépôt `Repere0/repere-citoyen`.
+3. **Choisir le dépôt** `Repere0/repere-citoyen`, puis **Commencer la configuration**.
 4. **Remplir exactement** :
 
    | champ | valeur |
