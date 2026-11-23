@@ -129,14 +129,32 @@ const lireProfil = page => page.evaluate(() => JSON.parse(localStorage.getItem("
   await contexte.close();
 }
 
-/* 3. Un lien ouvert sur une page précise n'est pas détourné vers la question */
+/* 3. Un lien partagé ouvre son contenu (23/11/2026, porteur, ADR 0012, qui amende l'ADR 0011 du 14/11).
+   Mesuré avant : « /finances#melun » ouvert par un nouveau visiteur montrait trois écrans de bienvenue avant Finances. */
 {
   const { contexte, page } = await nouveau();
-  await page.goto(BASE + "/faq", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/finances#melun", { waitUntil: "networkidle" });
   await page.waitForTimeout(1800);
-  verifier(page.url().includes("/faq"), "lien profond sans profil : l'adresse demandée n'est pas détournée");
-  verifier(await page.getByTestId("barriere-bienvenue").isVisible(), "lien profond sans profil : la barrière du prénom couvre la page (14/11)");
-  verifier(await page.getByTestId("bonjour").count() === 0, "sans prénom : l'accueil n'est pas atteignable");
+  verifier(page.url().includes("/finances"), "lien partagé sans profil : l'adresse demandée n'est pas détournée");
+  verifier(!(await page.getByTestId("barriere-bienvenue").isVisible().catch(() => false)), "lien partagé sans profil : aucune bienvenue ne couvre la page");
+  verifier(/Où va l'argent de Melun/.test(await page.locator("body").innerText()), "lien partagé sans profil : le contenu (Finances de Melun) est lu tout de suite");
+  verifier(await page.getByTestId("bandeau-decouverte").isVisible(), "lien partagé sans profil : un bandeau propose de personnaliser");
+  verifier(await lireProfil(page) === null, "lien partagé : rien n'est gardé sur l'appareil sans que le lecteur le demande");
+  await page.getByRole("button", { name: /^Personnaliser Repère/ }).click();
+  await page.getByTestId("barriere-bienvenue").waitFor({ state: "visible", timeout: 5000 }).catch(() => {});
+  verifier(await page.getByTestId("barriere-bienvenue").isVisible(), "« Personnaliser » pose la bienvenue par-dessus la page");
+  await passerBienvenue(page);
+  verifier(page.url().includes("/finances") && !(await page.getByTestId("bandeau-decouverte").isVisible().catch(() => false)), "après la bienvenue : on reste sur Finances, le bandeau a disparu");
+  await contexte.close();
+}
+
+/* 3 bis. L'ouverture directe (l'accueil) garde la bienvenue complète. */
+{
+  const { contexte, page } = await nouveau();
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.waitForTimeout(1500);
+  verifier(await page.getByTestId("barriere-bienvenue").isVisible(), "accueil sans profil : la bienvenue couvre l'écran (ouverture directe)");
+  verifier(!(await page.getByTestId("bonjour").isVisible().catch(() => false)), "sans prénom : l'accueil n'est pas visible");
   await contexte.close();
 }
 

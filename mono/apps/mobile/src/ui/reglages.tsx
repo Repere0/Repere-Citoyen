@@ -8,6 +8,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { CIBLE, PAS, RAYON, TYPO, couleurs, feuille, type ChoixTheme } from "../lib/theme";
 import { VOILE_MODAL } from "../lib/palette";
 import { useTheme } from "../lib/themeChoix";
+import { useBienvenue } from "../lib/bienvenue";
 import { router } from "expo-router";
 import { enfonce } from "./mouvement";
 import { BoutonAvis } from "./demo";
@@ -57,6 +58,7 @@ export function BoutonReglages() {
 function ChoixAffichage({ visible, onFermer }: { visible: boolean; onFermer: () => void }) {
   const { choix, setChoix } = useTheme();
   const { modifier } = useProfil();
+  const { ouvrir: ouvrirBienvenue } = useBienvenue();
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onFermer}>
       <Pressable style={s.voile} onPress={onFermer} accessibilityRole="button" accessibilityLabel="Fermer les réglages">
@@ -90,7 +92,7 @@ function ChoixAffichage({ visible, onFermer }: { visible: boolean; onFermer: () 
           {/* 14/11/2026 (porteur) : changer de prénom. Le prénom est vidé, et la coquille redresse aussitôt la
               question du prénom (ui/bienvenue.tsx) ; les autres réglages ne bougent pas. */}
           <Pressable
-            onPress={() => { onFermer(); modifier({ prenom: "" }); }}
+            onPress={() => { onFermer(); modifier({ prenom: "" }); ouvrirBienvenue(); /* ADR 0012 : la bienvenue se pose sur la page ouverte */ }}
             accessibilityRole="button" accessibilityLabel="Changer de prénom" testID="changer-prenom"
             style={({ pressed }) => [s.option, pressed && enfonce(true)]}
           >

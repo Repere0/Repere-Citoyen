@@ -149,6 +149,23 @@ test("la barriere du prenom est posee par la coquille, sans aucune redirection n
   assert.doesNotMatch(coque, /router\.(replace|push)\(/, "la coque ne navigue pas : un ordre au lancement se perd sur iPhone");
 });
 
+/* ─── 23/11/2026 (porteur, ADR 0012) : UN LIEN PARTAGÉ OUVRE SON CONTENU ─────────────────────────────────
+ * La bienvenue couvre l'accueil (ouverture directe) ou ce que le lecteur a demandé, jamais une page ouverte par
+ * un lien. Une seule fonction le décide ; la coquille l'appelle. */
+test("la bienvenue ne couvre que l'accueil ou la demande du lecteur, jamais un lien partagé", async () => {
+  const coque = lire(join(ICI, "..", "src", "app", "_layout.tsx"));
+  assert.match(coque, /const dressee = bienvenueDressee\(barriere, chemin, demandee\)/, "la coquille doit passer par bienvenueDressee");
+  const src = lire(join(ICI, "..", "src", "lib", "bienvenue.tsx"));
+  const corps = /export function bienvenueDressee[^{]*\{([\s\S]*?)\n\}/.exec(src);
+  assert.ok(corps, "bienvenueDressee introuvable");
+  const f = new Function("barriere", "chemin", "demandee", corps[1]);
+  assert.equal(f(true, "/", false), true, "accueil sans prénom : bienvenue");
+  assert.equal(f(true, "/finances", false), false, "lien partagé sans prénom : le contenu d'abord");
+  assert.equal(f(true, "/confidentialite", false), false, "confidentialité lisible avant le prénom");
+  assert.equal(f(true, "/finances", true), true, "« Personnaliser » : bienvenue");
+  assert.equal(f(false, "/", true), false, "prénom gardé : jamais de bienvenue");
+});
+
 /* ─── 13/11/2026 : UNE SEULE FAÇON DE TRAVERSER L'ÉCRAN DE BIENVENUE ──────────────────────────────────
  * L'écran de bienvenue a changé deux fois en une journée (une question, puis trois écrans). Les deux
  * fois, tests/meme-verite.mjs l'a appris par une CI rouge, parce qu'il gardait sa propre copie du
