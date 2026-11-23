@@ -71,10 +71,13 @@ test("la politique de confidentialite existe, et l'ecran et le document disent l
 test("les mentions légales existent, l'écran et le document disent la même chose, et les réglages y mènent", () => {
   const doc = fs.readFileSync(path.join(DOCS, "mentions-legales.md"), "utf8");
   const ecran = fs.readFileSync(path.join(MOBILE, "src", "app", "mentions-legales.tsx"), "utf8");
-  for (const cle of ["à titre non professionnel", "repere0@protonmail.com", "Netlify, Inc.", "101 2nd Street", "Vercel Inc.", "AGPL-3.0", "Wikimedia Commons"]) {
+  for (const cle of ["à titre non professionnel", "repere0@protonmail.com", "Netlify, Inc.", "101 2nd Street", "Cloudflare, Inc.", "AGPL-3.0", "Wikimedia Commons"]) {
     assert.ok(doc.includes(cle), `docs/mentions-legales.md ne contient pas « ${cle} »`);
     assert.ok(ecran.includes(cle), `mentions-legales.tsx ne contient pas « ${cle} »`);
   }
+  /* 23/11/2026 (porteur) : Vercel ne sert plus rien ; le citer comme hébergeur serait faux. */
+  assert.ok(!doc.includes("Vercel Inc."), "docs/mentions-legales.md cite encore Vercel comme hébergeur");
+  assert.ok(!ecran.includes("Vercel Inc."), "mentions-legales.tsx cite encore Vercel comme hébergeur");
   const reglages = fs.readFileSync(path.join(MOBILE, "src", "ui", "reglages.tsx"), "utf8");
   assert.ok(reglages.includes('"/mentions-legales"'), "les réglages ne mènent pas aux mentions légales");
 });
