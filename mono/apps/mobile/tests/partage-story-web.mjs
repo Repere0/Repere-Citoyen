@@ -86,14 +86,27 @@ async function controler(nom) {
       /* le badge de groupe porte son propre fond : son texte se mesure sur ce fond (BadgeGroupe, ADR 0001) */
       .filter(x => !/^Groupe/.test(x.t));
     const mots = textes.map(t => t.textContent.trim()).join(" ").split(/\s+/).filter(Boolean).length;
-    return { logo, faibles, mots, derniere: textes.length ? textes[textes.length - 1].textContent.trim() : "" };
+    /* 23/11/2026 (modèles A à D) : zones sûres d'Instagram et de TikTok, 250 px en haut et 340 px en bas sur 1920,
+       soit 84 et 114 pt sur 640 ; la source au-dessus du pied ; l'adresse publique dans le pied. */
+    const haut = e.getBoundingClientRect().top;
+    const horsZone = textes.map(t => { const r = t.getBoundingClientRect(); return { t: t.textContent.trim().slice(0, 30), h: Math.round(r.top - haut), b: Math.round(r.bottom - haut) }; })
+      .filter(x => x.h < 84 || x.b > 640 - 114);
+    const source = e.querySelector('[data-testid="carte-source"]')?.textContent.trim() || "";
+    const pied = e.querySelector('[data-testid="carte-pied"]')?.textContent.trim() || "";
+    /* L'adresse ne doit jamais être coupée par une ellipse (vu le 23/11 : « repere-cit… »). */
+    const adresse = textes.find(t => /^[a-z0-9.-]+\.[a-z]{2,}$/.test(t.textContent.trim()));
+    const adresseEntiere = !!adresse && adresse.scrollWidth <= adresse.clientWidth + 1;
+    return { logo, faibles, mots, horsZone, source, pied, adresseEntiere };
   });
   await p.evaluate(() => { const s = window.__story; document.getElementById("__story_style")?.remove(); s.c.removeAttribute("id"); s.c.setAttribute("style", s.style || ""); s.parent.insertBefore(s.c, s.suivant); });
   verifier(m.logo, `${nom} : logo present`);
   /* V34 bloc 4 : une carte story ne porte que le titre, une phrase, un visuel et la source. Plafond : 45 mots. */
-  verifier(m.mots <= 45, `${nom} : ${m.mots} mots (au plus 45)`);
+  verifier(m.mots <= 55, `${nom} : ${m.mots} mots (au plus 55 : 45 pour le contenu, 10 pour le pied ajouté le 23/11/2026)`);
   verifier(!m.faibles.length, `${nom} : textes a 4,5:1 au moins${m.faibles.length ? " — faibles : " + JSON.stringify(m.faibles) : ""}`);
-  verifier(/source/i.test(m.derniere), `${nom} : source en pied (« ${m.derniere.slice(0, 60)} »)`);
+  verifier(/source|définition/i.test(m.source), `${nom} : la source est écrite au-dessus du pied (« ${m.source.slice(0, 60)} »)`);
+  verifier(/^Repère/.test(m.pied) && /\.[a-z]{2,}$/.test(m.pied), `${nom} : la marque, l'invitation et l'adresse sont en pied (« ${m.pied} »)`);
+  verifier(m.adresseEntiere, `${nom} : l'adresse publique est écrite en entier, sur sa propre ligne`);
+  verifier(!m.horsZone.length, `${nom} : aucun texte dans les zones masquées par Instagram${m.horsZone.length ? " : " + JSON.stringify(m.horsZone) : ""}`);
 }
 
 await p.goto(BASE + "/", { waitUntil: "networkidle" });
@@ -123,6 +136,12 @@ await p.waitForTimeout(800);
 await p.getByRole("button", { name: /, .*,/ }).first().click();
 await p.waitForTimeout(800);
 await controler("annuaire");
+
+/* 5. Repère du jour (modèle A, l'affiche) */
+await p.goto(BASE + "/repere-du-jour#meaux", { waitUntil: "networkidle" });
+await p.waitForTimeout(1500);
+if (await p.locator('[data-testid="carte-story"]').count()) await controler("repere-du-jour");
+else console.log("note  repere-du-jour : aucun fait ce jour, pas de carte");
 
 await b.close();
 console.log(echecs.length ? `${echecs.length} echec(s)` : "cartes de partage : zero echec");
