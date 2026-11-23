@@ -1,6 +1,6 @@
 # Politique de confidentialité de Repère
 
-Version du 17/11/2026 (précédente : 30/10/2026). Ce texte est la version de l'application (écran Réglages, « Confidentialité ») et la version à publier en ligne pour l'App Store. Il doit être relu par le porteur avant publication.
+Version du 23/11/2026 (précédentes : 17/11/2026, 30/10/2026). Ce texte est la version de l'application (écran Réglages, « Confidentialité ») et la version à publier en ligne pour l'App Store. Il doit être relu par le porteur avant publication.
 
 ## Ce que Repère ne fait pas
 
@@ -18,12 +18,12 @@ Version du 17/11/2026 (précédente : 30/10/2026). Ce texte est la version de l'
 
 ## Ce qui quitte votre appareil
 
-Pour afficher les données, l'application les télécharge depuis le serveur qui les publie, `repereapp.netlify.app` (hébergement Netlify).
+Pour afficher les données, l'application sur téléphone les télécharge depuis le serveur qui les publie, `repereapp.netlify.app` (hébergement Netlify).
 
 - Comme pour tout site web, ce serveur reçoit votre adresse IP, la date de la demande et le type d'appareil ou de navigateur. Il peut consigner ces informations dans ses journaux techniques, selon sa propre politique.
 - Les fichiers demandés sont découpés par département. Le serveur voit donc quel département vous consultez. Il ne voit ni votre nom, ni votre commune exacte (la commune n'apparaît pas dans les adresses des fichiers).
 - Repère n'a pas accès à ces journaux, n'en fait aucun usage et ne les relie à aucun compte, puisqu'il n'y en a pas.
-- La version web de l'application est servie par Vercel ; ce serveur reçoit les mêmes informations techniques que ci-dessus. Aucun réglage ni aucune commune n'est transmis.
+- La version web de l'application, et les données qu'elle lit, sont servies par Cloudflare (hébergement Cloudflare Pages) ; ce serveur reçoit les mêmes informations techniques que ci-dessus. Aucun réglage ni aucune commune n'est transmis.
 - Quand vous ouvrez une source officielle (site de l'Assemblée nationale, data.gouv.fr, ministères), vous quittez Repère. Ce site applique sa propre politique.
 
 ## Données concernant des élus

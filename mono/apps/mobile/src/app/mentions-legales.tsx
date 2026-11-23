@@ -15,12 +15,13 @@ import { niveauTitre } from "../ui/titre";
 const CONTACT = "repere0@protonmail.com";
 
 /* Les hébergeurs (relevé le 17/11/2026, sources dans docs/mentions-legales.md). 23/11/2026 (audit C7) : l'application
-   Expo lit ses données sur son propre hôte (connect-src 'self', /data), donc Cloudflare ; Netlify publie le site compagnon. Cloudflare : ses conditions publiées.
+   web lit ses données sur son propre hôte (connect-src 'self', /data), donc Cloudflare ; sur téléphone, elle les lit sur Netlify
+   (lib/donnees.ts, PRODUCTION), qui publie aussi le site compagnon. Cloudflare : ses conditions publiées.
    Netlify : adresse de son contrat-cadre, téléphone relevé sur une page de mentions d'un autre site. Vercel : jusqu'à la
    bascule vers Cloudflare, adresse relevée sur une page tierce, téléphone non trouvé. */
 const HEBERGEURS = [
   { role: "Application web et données qu'elle lit", nom: "Cloudflare, Inc.", adresse: "101 Townsend Street, San Francisco, CA 94107, États-Unis", tel: "+1 650 319 8930" },
-  { role: "Site web compagnon et copie des données publiées", nom: "Netlify, Inc.", adresse: "101 2nd Street, suite 575, San Francisco, CA 94105, États-Unis", tel: "+1 415 691 1573" },
+  { role: "Site web compagnon, et données lues par l'application sur téléphone", nom: "Netlify, Inc.", adresse: "101 2nd Street, suite 575, San Francisco, CA 94105, États-Unis", tel: "+1 415 691 1573" },
   { role: "Application web, jusqu'à la bascule vers Cloudflare", nom: "Vercel Inc.", adresse: "440 N Barranca Ave, suite 4133, Covina, CA 91723, États-Unis", tel: null },
 ];
 

@@ -11,7 +11,7 @@ Contact : repere0@protonmail.com
 ## Hébergement
 
 - Application web et données qu'elle lit : Cloudflare, Inc., 101 Townsend Street, San Francisco, CA 94107, États-Unis, téléphone +1 650 319 8930.
-- Site web compagnon et copie des données publiées : Netlify, Inc., 101 2nd Street, suite 575, San Francisco, CA 94105, États-Unis, téléphone +1 415 691 1573.
+- Site web compagnon, et données lues par l'application sur téléphone : Netlify, Inc., 101 2nd Street, suite 575, San Francisco, CA 94105, États-Unis, téléphone +1 415 691 1573.
 - Application web, jusqu'à la bascule vers Cloudflare : Vercel Inc., 440 N Barranca Ave, suite 4133, Covina, CA 91723, États-Unis.
 
 ## Les données affichées
