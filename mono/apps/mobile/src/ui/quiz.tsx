@@ -286,8 +286,10 @@ export function Quiz({ categorieDe }: { categorieDe: (cle: string) => string }) 
             </Pressable>
             <View style={{ flex: 1 }}>
               <PartagerCarte etiquette={`Partager mon rang : ${monRang.nom}`} libelle="Partager" icone="share-outline"
-                repli={`J'ai atteint le rang de ${monRang.nom} sur Repère. Peux-tu faire mieux ?`}
-                rendu={ref => <QuizStory refCarte={ref} rang={monRang.nom} defi="Peux-tu faire mieux ?" />} />
+                /* 23/11/2026 (porteur, audit M5) : l'ancienne invitation était un défi comparatif (« peux-tu faire m. ? »), contraire à
+                   l'invariant 3 (« mieux » non). Le quiz invite à jouer, il ne compare personne. */
+                repli={`J'ai atteint le rang de ${monRang.nom} au quiz civique de Repère. À ton avis ?`}
+                rendu={ref => <QuizStory refCarte={ref} rang={monRang.nom} defi={"À ton avis\u00a0?"} />} />
             </View>
           </View>
           <Text style={[TYPO.micro, { textAlign: "center" }]} testID="quiz-local">100 % local, aucune donnée collectée.</Text>
