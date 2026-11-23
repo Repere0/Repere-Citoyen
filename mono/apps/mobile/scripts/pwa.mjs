@@ -168,5 +168,8 @@ export function appliquer(dossierApp, dist) {
 
 // Ligne de commande : node scripts/pwa.mjs <dossier-dist> (utilisee par build-web.mjs et la CI).
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  /* 23/11/2026 : polices allégées avant la liste du service worker (qui doit citer les .woff2). */
+  const { allegerPolices } = await import("./polices-web.mjs");
+  await allegerPolices(process.argv[2]);
   appliquer(join(fileURLToPath(import.meta.url), "..", ".."), process.argv[2]);
 }
