@@ -5,6 +5,7 @@ import { existsSync, cpSync, rmSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { appliquer } from "./pwa.mjs";
+import { allegerPolices } from "./polices-web.mjs";
 import { miroir } from "./miroir-donnees.mjs";
 
 const app = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -33,5 +34,7 @@ const pres = join(app, "..", "..", "..", "data", "presidentielle-2027");
 if (existsSync(pres) && !existsSync(join(dist, "data", "presidentielle-2027"))) cpSync(pres, join(dist, "data", "presidentielle-2027"), { recursive: true });
 const m = await miroir(join(dist, "data"));
 console.log(`Donnees publiques completees : ${m.copies.length} fichier(s) copie(s)` + (m.manquants.length ? `, ${m.manquants.length} introuvable(s) : ${m.manquants.slice(0, 8).join(", ")}` : ""));
+const pol = await allegerPolices(dist);
+console.log(`Polices web : ${Math.round(pol.avant / 1024)} Ko de TTF -> ${Math.round(pol.apres / 1024)} Ko de woff2 (${pol.pictogrammes} pictogrammes Ionicons)`);
 appliquer(app, dist);
 console.log("PWA prete dans apps/mobile/dist");
