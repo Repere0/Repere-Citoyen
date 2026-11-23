@@ -1,8 +1,8 @@
 // PARTAGE TEXTE DES ÉCRANS DE DÉTAIL, dans un navigateur (V37, bloc 7, 31/10/2026).
 // Usage : node apps/mobile/tests/partage-texte-web.mjs http://localhost:8811   (depuis mono/)
 // Pour chaque écran (budget, mes élus, actualités, calendrier) : le bouton « Partager » est dans l'en-tête ;
-// le message qui part vers le partage contient le titre de la page, le lien repere://<écran>, sans commune
-// dans l'adresse, et la source telle que l'écran la montre. Le partage du navigateur est simulé : on lit
+// le message qui part vers le partage contient le titre de la page, le lien https de l'écran (23/11/2026 : plus
+// « repere:// », qui ne s'ouvre que dans l'application native), aucun code INSEE (le nom de la commune va après le « # »), et la source telle que l'écran la montre. Le partage du navigateur est simulé : on lit
 // ce qui lui serait remis.
 import { createRequire } from "node:module";
 const require = createRequire(process.cwd() + "/");
@@ -52,7 +52,9 @@ try {
       verifier(recus.length === 1, `${chemin} : un partage est remis au navigateur`);
       const message = recus.length ? JSON.stringify(recus[0]) : "";
       verifier(message.includes(titre), `${chemin} : le titre de la page est dans le message (« ${titre} »)`);
-      verifier(message.includes(`repere://${chemin}`), `${chemin} : le lien est repere://${chemin}`);
+      const url = recus.length ? String(recus[0].url || "") : "";
+      verifier(url.startsWith(`${BASE}/${chemin}`), `${chemin} : le lien est l'adresse https de l'écran (${url})`);
+      verifier(!message.includes("repere://"), `${chemin} : plus aucun lien repere://`);
       verifier(!/77288|Melun"?\s*$/.test(message.replace(titre, "")) && !message.includes("77288"), `${chemin} : aucun code de commune dans le lien ou le message`);
       /* La source du message est celle que l'écran montre. Le calendrier tire ses sources de l'agenda de
          l'Assemblée et du Sénat, fichiers absents du jeu de données local : sans source à l'écran, rien à citer. */

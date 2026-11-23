@@ -5,7 +5,7 @@
  * commune, même jour, même résultat que le bandeau. Rien n'est calculé ici.
  * Le pied dit les sources réellement affichées et la date de publication (D147). */
 import { useState, type ReactNode } from "react";
-import { Linking, Platform, Pressable, Text, View } from "react-native";
+import { Linking, Pressable, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { ModaleExhaustif } from "../ui/modale-exhaustif";
 import { router, Stack } from "expo-router";
@@ -15,7 +15,8 @@ import { useSelection } from "../lib/selection";
 import { CIBLE, couleurs, PAS, POLICE, RAYON, TYPO } from "../lib/theme";
 import { faitsAffichables, repereDuJourPour } from "../lib/repere-jour";
 import { ELECTIONS, joursAvant } from "../lib/elections";
-import { lienDeLaPage } from "../lib/adresse-web";
+import { slugDe } from "../lib/adresse-web";
+import { lienPublic } from "../lib/adresse-publique";
 import { AvecDonnees, Page, Question } from "../ui/page";
 import { PastilleSource } from "../ui/source";
 import { PartagerCarte } from "../ui/partage/bouton-partage";
@@ -61,7 +62,7 @@ export default function RepereDuJourEcran() {
       const prochaine = ELECTIONS.find(e => e.date && joursAvant(e.date) >= 0) || null;
       const jours = prochaine && prochaine.date ? joursAvant(prochaine.date) : null;
       const textePartage = premier ? `${premier.f.texte} (${premier.src.producteur})` : "";
-      const lien = Platform.OS === "web" ? lienDeLaPage(choix ? choix.insee : null) : "";
+      const lien = lienPublic("repere-du-jour", slugDe(choix ? choix.insee : null));
       return (
         <Page>
           <Stack.Screen options={{ title: "Repère du jour" }} />

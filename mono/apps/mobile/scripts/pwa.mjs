@@ -29,19 +29,28 @@ export function construireManifeste(appJson) {
 // d'etat translucide recouvrirait l'en-tete.
 /* PARTAGE D'UN LIEN (17/11/2026) : Open Graph et carte « summary », communs a tout le site. Une seule page HTML
    est servie (export « single ») : un robot de reseau social n'execute pas le JavaScript, il lit ces balises-ci
-   pour toutes les adresses. Pas d'og:image ni d'og:url : il leur faut une adresse absolue, et l'hote definitif
-   (Cloudflare) n'est pas encore connu. */
+   pour toutes les adresses.
+   23/11/2026 (audit C6) : og:url et og:image (1200 x 630, public/og-image.png), carte « summary_large_image ».
+   L'adresse absolue vient d'app.json (expo.extra.adressePublique), la meme que l'application. Sans elle (cle
+   absente), ces deux balises ne sont pas ecrites : mieux vaut un apercu sans image qu'une image introuvable. */
 const echapper = t => String(t || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
-const PARTAGE = (nom, description) => [
+const PARTAGE = (nom, description, adresse) => [
   `<meta property="og:type" content="website" />`,
   `<meta property="og:site_name" content="${echapper(nom)}" />`,
   `<meta property="og:title" content="${echapper(nom)}" />`,
   `<meta property="og:description" content="${echapper(description)}" />`,
   `<meta property="og:locale" content="fr_FR" />`,
-  `<meta name="twitter:card" content="summary" />`,
+  ...(adresse ? [
+    `<meta property="og:url" content="${echapper(adresse)}/" />`,
+    `<meta property="og:image" content="${echapper(adresse)}/og-image.png" />`,
+    `<meta property="og:image:width" content="1200" />`,
+    `<meta property="og:image:height" content="630" />`,
+    `<meta property="og:image:alt" content="${echapper(nom)} : qui décide chez vous, où va votre argent." />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+  ] : [`<meta name="twitter:card" content="summary" />`]),
 ];
-const BALISES = (nom, couleur, description) => [
-  ...PARTAGE(nom, description),
+const BALISES = (nom, couleur, description, adresse) => [
+  ...PARTAGE(nom, description, adresse),
   '<link rel="manifest" href="/manifest.json" />',
   // 12/11/2026 : sizes + ?v= pour que Safari redemande l'icone (cache tenace). A incrementer si l'icone change.
   '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3" />',
@@ -50,7 +59,8 @@ const BALISES = (nom, couleur, description) => [
   '<meta name="mobile-web-app-capable" content="yes" />',
   '<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />',
   `<meta name="apple-mobile-web-app-title" content="${nom}" />`,
-  `<meta name="theme-color" content="${couleur}" />`,
+  /* theme-color : ecrit par Expo depuis app.json (expo.web.themeColor) ; on ne l'ecrit qu'en son absence (23/11 : il etait en double). */
+  ...(couleur ? [`<meta name="theme-color" content="${couleur}" />`] : []),
   // 12/11/2026 (iPhone, Safari) : la barre basse disparaissait ou passait sous la barre d'accueil. La page est figee a la
   // taille VISIBLE (100dvh : suit la barre d'adresse de Safari), le document ne defile plus (seuls les ecrans defilent),
   // la marge de securite du bas est donnee par la barre elle-meme (react-native-safe-area-context lit env(safe-area-inset-bottom)).
@@ -67,7 +77,9 @@ export function injecterBalises(html, appJson) {
   if (html.includes("apple-mobile-web-app-capable")) return html.includes("serviceWorker.register") ? html : html.replace("</head>", `  ${ENREGISTRE}\n  </head>`); // idempotent
   const w = appJson.expo.web;
   let sortie = html.replace(/(<meta name="viewport" content="[^"]*?)"/, (m, a) => (a.includes("viewport-fit") ? m : `${a}, viewport-fit=cover"`));
-  sortie = sortie.replace("</head>", `  ${BALISES(w.shortName || appJson.expo.name, w.themeColor, w.description)}\n    ${ENREGISTRE}\n  </head>`);
+  const adresse = (appJson.expo.extra?.adressePublique || "").replace(/\/$/, "");
+  const couleur = /<meta name="theme-color"/.test(sortie) ? null : w.themeColor;
+  sortie = sortie.replace("</head>", `  ${BALISES(w.shortName || appJson.expo.name, couleur, w.description, adresse)}\n    ${ENREGISTRE}\n  </head>`);
   /* Langue du document : sans elle, lecteurs d'ecran et moteurs lisent le francais avec une voix anglaise. */
   if (!/<html[^>]*\blang=/.test(sortie)) sortie = sortie.replace(/<html(\s|>)/, '<html lang="fr"$1');
   return sortie;

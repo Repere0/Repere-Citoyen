@@ -1,21 +1,18 @@
 /* LE PARTAGE TEXTE DES ÉCRANS DE DÉTAIL (V37, bloc 7, 31/10/2026).
  *
- * Un bouton en tête d'écran : le titre de la page, le lien direct (schéma repere://, sans commune : la commune
- * ne se met jamais dans une adresse, invariant 2), et la source telle que l'écran la montre. Share de React
- * Native, comme ailleurs ; pas de carte d'image : ce partage-là est un texte. */
+ * Un bouton en tête d'écran : le titre de la page, le lien direct et la source telle que l'écran la montre.
+ * 23/11/2026 (audit C5) : le lien était « repere:// » + l'écran, qui ne s'ouvre que si l'application native est
+ * installée (elle n'est distribuée à personne). C'est désormais l'adresse https de la page (lib/adresse-publique.ts),
+ * la commune après le « # », jamais envoyée au serveur (invariant 2). Pas de carte d'image : ce partage-là est un texte. */
 import { useRef, useState } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Platform, Pressable, Share, Text, View } from "react-native";
+import { Platform, Pressable, Text, View } from "react-native";
 import { dateFr } from "@repere/core";
 import { couleurs, CIBLE } from "../../lib/theme";
 import { useSelection } from "../../lib/selection";
-import { lienDeLaPage } from "../../lib/adresse-web";
-
-export const SCHEMA = "repere://";
-
-export function messagePartage({ titre, chemin, source }: { titre: string; chemin: string; source: string }): string {
-  return [titre, SCHEMA + chemin, source].filter(Boolean).join("\n");
-}
+import { lienDeLaPage, slugDe } from "../../lib/adresse-web";
+import { lienPublic } from "../../lib/adresse-publique";
+import { MESSAGE_RESULTAT, partager, type Resultat } from "./partager";
 
 /* « Source : X, relevé le JJ mois AAAA. » — la même forme que la fiche élu. */
 export function ligneSource(s: { producteur?: string; maj?: string } | null | undefined): string {
@@ -64,14 +61,23 @@ export function BoutonPartageTexte({ titre, chemin, source }: { titre: string; c
 }
 
 function BoutonPartager({ titre, chemin, source }: { titre: string; chemin: string; source: string }) {
+  const { choix } = useSelection();
+  const [etat, setEtat] = useState<Resultat | null>(null);
+  const message = etat ? MESSAGE_RESULTAT[etat] : "";
   return (
+    <>
     <Pressable
-      onPress={() => { Share.share({ title: titre, message: messagePartage({ titre, chemin, source }) }).catch(() => {}); }}
+      onPress={async () => {
+        const lien = lienPublic(chemin, slugDe(choix ? choix.insee : null));
+        setEtat(await partager({ texte: [titre, source].filter(Boolean).join("\n"), lien }));
+      }}
       accessibilityRole="button"
       accessibilityLabel={`Partager : ${titre}`}
       style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, alignItems: "center", justifyContent: "center", paddingHorizontal: 8, opacity: pressed ? 0.6 : 1 })}
     >
       <Ionicons name="share-outline" size={24} color={couleurs.lien} accessible={false} importantForAccessibility="no" />
     </Pressable>
+    {message ? <Text style={{ fontSize: 13, color: couleurs.sourd }} accessibilityLiveRegion="polite" testID="partage-resultat">{message}</Text> : null}
+    </>
   );
 }
