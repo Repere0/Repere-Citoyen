@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { miroir, FICHIERS } from "../scripts/miroir-donnees.mjs";
+import { miroir, FICHIERS, verdictMiroir } from "../scripts/miroir-donnees.mjs";
 
 const faux = serveur => async url => {
   const chemin = url.split("/data/")[1];
@@ -30,4 +30,14 @@ test("réseau coupé ou page HTML servie en 200 : pas d'exception, pas de fichie
   assert.equal(b1.copies.length, 0); assert.ok(b1.manquants.length >= FICHIERS.length);
   const b2 = await miroir(d, { fetchFn: async () => ({ ok: true, status: 200, text: async () => "<html>" }) });
   assert.equal(b2.copies.length, 0); assert.ok(!existsSync(join(d, "scrutins-index.json")));
+});
+
+test("verdict (23/11/2026) : Netlify injoignable bloque le build de production, un fichier absent non", async () => {
+  const coupe = await miroir(dossier(), { fetchFn: async () => { throw new Error("offline"); } });
+  assert.equal(verdictMiroir(coupe).bloquant, true, "réseau coupé : l'application partirait vide");
+  const tout = Object.fromEntries(FICHIERS.map(f => [f, "{}"]));
+  delete tout["agenda-an.json"];
+  const unSeul = await miroir(dossier(), { fetchFn: faux(tout) });
+  assert.equal(verdictMiroir(unSeul).bloquant, false, "un seul fichier absent : doctrine du vide, le build continue");
+  assert.deepEqual(verdictMiroir(unSeul).manquent, ["agenda-an.json"]);
 });

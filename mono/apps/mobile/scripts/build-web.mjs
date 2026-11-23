@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { appliquer } from "./pwa.mjs";
 import { allegerPolices } from "./polices-web.mjs";
-import { miroir } from "./miroir-donnees.mjs";
+import { miroir, verdictMiroir, FICHIERS, BASE_PUBLIQUE } from "./miroir-donnees.mjs";
 
 const app = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(app, "dist");
@@ -34,6 +34,14 @@ const pres = join(app, "..", "..", "..", "data", "presidentielle-2027");
 if (existsSync(pres) && !existsSync(join(dist, "data", "presidentielle-2027"))) cpSync(pres, join(dist, "data", "presidentielle-2027"), { recursive: true });
 const m = await miroir(join(dist, "data"));
 console.log(`Donnees publiques completees : ${m.copies.length} fichier(s) copie(s)` + (m.manquants.length ? `, ${m.manquants.length} introuvable(s) : ${m.manquants.slice(0, 8).join(", ")}` : ""));
+{
+  const v = verdictMiroir(m);
+  if (v.bloquant) {
+    const msg = `${v.manquent.length} fichiers publics sur ${FICHIERS.length} introuvables (${v.manquent.slice(0, 5).join(", ")}…) : ${BASE_PUBLIQUE} est-il joignable ?`;
+    if (process.env.CI) { console.error("ECHEC : l'application partirait sans ses donnees. " + msg); process.exit(1); }
+    console.warn("ATTENTION (hors CI, le build continue) : " + msg);
+  }
+}
 const pol = await allegerPolices(dist);
 console.log(`Polices web : ${Math.round(pol.avant / 1024)} Ko de TTF -> ${Math.round(pol.apres / 1024)} Ko de woff2 (${pol.pictogrammes} pictogrammes Ionicons)`);
 appliquer(app, dist);
