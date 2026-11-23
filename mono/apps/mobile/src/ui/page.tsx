@@ -17,6 +17,7 @@ import { SquelettesListe } from "./squelette";
 import { Etiquette } from "./resume";
 import { BandeauFraicheur, DatePublication } from "./fraicheur";
 import { BoutonCopierLien } from "./partage/partager-texte";
+import { BandeauDecouverte } from "./bandeau-decouverte";
 import { niveauTitre } from "./titre";
 
 /* LE BAS D'UN ÉCRAN QUI DÉFILE (12/11/2026, roadmap bêta) : la marge du bas s'ajoute à la zone protégée de l'iPhone
@@ -37,6 +38,8 @@ export function Page({ children, sansDate = false }: { children: ReactNode; sans
     <ScrollView {...MARQUE_DEFILEMENT} style={{ backgroundColor: couleurs.sol }} contentContainerStyle={[s.page, { paddingTop: sansDate ? PAS * 4 : PAS * 6, paddingBottom: marges.bottom + PAS * 10 }]}>
       {sansDate ? null : <DatePublication flottant />}
       <BandeauFraicheur />
+      {/* 23/11/2026 (ADR 0012) : arrivé par un lien, sans prénom, le lecteur lit d'abord ; le bandeau propose la suite. */}
+      <BandeauDecouverte />
       <Entree style={{ gap: PAS * 4, width: "100%" }}>{children}</Entree>
       {/* « Copier le lien » (web, 12/11/2026) : sur TOUS les écrans, en bas de page, bien visible. */}
       <View style={{ alignSelf: "flex-start", marginTop: PAS * 4 }}><BoutonCopierLien /></View>

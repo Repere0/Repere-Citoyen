@@ -18,6 +18,7 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Demarrage } from "../ui/demarrage";
 import { Bienvenue } from "../ui/bienvenue";
+import { bienvenueDressee, ContexteBienvenue } from "../lib/bienvenue";
 import { poserDefilementIos } from "../lib/defilement-ios";
 import { useFonts } from "expo-font";
 import { Manrope_800ExtraBold } from "@expo-google-fonts/manrope/800ExtraBold";
@@ -81,9 +82,14 @@ export default function Coquille() {
      ni aucune autre page. Ce n'est PAS une redirection : un ordre de navigation donné au lancement se perdait sans
      bruit sur iPhone (CONTEXTE, 13/11). Ici rien ne navigue ; l'adresse demandée reste, et s'affiche une fois la
      barrière levée. Seule la page Confidentialité reste lisible avant de donner un prénom (lien de la bienvenue). */
+  /* 23/11/2026 (porteur, ADR 0012, qui amende l'ADR 0011) : la barrière ne couvre plus que l'ACCUEIL. Un lien partagé
+     (« /finances#melun ») ouvre son contenu ; la page montre un bandeau, et « Personnaliser » pose la bienvenue
+     par-dessus (lib/bienvenue.tsx). Mesuré avant : trois écrans avant de voir le contenu d'un lien. */
   const chemin = usePathname();
   const barriere = !(etatProfil.profil && etatProfil.profil.prenom);
-  const dressee = barriere && chemin !== "/confidentialite";
+  const [demandee, setDemandee] = useState(false);
+  const dressee = bienvenueDressee(barriere, chemin, demandee);
+  const bienvenue = useMemo(() => ({ ouvrir: () => setDemandee(true) }), []);
   const [polices, erreur] = useFonts({ Manrope_800ExtraBold, Manrope_700Bold, DMSans_400Regular, DMSans_500Medium, DMSans_700Bold, IBMPlexMono_400Regular, IBMPlexMono_600SemiBold, Manrope_600SemiBold });
   if (!polices && !erreur) return null;
   return (
@@ -91,6 +97,7 @@ export default function Coquille() {
       <SafeAreaProvider>
         <FournisseurSelection>
         <FournisseurProfil valeur={etatProfil}>
+          <ContexteBienvenue.Provider value={bienvenue}>
           <AvecCommune>
             <AdresseCommune />
             <StatusBar style={mode === "sombre" ? "light" : "dark"} />
@@ -143,6 +150,7 @@ export default function Coquille() {
               <Demarrage />
             </ThemeProvider>
           </AvecCommune>
+          </ContexteBienvenue.Provider>
         </FournisseurProfil>
         </FournisseurSelection>
       </SafeAreaProvider>
