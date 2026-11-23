@@ -57,3 +57,14 @@ export async function miroir(dossier, { base = BASE_PUBLIQUE, fetchFn = fetch } 
   }
   return bilan;
 }
+
+/* LE BUILD DE PRODUCTION REFUSE UNE APPLICATION VIDE (23/11/2026, audit pré-bêta M7).
+   Un fichier absent n'arrête pas le build (doctrine du vide : l'écran le dit). Mais si la MOITIÉ au moins des
+   fichiers attendus manque, ce n'est plus un fichier absent : Netlify est injoignable ou a publié autre chose, et
+   l'application partirait en ligne sans votes, sans calendrier, sans questions au Gouvernement. Mesuré dans le
+   conteneur de développement (Netlify refusé) : 0 copié, 123 introuvables, build « réussi ». Ici, en CI : échec. */
+export function verdictMiroir(bilan) {
+  const manquent = FICHIERS.filter(f => bilan.manquants.some(m => m.startsWith(f + " ")));
+  const bloquant = manquent.length * 2 >= FICHIERS.length;
+  return { bloquant, manquent };
+}
