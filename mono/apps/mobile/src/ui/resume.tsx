@@ -10,7 +10,7 @@
 import { espacesFines } from "./donnees";
 import { ChiffreQuiCompte } from "./visuels";
 import type { ReactNode } from "react";
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View, type TextStyle } from "react-native";
 import { PAS, TYPO } from "../lib/theme";
 import { EnClair } from "./stitch";
 import { niveauTitre } from "./titre";
@@ -40,7 +40,7 @@ export function Resume({ phrase, chiffre, legende, enClair, children, geant }: {
             const m = geant && typeof chiffre === "string" ? /^(\d[\d\s\u202f\u00a0]*)(\D*)$/.exec(chiffre) : null;
             const nombre = m ? Number(m[1].replace(/[\s\u202f\u00a0]/g, "")) : NaN;
             return Number.isFinite(nombre) && m
-              ? <ChiffreQuiCompte valeur={nombre} style={style} etiquette={chiffre as string} suffixe={m[2] ? <Text>{m[2]}</Text> : undefined} />
+              ? <ChiffreQuiCompte valeur={nombre} style={style} etiquette={chiffre as string} suffixe={m[2] ? <>{espacesFines(" " + m[2].trim(), (StyleSheet.flatten(style) as TextStyle).fontSize ?? 16)}</> : undefined} />
               : <Text style={style}>{typeof chiffre === "string" ? espacesFines(chiffre) : chiffre}</Text>;
           })()}
           {legende ? <Text style={TYPO.note}>{legende}</Text> : null}

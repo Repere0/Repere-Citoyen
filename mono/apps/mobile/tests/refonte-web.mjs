@@ -41,14 +41,16 @@ ok(/la mairie de Paris Centre/.test(await page.locator("body").innerText()), "Pa
 await aller("/chez-vous#meaux");
 ok(await page.getByTestId("arrondissement-paris").count() === 0, "hors Paris : pas de choix d'arrondissement");
 
-/* 3. Finances : le titre ne passe plus sous le bouton de partage. */
+/* 3. Finances : rien ne passe sous le bouton de partage. 23/11/2026 (audit M3) : l'en-tête d'un onglet n'a plus de titre
+   (la barre basse et le titre de l'écran le disent) ; à gauche, la commune. Elle doit finir avant le partage. */
 await aller("/finances#meaux");
 const entete = await page.evaluate(() => {
-  const titre = [...document.querySelectorAll("*")].filter(e => !e.children.length && (e.innerText || "").trim() === "Où va l'argent" && e.getBoundingClientRect().top < 70)[0];
+  const commune = [...document.querySelectorAll('[role="button"]')].filter(e => /^Changer de commune/.test(e.getAttribute("aria-label") || "") && e.getBoundingClientRect().top < 70)[0];
   const partage = [...document.querySelectorAll('[role="button"]')].filter(e => /^Partager/.test(e.getAttribute("aria-label") || "") && e.getBoundingClientRect().top < 70)[0];
-  return titre && partage ? { fin: Math.round(titre.getBoundingClientRect().right), debut: Math.round(partage.getBoundingClientRect().left) } : null;
+  const titre = [...document.querySelectorAll("*")].filter(e => !e.children.length && (e.innerText || "").trim() === "Où va l'argent" && e.getBoundingClientRect().top < 70).length;
+  return commune && partage ? { fin: Math.round(commune.getBoundingClientRect().right), debut: Math.round(partage.getBoundingClientRect().left), titre } : null;
 });
-ok(entete && entete.fin <= entete.debut, `Finances : le titre finit avant le bouton de partage ${JSON.stringify(entete)}`);
+ok(entete && entete.fin <= entete.debut && entete.titre === 0, `Finances : la commune finit avant le bouton de partage, aucun titre dessous ${JSON.stringify(entete)}`);
 ok(await page.evaluate(() => [...document.querySelectorAll('[role="button"]')].filter(e => e.getBoundingClientRect().top < 70 && /Copier le lien/.test(e.getAttribute("aria-label") || "")).length) === 0, "Finances : plus de « Copier le lien » dans l'en-tête");
 
 /* 4. FAQ : des accordéons, une réponse ouverte à la fois. */

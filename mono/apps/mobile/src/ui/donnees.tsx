@@ -99,8 +99,12 @@ export function TexteLong({ texte, icone = "ellipse-outline" }: { texte: string;
 /* LES ESPACES D'UN GRAND NOMBRE (07/11/2026) : en IBM Plex Mono, l'espace insécable de
    « 2 495 € » prend la largeur d'un chiffre (« 2  495  € » sur iPhone). Chaque espace est
    rendu à 40 % de la taille : le nombre reste un seul texte, lu d'un seul tenant. */
-export function espacesFines(texte: string): ReactNode {
+/* 23/11/2026 (audit M4) : « taille » = la taille du chiffre. Le grand chiffre est désormais en Manrope, dont l'espace
+   ne fait que 0,2 em (mesuré dans la police : 400 unités sur 2000) : figée à 16 px, elle tombait à 3 px sous un chiffre
+   de 60 px, et l'écran affichait « 2495€ ». Quand la taille est connue, l'espace garde la taille du chiffre : 12 px. */
+export function espacesFines(texte: string, taille: number = 16): ReactNode {
   const morceaux = texte.split(/[   ]/);
   if (morceaux.length < 2) return texte;
-  return morceaux.flatMap((m, i) => (i ? [<Text key={i} style={{ fontSize: 16, letterSpacing: 0 }}>{" "}</Text>, m] : [m]));
+  const t = taille;
+  return morceaux.flatMap((m, i) => (i ? [<Text key={i} style={{ fontSize: t, letterSpacing: 0 }}>{" "}</Text>, m] : [m]));
 }

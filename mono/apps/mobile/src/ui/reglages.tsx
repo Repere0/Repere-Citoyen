@@ -2,6 +2,7 @@
  * (systeme, clair, sombre), puis les réglages de lecture et les pages d'information. V34 bloc 7 (audit) : la roue est un contour qui suit le thème, sans
  * pastille noire : elle ne rivalise plus avec le titre de l'écran, et la cible reste de 48 px. */
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { CIBLE, PAS, RAYON, TYPO, couleurs, feuille, type ChoixTheme } from "../lib/theme";
@@ -18,6 +19,12 @@ const OPTIONS: { valeur: ChoixTheme; libelle: string }[] = [
   { valeur: "clair", libelle: "Clair" },
   { valeur: "sombre", libelle: "Sombre" },
 ];
+
+/* LA DROITE DE L'EN-TÊTE D'UN ONGLET (23/11/2026, audit M3) : un écran qui ajoute un bouton (partager) garde la bascule
+   et les réglages. Avant, Finances et le Calendrier les perdaient : trois dessins d'en-tête différents. */
+export function DroiteEnTete({ children }: { children?: ReactNode }) {
+  return <View style={{ flexDirection: "row", alignItems: "center", marginRight: PAS }}>{children}<BoutonReglages /></View>;
+}
 
 export function BoutonReglages() {
   const [ouvert, setOuvert] = useState(false);
@@ -135,7 +142,8 @@ function ChoixAffichage({ visible, onFermer }: { visible: boolean; onFermer: () 
 }
 
 const s = feuille(() => StyleSheet.create({
-  roue: { minWidth: CIBLE, minHeight: CIBLE, borderRadius: CIBLE / 2, borderWidth: 1.5, borderColor: couleurs.sourd, alignItems: "center", justifyContent: "center", marginRight: PAS * 2 },
+  /* 23/11/2026 (audit M3) : sans cercle, comme les boutons de l'accueil ; un seul dessin d'en-tête dans toute l'application. */
+  roue: { minWidth: CIBLE, minHeight: CIBLE, borderRadius: CIBLE / 2, alignItems: "center", justifyContent: "center" },
   voile: { flex: 1, backgroundColor: VOILE_MODAL, justifyContent: "center", padding: PAS * 5 },
   carte: { backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 4, gap: PAS * 2 },
   option: { minHeight: CIBLE, borderRadius: RAYON.bloc, borderWidth: 1, borderColor: couleurs.trait, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 4 },

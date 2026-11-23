@@ -16,6 +16,7 @@
  *   - La procedure : une entree vers son ecran, comme avant.
  *
  * Par journee, @repere/core (regrouperParJour) : meme regle que le site. */
+import { DroiteEnTete } from "../../ui/reglages";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { router, Stack } from "expo-router";
@@ -224,8 +225,8 @@ export default function AVenir() {
       return (
         /* Audit 5 s (V15) : sansDate, la ligne DateDonnee de l'ecran dit deja la date et la source. */
         <Page sansDate>
-          <Stack.Screen options={{ title: LIBELLES.calendrier, headerRight: () => <BoutonPartageTexte titre={LIBELLES.calendrier} chemin="a-venir"
-            source={lues.map(x => ligneSource({ producteur: x.source.producteur_affiche || x.source.producteur, maj: x.source.releve_le })).filter(Boolean).join(" ")} /> }} />
+          <Stack.Screen options={{ title: LIBELLES.calendrier, headerRight: () => <DroiteEnTete><BoutonPartageTexte titre={LIBELLES.calendrier} chemin="a-venir"
+            source={lues.map(x => ligneSource({ producteur: x.source.producteur_affiche || x.source.producteur, maj: x.source.releve_le })).filter(Boolean).join(" ")} /></DroiteEnTete> }} />
           {/* En-tête compact (porteur, 09/11/2026) : le titre, une ligne qui dit que l'agenda est national,
               puis directement la frise des jours. */}
           <View style={{ gap: PAS }}>

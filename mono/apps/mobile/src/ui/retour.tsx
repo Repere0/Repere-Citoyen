@@ -3,6 +3,8 @@
  * (tests/parcours-web.mjs) : on la remplace par ce bouton, a la meme cible.
  * Le geste natif reste actif. */
 import { Pressable, Text } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useSelection } from "../lib/selection";
 import { router, useRootNavigationState } from "expo-router";
 import { LIBELLES } from "@repere/core";
 import { couleurs, CIBLE } from "../lib/theme";
@@ -67,14 +69,20 @@ export function Retour({ texte, etiquette }: { texte?: string; etiquette?: strin
    second accueil sous le premier : le retour arriere revenait a un ecran identique
    (parcours navigateur, 29/10/2026). */
 export function ChangerCommune() {
+  /* 23/11/2026 (audit M3) : « ‹ Communes » se lisait comme un retour sur un écran d'onglet, qui n'a rien derrière.
+     Le bouton montre désormais la commune ouverte, avec un repère de lieu : on voit où l'on est, et qu'on peut en changer. */
+  const { choix } = useSelection();
+  const nom = choix?.nom || "Communes";
   return (
     <Pressable
       onPress={() => router.dismissTo("/")}
       accessibilityRole="button"
-      accessibilityLabel="Changer de commune : revenir à l'accueil"
-      style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, justifyContent: "center", paddingHorizontal: 8, ...enfonce(pressed) })}
+      accessibilityLabel={choix?.nom ? `Changer de commune (${choix.nom}) : revenir à l'accueil` : "Changer de commune : revenir à l'accueil"}
+      style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, maxWidth: 170, flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, ...enfonce(pressed) })}
     >
-      <Text style={{ fontSize: 17, color: couleurs.lien, fontWeight: "500" }}>‹ Communes</Text>
+      <Ionicons name="location-outline" size={18} color={couleurs.lien} accessible={false} importantForAccessibility="no" />
+      <Text numberOfLines={1} style={{ flexShrink: 1, fontSize: 17, color: couleurs.lien, fontWeight: "500" }}>{nom}</Text>
+      <Ionicons name="chevron-down" size={14} color={couleurs.lien} accessible={false} importantForAccessibility="no" />
     </Pressable>
   );
 }
