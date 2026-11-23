@@ -90,6 +90,8 @@ export const CHAMPS_INTERDITS = [
 export const MOTS_CLASSEMENT = [
   "classement", "palmarès", "palmares", "top 10", "top 5", "meilleur",
   "pire", "mieux que", "moins bien que", "note globale", "moyenne nationale",
+  /* 23/11/2026 (porteur) : le défi comparatif du quiz partagé (« Peux-tu faire mieux ? »). */
+  "faire mieux",
 ];
 export const MOTS_GAMIFICATION = [
   "bonne réponse", "mauvaise réponse", "bonne reponse", "score de vote",
