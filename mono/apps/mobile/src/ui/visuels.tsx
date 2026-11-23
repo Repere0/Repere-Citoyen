@@ -96,9 +96,10 @@ export function Compteur({ valeur, suffixe }: { valeur: number; suffixe: string 
    d'écran lit la valeur finale ; « réduire les animations » affiche la valeur d'emblée. */
 export function ChiffreQuiCompte({ valeur, style, suffixe, etiquette }: { valeur: number; style: TextStyle | TextStyle[]; suffixe?: ReactNode; etiquette?: string }) {
   const n = useCompteur(valeur);
+  const taille = (StyleSheet.flatten(style) as TextStyle | undefined)?.fontSize ?? 16;
   return (
     <Text style={style} accessible accessibilityLabel={etiquette ?? valeur.toLocaleString("fr-FR")}>
-      {espacesFines(n.toLocaleString("fr-FR"))}{suffixe}
+      {espacesFines(n.toLocaleString("fr-FR"), taille)}{suffixe}
     </Text>
   );
 }

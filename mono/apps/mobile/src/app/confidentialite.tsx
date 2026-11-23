@@ -22,7 +22,7 @@ export default function Confidentialite() {
     <ScrollView {...MARQUE_DEFILEMENT} focusable style={{ flex: 1, backgroundColor: couleurs.sol }} contentContainerStyle={{ padding: PAS * 4, paddingBottom: bas, gap: PAS * 4 }}>
       <Stack.Screen options={{ title: "Confidentialité" }} />
       <Text style={TYPO.question} {...niveauTitre(1)}>Confidentialité</Text>
-      <Text style={TYPO.corps}>Version du 17/11/2026.</Text>
+      <Text style={TYPO.corps}>Version du 23/11/2026.</Text>
 
       <Carte titre="Ce que Repère ne fait pas">
         <Puce>Repère ne crée aucun compte. Aucune adresse e-mail, aucun numéro de téléphone, aucun nom de famille ne vous est demandé. Au premier lancement, Repère propose de donner un prénom : c'est facultatif, et il ne quitte pas votre appareil.</Puce>
@@ -39,11 +39,11 @@ export default function Confidentialite() {
       </Carte>
 
       <Carte titre="Ce qui quitte votre appareil">
-        <Puce>Pour afficher les données, l'application les télécharge depuis le serveur qui les publie, repereapp.netlify.app (hébergement Netlify).</Puce>
+        <Puce>Pour afficher les données, l'application sur téléphone les télécharge depuis le serveur qui les publie, repereapp.netlify.app (hébergement Netlify).</Puce>
         <Puce>Comme pour tout site web, ce serveur reçoit votre adresse IP, la date de la demande et le type d'appareil ou de navigateur. Il peut consigner ces informations dans ses journaux techniques, selon sa propre politique.</Puce>
         <Puce>Les fichiers demandés sont découpés par département : le serveur voit quel département vous consultez. Il ne voit ni votre nom, ni votre commune exacte.</Puce>
         <Puce>Repère n'a pas accès à ces journaux, n'en fait aucun usage et ne les relie à aucun compte, puisqu'il n'y en a pas.</Puce>
-        <Puce>La version web de l'application est servie par Vercel ; ce serveur reçoit les mêmes informations techniques que ci-dessus. Aucun réglage ni aucune commune n'est transmis.</Puce>
+        <Puce>La version web de l'application, et les données qu'elle lit, sont servies par Cloudflare (hébergement Cloudflare Pages) ; ce serveur reçoit les mêmes informations techniques que ci-dessus. Aucun réglage ni aucune commune n'est transmis.</Puce>
         <Puce>Quand vous ouvrez une source officielle, vous quittez Repère. Ce site applique sa propre politique.</Puce>
       </Carte>
 

@@ -73,7 +73,10 @@ export default function Onglets() {
         headerLeft: () => <ChangerCommune />,
         headerRight: () => <BoutonReglages />,
         /* Audit UI, vague 2 : le titre de l'en-tête n'est pas un titre de niveau 1 (celui de l'écran l'est). */
-        headerTitle: ({ children }) => <Text numberOfLines={1} style={{ fontSize: 17, fontWeight: "600", color: couleurs.encre }}>{children}</Text>,
+        /* 23/11/2026 (audit M3) : sur un onglet, l'en-tête ne répète plus le nom de l'écran. La barre basse le dit, et le
+           titre de l'écran (niveau 1) le redit en grand. Mesuré à 360 px avec « Saint-Germain-en-Laye » : le titre passait
+           sous le bouton « Partager ». À gauche la commune, à droite les actions, rien au milieu. */
+        headerTitle: () => null,
       }}
     >
       <Tabs.Screen
