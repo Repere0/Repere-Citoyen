@@ -53,6 +53,9 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "adressePublique": "https://repere-citoyen.fr"
     }
   }
 }

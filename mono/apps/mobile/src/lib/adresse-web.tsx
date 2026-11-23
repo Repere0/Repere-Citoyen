@@ -22,6 +22,11 @@ let tableCourante: Table | null = null;
 
 /* « https://…/finances#melun » : l'adresse de la page ouverte, la commune après le « # » (jamais envoyée au serveur).
    Sans commune choisie ou sans table, l'adresse reste celle de la page, sans « # ». Web seulement. */
+/* Le nom de la commune dans l'adresse (« melun »), ou null : jamais le code INSEE. */
+export function slugDe(insee: string | null | undefined): string | null {
+  return insee && tableCourante ? tableCourante.parInsee[insee] || null : null;
+}
+
 export function lienDeLaPage(insee: string | null | undefined): string {
   const l = window.location;
   const slug = insee && tableCourante ? tableCourante.parInsee[insee] : null;
