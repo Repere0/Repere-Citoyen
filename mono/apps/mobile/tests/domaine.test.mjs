@@ -12,6 +12,8 @@ const APP = new URL("..", import.meta.url).pathname;
 const app = JSON.parse(readFileSync(join(APP, "app.json"), "utf8"));
 const adresse = app.expo.extra && app.expo.extra.adressePublique;
 const hote = adresse ? new URL(adresse).host : "";
+/* Échappe TOUS les caractères spéciaux d'une expression régulière (CodeQL : le seul point ne suffit pas). */
+const echapperRegex = t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 /* Fichier -> pourquoi il a le droit d'écrire une adresse. */
 const PERMIS = {
@@ -29,7 +31,7 @@ test("app.json donne une adresse publique en https", () => {
 });
 
 test("aucune adresse publique de Repère n'est écrite en dur hors des exceptions", () => {
-  const motif = new RegExp(`${hote.replace(/\./g, "\\.")}|[a-z0-9-]+\\.pages\\.dev|repereapp\\.netlify\\.app|[a-z0-9-]+\\.vercel\\.app`);
+  const motif = new RegExp(`${echapperRegex(hote)}|[a-z0-9-]+\\.pages\\.dev|repereapp\\.netlify\\.app|[a-z0-9-]+\\.vercel\\.app`);
   const fautifs = fichiers(join(APP, "src")).map(p => relative(APP, p).split("\\").join("/"))
     .filter(r => !(r in PERMIS) && motif.test(readFileSync(join(APP, r), "utf8")));
   assert.deepEqual(fautifs, []);
@@ -41,7 +43,7 @@ test("la valeur de secours est la même que app.json", () => {
 });
 
 test("la garde voit une adresse en dur", () => {
-  const motif = new RegExp(`${hote.replace(/\./g, "\\.")}|[a-z0-9-]+\\.pages\\.dev`);
+  const motif = new RegExp(`${echapperRegex(hote)}|[a-z0-9-]+\\.pages\\.dev`);
   assert.ok(motif.test(`const x = "https://${hote}/argent";`));
   assert.ok(motif.test(`const y = "https://repere.pages.dev/";`));
 });
