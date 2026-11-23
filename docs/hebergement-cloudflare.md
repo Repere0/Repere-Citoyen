@@ -3,7 +3,7 @@
 Date : 12/11/2026 (roadmap bêta, chantier 2), complété le 17/11/2026 (déploiement par GitHub Actions). Remplace Vercel pour l'application (`mono/apps/mobile`, export web).
 Le site historique et les données restent publiés sur Netlify par la collecte : ce document n'y touche pas.
 
-**Rien n'est déployé.** Le dépôt est prêt ; créer le projet demande ton compte Cloudflare. Coût : l'offre gratuite
+**État au 23/11/2026** : le porteur dit avoir corrigé le jeton (droit Pages) ; le premier déploiement n'est pas vérifié d'ici. Le dépôt est prêt ; créer le projet demande ton compte Cloudflare. Coût : l'offre gratuite
 de Pages suffit (aucune fonction exécutée, donc aucun quota de requêtes ; limites de 20 000 fichiers et 25 Mio par
 fichier, le build en produit quelques centaines, le plus gros pèse 1,3 Mo). Limites lues dans une recherche web le
 12/11/2026, pas sur ton compte : à relire sur la page du projet.
@@ -134,6 +134,45 @@ Deux pièges mesurés et corrigés :
 
 **Non vérifié** : le vrai Cloudflare (l'émulateur n'est pas la production), le build dans leur environnement, et
 l'iPhone. Refaire ce tableau sur l'adresse `*.pages.dev` avant de couper Vercel.
+
+## Brancher le nom de domaine (préparé le 23/11/2026)
+
+Décision du porteur, 23/11/2026 : un nom de domaine sera acheté ; en attendant, l'adresse retenue est
+`https://repere-citoyen.fr`. **Elle n'est pas achetée à cette date** : rien n'y répond.
+
+**Dépense** : un domaine en `.fr` coûte de l'ordre de 6 à 15 € par an selon le bureau d'enregistrement (ordre de
+grandeur, prix non vérifiés ici ; à relire au moment de l'achat). C'est la seule dépense de cette section.
+
+### Ce que le code fait déjà
+
+- **Une seule source** : `mono/apps/mobile/app.json`, clé `expo.extra.adressePublique`. Elle est lue par
+  l'application (`src/lib/adresse-publique.ts`) et par `scripts/pwa.mjs` (`og:url`, `og:image`).
+- **Sur le web, un lien partagé prend l'adresse réelle de la page** (`window.location.origin`) : avant le domaine,
+  les liens partagés depuis `*.pages.dev` mènent à `*.pages.dev`, et marchent.
+- **Ce qui affiche le domaine même avant l'achat** : les cartes de partage (pied : `repere-citoyen.fr`), l'aperçu
+  de lien (`og:url`, `og:image`) et les liens partagés depuis un téléphone (application native). Tant que le
+  domaine ne répond pas, l'aperçu d'un lien collé dans WhatsApp ou X n'aura **pas d'image**.
+- Garde : `mono/apps/mobile/tests/domaine.test.mjs` refuse qu'une autre adresse publique soit écrite en dur dans
+  `src/` (hors des exceptions listées et justifiées dans le test).
+
+### Les gestes, le jour de l'achat
+
+1. Acheter `repere-citoyen.fr` (ou un autre nom : changer alors **la seule** clé `expo.extra.adressePublique`).
+2. Cloudflare → **Workers & Pages** → projet `repere` → **Domaines personnalisés** → **Configurer un domaine** →
+   `repere-citoyen.fr`, puis de nouveau pour `www.repere-citoyen.fr`.
+   - si le domaine est enregistré chez Cloudflare : la zone DNS est créée seule ;
+   - sinon : soit déléguer le domaine à Cloudflare (changer les serveurs de noms chez le bureau
+     d'enregistrement), soit ajouter chez lui un enregistrement `CNAME www → repere.pages.dev`. L'apex
+     (`repere-citoyen.fr` sans `www`) demande que la zone soit chez Cloudflare (règle de Cloudflare, lue dans leur
+     documentation, non éprouvée ici).
+3. Attendre le certificat (« Actif » dans le tableau de bord), puis ouvrir `https://repere-citoyen.fr/og-image.png`.
+4. Coller `https://repere-citoyen.fr/` dans une conversation WhatsApp : l'aperçu doit montrer l'image.
+5. Mentions légales : rien à changer (l'hébergeur reste Cloudflare).
+
+### Ce qui n'est pas fait
+
+- Pas de redirection de `repere.pages.dev` vers le domaine : à ajouter dans `scripts/cloudflare.mjs` (`_redirects`)
+  **après** que le domaine répond, sinon `*.pages.dev` renverrait vers une adresse morte.
 
 ## Bascule et retour arrière
 
