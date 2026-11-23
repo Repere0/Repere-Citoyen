@@ -82,6 +82,16 @@ export const TEINTES_PAR_MODE: Record<Mode, Record<Echelon, string>> = {
 
 export const NEUTRES_PAR_MODE: Record<Mode, Neutres> = { clair: NEUTRES_CLAIR, sombre: NEUTRES_SOMBRE };
 
+/* LES CARTES DE PARTAGE (23/11/2026, modèles A à D validés par le porteur). Deux fonds, tous deux neutres
+   (invariant 7 : noir, ivoire, gris ; aucune couleur de parti, aucun émeraude) :
+   - « nuit » (A, C) : les neutres du sombre de l'application ;
+   - « ivoire » (B, D) : papier chaud. Contrastes calculés : encre 16,0:1, sourd 6,7:1 (seuil AA : 4,5:1). */
+export type FondCarte = "nuit" | "ivoire";
+export const NEUTRES_CARTE: Record<FondCarte, Neutres> = {
+  nuit: NEUTRES_SOMBRE,
+  ivoire: { sol: "#F5F1E8", carte: "#FFFFFF", encre: "#171614", sourd: "#57544D", trait: "#171614", voile: "#EAE4D6", blanc: "#ffffff", lien: "#171614" },
+};
+
 /* Ombres : en sombre, l'ombre se voit par l'opacité du noir, pas par l'encre. */
 export const OMBRE_PAR_MODE = {
   /* Refonte « légère » (09/11/2026) : une ombre à peine visible. */
