@@ -47,6 +47,18 @@ jobs:
       run:
         working-directory: mono/apps/mobile
     steps:
+      - name: DIAGNOSTIC du jeton (branche diag, aucun deploiement, aucun secret affiche)
+        working-directory: .
+        run: |
+          api() { curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4$1"; }
+          echo "prefixe du jeton (public, format Cloudflare) : ${CLOUDFLARE_API_TOKEN:0:5} ; longueur ${#CLOUDFLARE_API_TOKEN}"
+          echo "empreinte sha256 (8 premiers caracteres) : $(printf %s "$CLOUDFLARE_API_TOKEN" | sha256sum | cut -c1-8)"
+          a=$(api "/accounts/$CLOUDFLARE_ACCOUNT_ID/tokens/verify")
+          echo "verify compte : succes=$(echo "$a" | jq -r .success) id=$(echo "$a" | jq -r '.result.id // "-"') statut=$(echo "$a" | jq -r '.result.status // "-"') debut=$(echo "$a" | jq -r '.result.not_before // "-"') fin=$(echo "$a" | jq -r '.result.expires_on // "-"')"
+          u=$(api /user/tokens/verify)
+          echo "verify utilisateur : succes=$(echo "$u" | jq -r .success) id=$(echo "$u" | jq -r '.result.id // "-"') statut=$(echo "$u" | jq -r '.result.status // "-"')"
+          for p in /pages/projects /workers/scripts /tokens; do r=$(api "/accounts/$CLOUDFLARE_ACCOUNT_ID$p"); echo "GET $p : succes=$(echo "$r" | jq -r .success) erreurs=$(echo "$r" | jq -c '[.errors[]?|{code,message}]')"; done
+
       - name: Secrets presents ?
         id: secrets
         working-directory: .
@@ -55,7 +67,7 @@ jobs:
             echo "::notice::Cloudflare Pages : secrets CLOUDFLARE_API_TOKEN et CLOUDFLARE_ACCOUNT_ID absents, rien n'est deploye (docs/hebergement-cloudflare.md)."
             echo "pret=non" >> "$GITHUB_OUTPUT"
           else
-            echo "pret=oui" >> "$GITHUB_OUTPUT"
+            echo "pret=non" >> "$GITHUB_OUTPUT"  # branche diag : jamais de deploiement
           fi
 
       - uses: actions/checkout@v7
