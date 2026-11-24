@@ -3,7 +3,7 @@
 Produit par `outils/echantillon_scrutins.py` a partir du fichier telecharge
 par la collecte quotidienne. **Ce document est engendre : ne le modifie pas a la main.**
 
-- Fichiers dans l'archive : **10032**
+- Fichiers dans l'archive : **10101**
 - Fichiers ouverts pour le tirage : **3000** (pas de 3)
 - Fichiers decrits : **3000** — tous ceux qui ont ete ouverts
 - Cles distinctes trouvees : **158**
@@ -38,7 +38,7 @@ une seule fois sont reprises a part, plus bas.
 | `scrutin.demandeur.texte` | texte/vide | 3000 | Président du groupe "Socialistes et apparentés" · Présidente du groupe "La France insoumise - Nouveau Front Populaire" |
 | `scrutin.demandeur.referenceLegislative` | vide | 3000 |  |
 | `scrutin.objet.libelle` | texte | 3000 | la motion de censure déposée en application de l'article 49, alinéa 2, de la Constituti... · l'amendement n° 29 de Mme Pirès Beaune à l'article 2 de la proposition de loi visant à ... |
-| `scrutin.objet.dossierLegislatif` | vide | 1910 |  |
+| `scrutin.objet.dossierLegislatif` | vide | 1909 |  |
 | `scrutin.objet.referenceLegislative` | vide | 3000 |  |
 | `scrutin.modePublicationDesVotes` | texte | 3000 | DecompteNominatif |
 | `scrutin.syntheseVote.nombreVotants` | texte | 3000 | 197 · 41 |
@@ -60,70 +60,78 @@ une seule fois sont reprises a part, plus bas.
 | `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteVoix.contre` | texte | 36000 | 0 · 7 |
 | `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteVoix.abstentions` | texte | 36000 | 0 · 1 |
 | `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteVoix.nonVotantsVolontaires` | texte | 36000 | 0 · 1 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants` | vide | 30480 |  |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours` | vide | 19406 |  |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres` | vide | 16640 |  |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions` | vide | 31040 |  |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants` | vide | 30479 |  |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours` | vide | 19442 |  |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres` | vide | 16620 |  |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions` | vide | 31042 |  |
 | `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant[]` | liste | 1144 | de 2 a 10 entrees |
 | `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant[].acteurRef` | texte | 3693 | PA795050 · PA795958 |
 | `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant[].mandatRef` | texte | 3693 | PM843272 · PM843422 |
 | `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant[].parDelegation` | texte | 3693 | false |
 | `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant[].numPlace` | texte/vide | 3693 | 322 · 323 |
 | `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant[].causePositionVote` | texte | 3693 | MG · PSE |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant[]` | liste | 13510 | de 2 a 123 entrees |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant[].acteurRef` | texte | 179975 | PA794906 · PA796070 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant[].mandatRef` | texte | 179975 | PM843284 · PM843746 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant[].parDelegation` | texte | 179975 | false · true |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant[].numPlace` | texte/vide | 179975 | 544 · 638 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant.acteurRef` | texte | 4376 | PA227089 · PA721908 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant.mandatRef` | texte | 4376 | PM843131 · PM843467 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant.parDelegation` | texte | 4376 | false |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant.numPlace` | texte/vide | 4376 | 395 · 402 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant.causePositionVote` | texte | 4376 | MG · PAN |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant.acteurRef` | texte | 3084 | PA793796 · PA794530 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant.mandatRef` | texte | 3084 | PM842723 · PM840327 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant.parDelegation` | texte | 3084 | false · true |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant.numPlace` | texte | 3084 | 485 · 051 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant[]` | liste | 13498 | de 2 a 123 entrees |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant[].acteurRef` | texte | 180489 | PA794906 · PA796070 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant[].mandatRef` | texte | 180489 | PM843284 · PM843746 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant[].parDelegation` | texte | 180489 | false · true |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant[].numPlace` | texte/vide | 180489 | 544 · 638 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant.acteurRef` | texte | 4377 | PA227089 · PA721908 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant.mandatRef` | texte | 4377 | PM843131 · PM843467 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant.parDelegation` | texte | 4377 | false |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant.numPlace` | texte/vide | 4377 | 395 · 402 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.nonVotants.votant.causePositionVote` | texte | 4377 | MG · PAN |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant.acteurRef` | texte | 3060 | PA793796 · PA794530 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant.mandatRef` | texte | 3060 | PM842723 · PM840327 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant.parDelegation` | texte | 3060 | false · true |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.pours.votant.numPlace` | texte | 3060 | 485 · 051 |
 | `scrutin.miseAuPoint.nonVotants[]` | liste/vide | 8862 | 2 entree(s) |
 | `scrutin.miseAuPoint.pours` | vide | 2769 |  |
-| `scrutin.miseAuPoint.abstentions[]` | liste/vide | 8946 | 2 entree(s) |
+| `scrutin.miseAuPoint.abstentions[]` | liste/vide | 8947 | 2 entree(s) |
 | `scrutin.miseAuPoint.nonVotantsVolontaires[]` | liste/vide | 9000 | 2 entree(s) |
-| `scrutin.miseAuPoint.contres` | vide | 2751 |  |
+| `scrutin.miseAuPoint.contres` | vide | 2752 |  |
 | `scrutin.miseAuPoint.dysfonctionnement.nonVotants` | vide | 3000 |  |
 | `scrutin.miseAuPoint.dysfonctionnement.pour` | vide | 2973 |  |
-| `scrutin.miseAuPoint.dysfonctionnement.contre` | vide | 2980 |  |
+| `scrutin.miseAuPoint.dysfonctionnement.contre` | vide | 2975 |  |
 | `scrutin.miseAuPoint.dysfonctionnement.abstentions` | vide | 2999 |  |
-| `scrutin.miseAuPoint.dysfonctionnement.nonVotantsVolontaires` | vide | 2994 |  |
+| `scrutin.miseAuPoint.dysfonctionnement.nonVotantsVolontaires` | vide | 2989 |  |
 | `scrutin.lieuVote` | texte | 3000 | Salons · Hémicycle |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant[]` | liste | 16515 | de 2 a 125 entrees |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant[].acteurRef` | texte | 205752 | PA795950 · PA794798 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant[].mandatRef` | texte | 205752 | PM843419 · PM843188 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant[].parDelegation` | texte | 205752 | false · true |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant[].numPlace` | texte/vide | 205752 | 259 · 365 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant.acteurRef` | texte | 2413 | PA721202 · PA841419 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant.mandatRef` | texte | 2413 | PM840435 · PM843005 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant.parDelegation` | texte | 2413 | false · true |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant.numPlace` | texte | 2413 | 549 · 496 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant.acteurRef` | texte | 2845 | PA346782 · PA841381 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant.mandatRef` | texte | 2845 | PM840426 · PM842966 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant.parDelegation` | texte | 2845 | false · true |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant.numPlace` | texte | 2845 | 172 · 463 |
-| `scrutin.objet.dossierLegislatif.libelle` | texte | 1090 | La relance et la décentralisation du logement · Retrouver la confiance et l’équilibre dans les rapports locatifs |
-| `scrutin.objet.dossierLegislatif.dossierRef` | texte | 1090 | DLR5L17N54608 · DLR5L17N53069 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant[]` | liste | 2547 | de 2 a 96 entrees |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant[].acteurRef` | texte | 21697 | PA642847 · PA266797 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant[].mandatRef` | texte | 21697 | PM843056 · PM843071 |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant[].parDelegation` | texte | 21697 | false · true |
-| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant[].numPlace` | texte | 21697 | 165 · 169 |
-| `scrutin.miseAuPoint.contres.votant[]` | liste | 69 | de 2 a 48 entrees |
-| `scrutin.miseAuPoint.contres.votant[].acteurRef` | texte | 253 | PA841665 · PA841381 |
-| `scrutin.miseAuPoint.contres.votant[].mandatRef` | texte | 253 | PM843227 · PM842966 |
-| `scrutin.miseAuPoint.contres.votant[].parDelegation` | texte | 253 | false |
-| `scrutin.miseAuPoint.contres.votant[].numPlace` | texte | 253 | 487 · 463 |
-| `scrutin.miseAuPoint.abstentions[].votant.acteurRef` | texte | 33 | PA719822 · PA794778 |
-| `scrutin.miseAuPoint.abstentions[].votant.mandatRef` | texte | 33 | PM842762 · PM843239 |
-| `scrutin.miseAuPoint.abstentions[].votant.parDelegation` | texte | 33 | false |
-| `scrutin.miseAuPoint.abstentions[].votant.numPlace` | texte | 33 | 334 · 501 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant[]` | liste | 16548 | de 2 a 125 entrees |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant[].acteurRef` | texte | 206516 | PA795950 · PA794798 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant[].mandatRef` | texte | 206516 | PM843419 · PM843188 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant[].parDelegation` | texte | 206516 | false · true |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant[].numPlace` | texte/vide | 206516 | 259 · 365 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant.acteurRef` | texte | 2412 | PA721202 · PA841419 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant.mandatRef` | texte | 2412 | PM840435 · PM843005 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant.parDelegation` | texte | 2412 | false · true |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant.numPlace` | texte | 2412 | 549 · 496 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant.acteurRef` | texte | 2832 | PA346782 · PA841381 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant.mandatRef` | texte | 2832 | PM840426 · PM842966 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant.parDelegation` | texte | 2832 | false · true |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.contres.votant.numPlace` | texte | 2832 | 172 · 463 |
+| `scrutin.objet.dossierLegislatif.libelle` | texte | 1091 | La relance et la décentralisation du logement · Retrouver la confiance et l’équilibre dans les rapports locatifs |
+| `scrutin.objet.dossierLegislatif.dossierRef` | texte | 1091 | DLR5L17N54608 · DLR5L17N53069 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant[]` | liste | 2546 | de 2 a 96 entrees |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant[].acteurRef` | texte | 21448 | PA642847 · PA266797 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant[].mandatRef` | texte | 21448 | PM843056 · PM843071 |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant[].parDelegation` | texte | 21448 | false · true |
+| `scrutin.ventilationVotes.organe.groupes.groupe[].vote.decompteNominatif.abstentions.votant[].numPlace` | texte | 21448 | 165 · 169 |
+| `scrutin.miseAuPoint.contres.votant[]` | liste | 68 | de 2 a 48 entrees |
+| `scrutin.miseAuPoint.contres.votant[].acteurRef` | texte | 251 | PA841665 · PA841381 |
+| `scrutin.miseAuPoint.contres.votant[].mandatRef` | texte | 251 | PM843227 · PM842966 |
+| `scrutin.miseAuPoint.contres.votant[].parDelegation` | texte | 251 | false |
+| `scrutin.miseAuPoint.contres.votant[].numPlace` | texte | 251 | 487 · 463 |
+| `scrutin.miseAuPoint.dysfonctionnement.contre.votant.acteurRef` | texte | 24 | PA2940 · PA342384 |
+| `scrutin.miseAuPoint.dysfonctionnement.contre.votant.mandatRef` | texte | 24 | PM842531 · PM842771 |
+| `scrutin.miseAuPoint.dysfonctionnement.contre.votant.parDelegation` | texte | 24 | false |
+| `scrutin.miseAuPoint.dysfonctionnement.contre.votant.numPlace` | texte | 24 | 495 · 637 |
+| `scrutin.miseAuPoint.dysfonctionnement.nonVotantsVolontaires.votant.acteurRef` | texte | 11 | PA841575 · PA793342 |
+| `scrutin.miseAuPoint.dysfonctionnement.nonVotantsVolontaires.votant.mandatRef` | texte | 11 | PM843143 · PM842345 |
+| `scrutin.miseAuPoint.dysfonctionnement.nonVotantsVolontaires.votant.parDelegation` | texte | 11 | false |
+| `scrutin.miseAuPoint.dysfonctionnement.nonVotantsVolontaires.votant.numPlace` | texte | 11 | 134 · 204 |
+| `scrutin.miseAuPoint.abstentions[].votant.acteurRef` | texte | 32 | PA719822 · PA794778 |
+| `scrutin.miseAuPoint.abstentions[].votant.mandatRef` | texte | 32 | PM842762 · PM843239 |
+| `scrutin.miseAuPoint.abstentions[].votant.parDelegation` | texte | 32 | false |
+| `scrutin.miseAuPoint.abstentions[].votant.numPlace` | texte | 32 | 334 · 501 |
 | `scrutin.miseAuPoint.contres.votant.acteurRef` | texte | 180 | PA841981 · PA719930 |
 | `scrutin.miseAuPoint.contres.votant.mandatRef` | texte | 180 | PM843533 · PM842870 |
 | `scrutin.miseAuPoint.contres.votant.parDelegation` | texte | 180 | false |
@@ -151,14 +159,6 @@ une seule fois sont reprises a part, plus bas.
 | `scrutin.miseAuPoint.abstentions[].votant[].mandatRef` | texte | 50 | PM842750 · PM843821 |
 | `scrutin.miseAuPoint.abstentions[].votant[].parDelegation` | texte | 50 | false |
 | `scrutin.miseAuPoint.abstentions[].votant[].numPlace` | texte | 50 | 530 · 542 |
-| `scrutin.miseAuPoint.dysfonctionnement.contre.votant.acteurRef` | texte | 19 | PA342384 · PA795278 |
-| `scrutin.miseAuPoint.dysfonctionnement.contre.votant.mandatRef` | texte | 19 | PM842771 · PM843539 |
-| `scrutin.miseAuPoint.dysfonctionnement.contre.votant.parDelegation` | texte | 19 | false |
-| `scrutin.miseAuPoint.dysfonctionnement.contre.votant.numPlace` | texte | 19 | 637 · 219 |
-| `scrutin.miseAuPoint.dysfonctionnement.nonVotantsVolontaires.votant.acteurRef` | texte | 6 | PA793342 · PA721816 |
-| `scrutin.miseAuPoint.dysfonctionnement.nonVotantsVolontaires.votant.mandatRef` | texte | 6 | PM842345 · PM843551 |
-| `scrutin.miseAuPoint.dysfonctionnement.nonVotantsVolontaires.votant.parDelegation` | texte | 6 | false |
-| `scrutin.miseAuPoint.dysfonctionnement.nonVotantsVolontaires.votant.numPlace` | texte | 6 | 204 · 180 |
 | `scrutin.miseAuPoint.dysfonctionnement.contre.votant[]` | liste | 1 | 2 entree(s) |
 | `scrutin.miseAuPoint.dysfonctionnement.contre.votant[].acteurRef` | texte | 2 | PA608264 · PA774958 |
 | `scrutin.miseAuPoint.dysfonctionnement.contre.votant[].mandatRef` | texte | 2 | PM843179 · PM843389 |
