@@ -40,6 +40,7 @@ import { feuille, PAS, TYPO, couleurs, CIBLE, RAYON, OMBRE, POLICE } from "../li
 import { niveauTitre } from "../ui/titre";
 import { dateFr, titreLisible, nombreDecompte, resultatDecompteCourt } from "@repere/core";
 import { enfonce } from "../ui/mouvement";
+import { BoutonPartageTexte } from "../ui/partage/partager-texte";
 
 type Resume = {
   n: string; d: string; t: string; ty: string; s: string;
@@ -358,7 +359,7 @@ export default function Scrutins() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: "Le Parlement", headerRight: () => <BoutonCopierLien icone /> }} />
+      <Stack.Screen options={{ title: "Le Parlement", headerRight: () => <View style={{ flexDirection: "row" }}><BoutonPartageTexte titre="Le Parlement : les derniers votes" chemin="scrutins" source="Source : Assemblée nationale et Sénat, données ouvertes." /><BoutonCopierLien icone /></View> }} />
 
       {/* 13/11/2026 (porteur) : une chambre à la fois. Les deux assemblées votent la loi ; l'écran les met
           côte à côte sans les comparer (invariant 3 : aucun rang, aucune note). */}

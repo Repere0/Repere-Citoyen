@@ -35,6 +35,7 @@ import { Page } from "../ui/page";
 import { Onglets } from "../ui/stitch";
 import { enfonce } from "../ui/mouvement";
 import { niveauTitre } from "../ui/titre";
+import { BoutonPartageTexte } from "../ui/partage/partager-texte";
 
 type Onglet = "candidats" | "debats" | "meetings";
 type Partie = "etapes" | "regles" | "candidats" | "voter";
@@ -168,7 +169,7 @@ export default function Presidentielle2027() {
   const second = "2027-05-02";
   return (
     <Page>
-      <Stack.Screen options={{ title: "" }} />
+      <Stack.Screen options={{ title: "", headerRight: () => <BoutonPartageTexte titre="Présidentielle 2027" chemin="presidentielle-2027" source="Sources indiquées sous chaque information." /> }} />
       {/* 1. LE COMPTE À REBOURS — la réponse héros de la page, et son seul bouton plein. */}
       <View style={{ gap: PAS * 4, padding: PAS * 6, borderRadius: RAYON.carte + 4, backgroundColor: couleurs.carte }}>
         <Text style={TYPO.etiquette}>Élection présidentielle 2027</Text>

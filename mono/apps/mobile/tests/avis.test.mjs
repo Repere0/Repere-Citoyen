@@ -23,3 +23,13 @@ test("aucune adresse inventée : sans variable de build, pas de bouton", () => {
   const src = fs.readFileSync(new URL("../src/lib/avis.ts", import.meta.url), "utf8");
   assert.doesNotMatch(src.replace(/\/\*[\s\S]*?\*\//g, ""), /@[a-z0-9-]+\.(fr|com|org)/i, "une adresse écrite en dur dans avis.ts");
 });
+
+/* Step Up (25/11/2026) : l'avis en trois étapes. */
+test("avis en trois étapes : note, points d'une liste fixe, texte ; rien d'inventé", () => {
+  const c = corpsAvis(sys, { note: 4, points: ["Le design", "intrus", "C'est lent"], texte: "Très clair." });
+  assert.ok(c.includes("Ma note : 4 sur 5"));
+  assert.ok(c.includes("Ce qui compte pour moi : Le design, C'est lent"), "un point hors liste est ignoré");
+  assert.ok(c.includes("Très clair.") && !c.includes("Ce que je faisais"));
+  assert.ok(!corpsAvis(sys, { note: 9 }).includes("Ma note"), "une note hors de 1 à 5 n'est pas écrite");
+  assert.ok(corpsAvis(sys).startsWith("Mon avis sur Repère :"), "sans réponses, le message d'avant");
+});
