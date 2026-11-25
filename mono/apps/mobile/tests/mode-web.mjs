@@ -63,7 +63,12 @@ verifier(p && p.mode === "sombre", "après rechargement, repere.profil garde mod
 await choisir("Clair");
 p = await profil();
 verifier(p && p.mode === "clair", `« Clair » est écrit (mode=${p && p.mode})`);
-verifier(!(await fondNuitPresent(page)), "le thème clair remplace le sombre");
+/* 25/11/2026 : la CI, plus lente, a vu le fond nuit encore présent à 600 ms ; on attend jusqu'à 5 s qu'il parte
+   (un fond resté sombre au-delà serait un vrai défaut, et échouerait toujours). */
+let nuitPartie = false;
+for (let i = 0; i < 25 && !nuitPartie; i++) { nuitPartie = !(await fondNuitPresent(page)); if (!nuitPartie) await page.waitForTimeout(200); }
+if (!nuitPartie) console.log("fond nuit restant :", await page.evaluate(nuit => [...document.querySelectorAll("*")].filter(e => getComputedStyle(e).backgroundColor === nuit).slice(0, 3).map(e => e.tagName + "." + (e.getAttribute("data-testid") || "") + " " + (e.textContent || "").slice(0, 40)), FOND_NUIT));
+verifier(nuitPartie, "le thème clair remplace le sombre");
 
 await choisir("Système");
 p = await profil();
