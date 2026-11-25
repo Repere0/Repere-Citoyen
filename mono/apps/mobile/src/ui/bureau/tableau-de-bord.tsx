@@ -51,7 +51,7 @@ function Widget({ titre, source, children, testID, lien, interactif = false, sty
       {source ? <Text style={TYPO.micro} testID="widget-source">{source}</Text> : null}
     </>
   );
-  const base = [{ flex: 1, gap: PAS * 5, padding: PAS * 8, borderRadius: RAYON.carte, borderWidth: 1, backgroundColor: couleurs.carte }, TRANSITION, style];
+  const base = [{ flex: 1, gap: PAS * 4, padding: PAS * 8, borderRadius: RAYON.carte, borderWidth: 1, backgroundColor: couleurs.carte }, TRANSITION, style];
   if (!lien || interactif) return <View testID={testID} style={[...base, { borderColor: couleurs.trait }]}>{corps(false)}</View>;
   return (
     <Pressable testID={testID} onPress={lien.aller} accessibilityRole="link" accessibilityLabel={`${titre}. ${lien.texte}`}

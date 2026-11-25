@@ -61,7 +61,7 @@ function ToutesLesAides({ ouvert, fermer, liste, nom, nomDe }: {
   return (
     <Modal visible={ouvert} animationType="slide" onRequestClose={fermer} transparent={false}>
       <View style={{ flex: 1, backgroundColor: couleurs.sol, paddingTop: marges.top + PAS * 3, paddingBottom: marges.bottom }}>
-        <View style={{ paddingHorizontal: PAS * 5, gap: PAS * 3 }}>
+        <View style={{ paddingHorizontal: PAS * 6, gap: PAS * 3 }}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3 }}>
             <Text style={[TYPO.question, { flex: 1 }]} {...niveauTitre(2)}>Les {liste.length} projets aidés</Text>
             <Pressable onPress={fermer} accessibilityRole="button" accessibilityLabel="Fermer la liste des projets"
@@ -100,7 +100,7 @@ function ToutesLesAides({ ouvert, fermer, liste, nom, nomDe }: {
              site exige que chaque phrase de projet soit lisible ici (tests/meme-verite.mjs). */
           initialNumToRender={200}
           windowSize={21}
-          contentContainerStyle={{ padding: PAS * 5, gap: PAS * 3 }}
+          contentContainerStyle={{ padding: PAS * 6, gap: PAS * 3 }}
           /* Vague 3 (17/11/2026) : l'état vide commun, avec le geste qui en sort. */
           ListEmptyComponent={<Vide icone="search-outline" titre={`Aucun projet publié pour ${nom} ne correspond à cette recherche.`}
             corps="La recherche porte sur l'intitulé des projets aidés, dans le dispositif choisi. Effacez-la pour revoir toute la liste."

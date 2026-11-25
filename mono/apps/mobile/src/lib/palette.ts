@@ -245,3 +245,12 @@ export const BADGE_DECLARATION_PAR_MODE = Object.freeze({
 /* FILET DES TUILES DE L'ACCUEIL (web, 12/11/2026, demande du porteur) : une tuile blanche sur fond presque blanc
    disparaissait en mode clair. Un filet neutre, sans sens : ce n'est ni un parti, ni un vote, ni un rang. */
 export const FILET_TUILE_PAR_MODE = Object.freeze({ clair: { filet: "#E2E8F0" }, sombre: { filet: "#2B2A26" } });
+
+/* Polish (porteur, 25/11/2026). Une couleur du thème rendue translucide (barre d'onglets floutée du web), et l'ombre
+   intérieure du champ de recherche : deux effets, aucune teinte nouvelle. */
+export function translucide(hex: string, alpha: number): string {
+  const v = hex.replace("#", "");
+  const [r, g, b] = [0, 2, 4].map(i => parseInt(v.slice(i, i + 2), 16));
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+export const OMBRE_INTERIEURE_CHAMP = "inset 0 1px 2px rgba(0, 0, 0, 0.05)";

@@ -52,6 +52,7 @@ import { enfonce } from "../ui/mouvement";
 import { niveauTitre } from "../ui/titre";
 import { BandeauDemo } from "../ui/demo";
 import { BandeauAlertes } from "../ui/alertes";
+import { OMBRE_INTERIEURE_CHAMP } from "../lib/palette";
 import { TableauDeBord } from "../ui/bureau/tableau-de-bord";
 import { HeroBureau } from "../ui/bureau/hero";
 import { useBureau } from "../lib/bureau";
@@ -554,8 +555,15 @@ export default function Accueil() {
                 UNE action principale (chercher une commune) et trois accès rapides en tuiles.
                 Avant : sept éléments empilés, quatre styles de lien, le logo seul au milieu. */}
             <View style={[s.barreHaut, bureau && { display: "none" }]}>
-              {/* Step Up (porteur, 25/11/2026) : la marque quitte la barre ; le logo, en grand, ouvre l'accueil (plus bas). */}
-              <View />
+              {/* Polish (porteur, 25/11/2026) : le logo, la marque et la date des données (invariant 9) ensemble, à gauche ;
+                  plus de grand vide entre le logo et la date. */}
+              <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3, flexShrink: 1 }}>
+                <Logo size={40} variant={modeTheme} />
+                <View style={{ flexShrink: 1 }}>
+                  <Text style={s.marque} accessibilityRole="header">Repère</Text>
+                  <DatePublication compact />
+                </View>
+              </View>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 {/* 12/11/2026 (porteur) : la bascule clair / sombre, à un geste dès l'accueil. */}
                 <Pressable onPress={() => choisirTheme(modeTheme === "sombre" ? "clair" : "sombre")} accessibilityRole="button"
@@ -578,10 +586,7 @@ export default function Accueil() {
             </View>
             {/* Invariant 9 : la date des données reste visible, en tête, sans prendre la place du contenu. */}
             {/* Step Up (25/11/2026) : le gros logo, puis la date des données (invariant 9), centrés. */}
-            <View style={[{ alignItems: "center", gap: PAS * 4, marginTop: PAS * 2 }, bureau && { display: "none" }]}>
-              <Logo size={64} variant={modeTheme} />
-              <DatePublication />
-            </View>
+
             {/* LE PITCH : une citation, en grand. Demande du CEO (30/10/2026) : elle remplace le paragraphe.
                 07/11/2026 (porteur) : titre court, les deux questions du produit, mot pour mot. */}
             {/* 07/11/2026 (porteur, refonte globale) : plus de slogan ; la recherche devient le héros.
@@ -594,12 +599,15 @@ export default function Accueil() {
                 « Bonjour » : le prénom vient de repere.profil, jamais du réseau ; sans prénom, « Citoyen ». */}
             {/* 17/11/2026 : en mode démo, une ligne discrète au-dessus de tout, avec « Laisser un avis ». */}
             <BandeauDemo />
-            <Text style={[s.bonjour, { textAlign: "center" }, bureau && { display: "none" }]} testID="bonjour" {...niveauTitre(1)}>Bonjour {prenom || "Citoyen"}</Text>
-            <Text style={[s.sousTitre, { textAlign: "center" }, bureau && { display: "none" }]}>Ce qui se passe chez vous, expliqué simplement.</Text>
+            <View style={[{ gap: PAS }, bureau && { display: "none" }]}>
+              <Text style={s.bonjour} testID="bonjour" {...niveauTitre(1)}>Bonjour {prenom || "Citoyen"}</Text>
+              <Text style={s.sousTitre}>Ce qui se passe chez vous, expliqué simplement.</Text>
+            </View>
             <Text style={s.titreCache} nativeID="question">Où habitez-vous ?</Text>
             {/* Bureau : la recherche vit dans le bloc d'accueil (ui/bureau/hero.tsx), la même logique. */}
             <HeroBureau actif={bureau}>
-            <View style={[s.champLigne, champActif && Platform.OS === "web" && { borderColor: D.encre }, bureau && { minHeight: 64, borderRadius: RAYON.bloc }]}>
+            <View style={[s.champLigne, Platform.OS === "web" && ({ boxShadow: champActif ? `0 0 0 4px ${D.voile}` : OMBRE_INTERIEURE_CHAMP } as object),
+              champActif && Platform.OS === "web" && { borderColor: D.encre }, bureau && { minHeight: 64, borderRadius: RAYON.bloc }]}>
               <Ionicons name="search" size={22} color={D.sourd} accessible={false} importantForAccessibility="no" style={{ marginRight: PAS * 2 }} />
               <TextInput
                 value={filtre}
@@ -653,9 +661,9 @@ export default function Accueil() {
                 <View style={s.tuiles}>
                   {(premiere ? ACCES_PREMIERE : ACCES).map(a => (
                     <Pressable key={a.texte} onPress={a.ouvrir} accessibilityRole="link" accessibilityLabel={a.etiquette}
-                      style={({ pressed }) => [s.tuile, pressed && enfonce(true)]}>
+                      style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [s.tuile, hovered && { borderColor: D.sourd }, pressed && enfonce(true)]}>
                       <View style={s.tuileIcone}><Ionicons name={`${a.icone}-outline` as keyof typeof Ionicons.glyphMap} size={20} color={D.encre} accessible={false} importantForAccessibility="no" /></View>
-                      <Text style={s.tuileTexte}>{a.texte}</Text>
+                      <Text style={s.tuileTexte} numberOfLines={2}>{a.texte}</Text>
                     </Pressable>
                   ))}
                 </View>
@@ -796,19 +804,21 @@ const s = feuille(() => StyleSheet.create({
   /* Taille 26 : la pastille « Chercher » passe sous le logo au lieu de sortir de la marge. */
   barreHaut: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   outil: { width: CIBLE, height: CIBLE, alignItems: "center", justifyContent: "center" },
-  tuiles: { flexDirection: "row", flexWrap: "wrap", gap: PAS * 2 },
+  tuiles: { flexDirection: "row", flexWrap: "wrap", gap: PAS * 3 },
   /* Fond D.voile : la teinte demandée par le porteur à 3 unités près, sans couleur hors palette. */
   /* Step Up (25/11/2026) : des cartes aérées, l'icône dans une pastille, une ombre douce au lieu du filet. */
-  tuile: { width: "48%", flexGrow: 1, minHeight: 112, gap: PAS * 3, padding: PAS * 4, borderRadius: RAYON.carte, backgroundColor: D.carte, ...OMBRE, justifyContent: "space-between" },
+  /* Polish (25/11/2026) : une grille régulière — même hauteur, icône au même endroit, titre sur deux lignes au plus,
+     un filet fin au lieu de l'ombre. */
+  tuile: { width: "48%", flexGrow: 1, height: 120, padding: PAS * 4, borderRadius: RAYON.carte, backgroundColor: D.carte, borderWidth: 1, borderColor: D.trait, justifyContent: "space-between" },
   tuileIcone: { width: 40, height: 40, borderRadius: RAYON.bloc, backgroundColor: D.voile, alignItems: "center", justifyContent: "center" },
   tuileTexte: { fontFamily: POLICE.titre, fontSize: 16, lineHeight: 24, color: D.encre },
-  marque: { fontFamily: POLICE.affiche, fontSize: 20, color: D.encre },
+  marque: { fontFamily: POLICE.section, fontSize: 20, lineHeight: 24, letterSpacing: -0.3, color: D.encre },
   /* L'action principale : plus haute, filet plus marqué (refonte du 09/11/2026). */
-  chercher: { minHeight: 60, borderRadius: RAYON.bloc, backgroundColor: D.carte, borderWidth: 1.5, borderColor: D.sourd, paddingHorizontal: PAS * 5, flexDirection: "row", alignItems: "center", gap: PAS * 3, marginTop: PAS * 4, ...OMBRE },
+  chercher: { minHeight: 60, borderRadius: RAYON.bloc, backgroundColor: D.carte, borderWidth: 1.5, borderColor: D.sourd, paddingHorizontal: PAS * 6, flexDirection: "row", alignItems: "center", gap: PAS * 3, marginTop: PAS * 4, ...OMBRE },
   titreCache: { position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0 },
   chercherTexte: { fontFamily: POLICE.titre, fontSize: 16, color: D.encre },
   citation: { fontFamily: POLICE.affiche, fontSize: 28, lineHeight: 40, letterSpacing: -0.8, color: D.encre, marginTop: PAS * 6 },
-  carte: { gap: PAS * 3, padding: PAS * 5, borderRadius: RAYON.carte, backgroundColor: D.carte, ...OMBRE },
+  carte: { gap: PAS * 3, padding: PAS * 6, borderRadius: RAYON.carte, backgroundColor: D.carte, ...OMBRE },
   etiquette: { fontSize: 14, fontWeight: "500", color: D.sourd },
   carteTitre: { fontFamily: POLICE.titre, fontSize: 16, lineHeight: 24, color: D.encre },
   chiffre: { fontFamily: POLICE.donneeForte, fontSize: 28, lineHeight: 34, letterSpacing: -0.5, color: D.encre },
@@ -826,7 +836,9 @@ const s = feuille(() => StyleSheet.create({
   question: { fontFamily: POLICE.titre, fontSize: 20, lineHeight: 26, color: D.encre, marginTop: PAS * 6 },
   champLigne: {
     /* Step Up (25/11/2026) : un champ calme (filet fin, rayon 16), plus le cadre noir épais de 2 px. */
-    flexDirection: "row", alignItems: "center", minHeight: 56, borderRadius: 16, borderWidth: 1, borderColor: D.trait,
+    /* Polish (25/11/2026) : un champ qui se voit cliquable — filet, légère ombre intérieure sur le web, bord encré au
+       focus (plus bas). */
+    flexDirection: "row", alignItems: "center", minHeight: 56, borderRadius: RAYON.carte, borderWidth: 1, borderColor: D.trait,
     backgroundColor: D.carte, paddingLeft: PAS * 4,
   },
   loupe: { width: 18, height: 18, marginRight: PAS * 2 },
@@ -841,7 +853,8 @@ const s = feuille(() => StyleSheet.create({
     ...(Platform.OS === "web" ? ({ outlineStyle: "none" } as object) : {}),
   },
   note: { fontFamily: POLICE.texte, fontSize: 14, lineHeight: 22, color: D.sourd },
-  bonjour: { fontFamily: POLICE.section, fontSize: 28, lineHeight: 36, letterSpacing: -0.4, color: D.encre, marginTop: PAS * 2 },
+  /* Polish (porteur, 25/11/2026) : un bonjour discret, aligné à gauche, plus un grand titre centré. */
+  bonjour: { fontFamily: POLICE.section, fontSize: 20, lineHeight: 28, letterSpacing: -0.2, color: D.encre, marginTop: PAS * 4 },
   sousTitre: { fontFamily: POLICE.texte, fontSize: 16, lineHeight: 24, color: D.sourd },
   jouer: { minHeight: 36, paddingHorizontal: PAS * 4, borderRadius: 999, backgroundColor: D.encre, alignItems: "center", justifyContent: "center" },
   jouerTexte: { fontFamily: POLICE.titre, fontSize: 16, color: D.sol },

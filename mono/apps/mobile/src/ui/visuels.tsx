@@ -304,7 +304,7 @@ export function Frise({ jalons, etiquette }: { jalons: Jalon[]; etiquette?: stri
               j.actif && { backgroundColor: couleurs[j.echelon || "france"] }]} />
             {i < jalons.length - 1 ? <View style={s.jalonTrait} /> : null}
           </View>
-          <View style={{ flex: 1, paddingBottom: PAS * 5, gap: 2 }}>
+          <View style={{ flex: 1, paddingBottom: PAS * 6, gap: 2 }}>
             {j.date ? <Text style={TYPO.micro}>{j.date}</Text> : null}
             <Text style={[TYPO.corps, { fontWeight: j.actif ? "800" : "600" }]}>{j.titre}</Text>
             {j.texte ? <Text style={TYPO.note}>{j.texte}</Text> : null}
@@ -418,7 +418,7 @@ export function Chaine({ niveaux, compact, surNom, ouverts, basculer }: {
             )}
             {i < niveaux.length - 1 ? <View style={[compact ? s.jalonTrait : s.timelineTrait, { backgroundColor: couleurs.trait }, compact ? null : { width: Math.max(1, 5 - i) }]} /> : null}
           </View>
-          <View style={{ flex: 1, paddingBottom: compact ? PAS * 3 : PAS * 7, gap: compact ? 2 : PAS }}>
+          <View style={{ flex: 1, paddingBottom: compact ? PAS * 3 : PAS * 8, gap: compact ? 2 : PAS }}>
             {/* La couleur d'echelon est portee par le maillon, pas par le texte :
                 en 13 px, l'intercommunalite (ancien cyan) faisait 3,21:1 sur le fond
                 et le departement 4,38:1 — sous le seuil AA de 4,5:1 (mesure du
@@ -483,7 +483,7 @@ const s = feuille(() => StyleSheet.create({
   pisteBarre: { flex: 1.2, height: 6, borderRadius: 3, backgroundColor: couleurs.voile, overflow: "hidden" },
   remplissageBarre: { height: 6, borderRadius: 3, backgroundColor: couleurs.encre },
   tendance: { alignSelf: "flex-start", flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: PAS * 2, backgroundColor: couleurs.voile, borderRadius: RAYON.pastille, paddingHorizontal: PAS * 2, paddingVertical: PAS },
-  variation: { flexDirection: "row", alignItems: "center", gap: PAS * 4, padding: PAS * 5, borderRadius: RAYON.carte, backgroundColor: couleurs.carte },
+  variation: { flexDirection: "row", alignItems: "center", gap: PAS * 4, padding: PAS * 6, borderRadius: RAYON.carte, backgroundColor: couleurs.carte },
   variationFleche: { width: 56, height: 56, borderRadius: 28, backgroundColor: couleurs.voile, alignItems: "center", justifyContent: "center" },
   mois: { flexDirection: "row", flexWrap: "wrap", gap: 4 },
   moisCase: { width: 22, height: 22, borderRadius: 6, backgroundColor: couleurs.voile, overflow: "hidden" },

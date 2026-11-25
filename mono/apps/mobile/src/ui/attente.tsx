@@ -15,12 +15,12 @@ export function Attente({ icone, etiquette, texte }: { icone: keyof typeof Ionic
   const v = useApparition();
   const grossit = { transform: [{ scale: v.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }) }], opacity: v };
   return (
-    <View style={{ gap: PAS * 3, padding: PAS * 5, borderRadius: RAYON.carte, backgroundColor: couleurs.carte, overflow: "hidden" }}>
+    <View style={{ gap: PAS * 3, padding: PAS * 6, borderRadius: RAYON.carte, backgroundColor: couleurs.carte, overflow: "hidden" }}>
       <Text style={TYPO.etiquette}>{etiquette}</Text>
       <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants"
         style={{ height: 132, alignItems: "center", justifyContent: "center", borderRadius: RAYON.bloc, backgroundColor: couleurs.voile, overflow: "hidden" }}>
         <Animated.View style={[{ position: "absolute", width: 168, height: 168, borderRadius: 84, left: "50%", marginLeft: -122, top: -30, backgroundColor: TEINTES.region }, grossit]} />
-        <Animated.View style={[{ position: "absolute", width: 120, height: 120, borderRadius: 60, left: "50%", marginLeft: 20, top: 40, backgroundColor: TEINTES.ville }, grossit]} />
+        <Animated.View style={[{ position: "absolute", width: 120, height: 120, borderRadius: 60, left: "50%", marginLeft: 24, top: 40, backgroundColor: TEINTES.ville }, grossit]} />
         <Animated.View style={[{ position: "absolute", width: 72, height: 72, borderRadius: 36, left: "50%", marginLeft: -86, top: 74, backgroundColor: TEINTES.dept }, grossit]} />
         <Animated.View style={[{ width: 64, height: 64, borderRadius: 32, alignItems: "center", justifyContent: "center", borderWidth: 2, borderColor: couleurs.encre, backgroundColor: couleurs.carte }, grossit]}>
           <Ionicons name={icone} size={28} color={couleurs.encre} />

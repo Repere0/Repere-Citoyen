@@ -74,7 +74,7 @@ function Etape({ titre, texte, date, dernier }: { titre: string; texte: string; 
         <View style={{ width: 12, height: 12, borderRadius: 6, marginTop: 6 /* alignement optique */, backgroundColor: date ? ACCENTS.autorite : couleurs.voile }} />
         {dernier ? null : <View style={{ flex: 1, width: 2, backgroundColor: couleurs.voile }} />}
       </View>
-      <View style={{ flex: 1, gap: 2, paddingBottom: dernier ? 0 : PAS * 5 }}>
+      <View style={{ flex: 1, gap: 2, paddingBottom: dernier ? 0 : PAS * 6 }}>
         {date ? <Text style={[TYPO.note, { fontFamily: POLICE.section, color: couleurs.encre }]}>{date}</Text> : null}
         <Text style={TYPO.reponse}>{titre}</Text>
         <Text style={TYPO.note}>{texte}</Text>
@@ -192,7 +192,7 @@ export default function Presidentielle2027() {
         ) : null}
         <Pressable onPress={() => Linking.openURL(DEMARCHES[0].url)} accessibilityRole="link"
           accessibilityLabel={`${DEMARCHES[0].texte}, ouvre le site officiel service-public`}
-          style={({ pressed }) => ({ minHeight: CIBLE + 4, borderRadius: RAYON.pastille, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 5, backgroundColor: ACCENTS.autorite, ...enfonce(pressed) })}>
+          style={({ pressed }) => ({ minHeight: CIBLE + 4, borderRadius: RAYON.pastille, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 6, backgroundColor: ACCENTS.autorite, ...enfonce(pressed) })}>
           <Text style={{ fontSize: 16, fontFamily: POLICE.section, color: ACCENTS.surAutorite }}>Vérifier mon inscription</Text>
         </Pressable>
         <Text style={TYPO.micro}>Le bouton ouvre le service officiel, sur service-public.gouv.fr.</Text>

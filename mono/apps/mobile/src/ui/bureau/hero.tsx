@@ -42,7 +42,7 @@ export function HeroBureau({ actif, children }: { actif: boolean; children: Reac
         <View style={{ flex: 1, minWidth: 420, maxWidth: 720 }}>{children}</View>
         <Pressable onPress={() => setTour(!ouvert)} accessibilityRole="button" testID="faire-le-tour" accessibilityState={{ expanded: ouvert }}
           style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [{ minHeight: 56, flexDirection: "row", alignItems: "center", gap: PAS * 2,
-            paddingHorizontal: PAS * 5, borderRadius: RAYON.bloc, backgroundColor: hovered || ouvert ? couleurs.voile : "transparent" }, TRANSITION, pressed && enfonce(true)]}>
+            paddingHorizontal: PAS * 6, borderRadius: RAYON.bloc, backgroundColor: hovered || ouvert ? couleurs.voile : "transparent" }, TRANSITION, pressed && enfonce(true)]}>
           <Ionicons name={ouvert ? "close-outline" : "compass-outline"} size={20} color={couleurs.sourd} accessible={false} importantForAccessibility="no" />
           <Text style={[TYPO.corps, { fontFamily: POLICE.texteMoyen, color: couleurs.encre }]}>{ouvert ? "Fermer le tour" : "Comment ça marche"}</Text>
         </Pressable>

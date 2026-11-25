@@ -33,7 +33,7 @@ export function Decideurs({ maire, depute, circo, titre = "Vos décideurs", grou
   return (
     <View style={{ gap: PAS * 2 }}>
       <Text style={TYPO.etiquette} {...niveauTitre(2)}>{titre}</Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", columnGap: PAS * 5, rowGap: PAS * 2 }}>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", columnGap: PAS * 4, rowGap: PAS * 2 }}>
         {gens.map(g => (
           <Pression key={g.nom} etiquette={`${g.nom}, ${g.role} : ouvrir sa fiche`}
             onPress={() => router.push({ pathname: "/elu", params: { nom: g.nom, role: g.role, echelon: g.echelon, niveau: g.niveau, institution: g.institution, lieu: "" } })}

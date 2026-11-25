@@ -318,7 +318,7 @@ export default function AVenir() {
               {!choisi && !suite && parJour(montres).length > JOURS_OUVERTS ? (
                 <Pressable onPress={() => setSuite(true)} accessibilityRole="button"
                   accessibilityLabel={`Voir les ${parJour(montres).length - JOURS_OUVERTS} jours suivants`}
-                  style={({ pressed }) => ({ minHeight: CIBLE + 4, borderRadius: 999, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 5, backgroundColor: ACCENTS.autorite, ...enfonce(pressed) })}>
+                  style={({ pressed }) => ({ minHeight: CIBLE + 4, borderRadius: 999, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 6, backgroundColor: ACCENTS.autorite, ...enfonce(pressed) })}>
                   <Text style={{ fontSize: 16, fontFamily: POLICE.section, color: ACCENTS.surAutorite }}>Voir les {parJour(montres).length - JOURS_OUVERTS} jours suivants</Text>
                 </Pressable>
               ) : null}
@@ -351,7 +351,7 @@ export default function AVenir() {
             onPress={() => router.push("/procedure")}
             accessibilityRole="button"
             accessibilityLabel="Ouvrir : comment une loi devient loi"
-            style={({ pressed }) => ({ minHeight: 52, padding: 16, borderRadius: 14, backgroundColor: couleurs.carte, ...enfonce(pressed) })}
+            style={({ pressed }) => ({ minHeight: 52, padding: 16, borderRadius: 12, backgroundColor: couleurs.carte, ...enfonce(pressed) })}
           >
             <Text style={{ fontWeight: "500", color: couleurs.encre }}>Comment une loi devient loi</Text>
             <Text style={{ marginTop: 4, color: couleurs.sourd }}>{ETAPES_LOI.length} étapes, du dépôt à la publication, avec la navette.</Text>
@@ -360,7 +360,7 @@ export default function AVenir() {
             onPress={() => router.push("/scrutins?mode=qag")}
             accessibilityRole="button"
             accessibilityLabel="Ouvrir les Questions au Gouvernement"
-            style={({ pressed }) => ({ minHeight: 52, padding: 16, borderRadius: 14, backgroundColor: couleurs.carte, ...enfonce(pressed) })}
+            style={({ pressed }) => ({ minHeight: 52, padding: 16, borderRadius: 12, backgroundColor: couleurs.carte, ...enfonce(pressed) })}
           >
             <Text style={{ fontWeight: "500", color: couleurs.encre }}>Questions au Gouvernement</Text>
             <Text style={{ marginTop: 4, color: couleurs.sourd }}>Voir les questions posées et les réponses publiées.</Text>
@@ -369,7 +369,7 @@ export default function AVenir() {
             onPress={() => router.push("/dictionnaire")}
             accessibilityRole="button"
             accessibilityLabel="Ouvrir le dictionnaire citoyen"
-            style={({ pressed }) => ({ minHeight: 52, padding: 16, borderRadius: 14, backgroundColor: couleurs.carte, ...enfonce(pressed) })}
+            style={({ pressed }) => ({ minHeight: 52, padding: 16, borderRadius: 12, backgroundColor: couleurs.carte, ...enfonce(pressed) })}
           >
             <Text style={{ fontWeight: "500", color: couleurs.encre }}>Dictionnaire citoyen</Text>
             <Text style={{ marginTop: 4, color: couleurs.sourd }}>Ce que veulent dire les mots du Parlement et des collectivités.</Text>

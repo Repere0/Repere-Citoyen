@@ -132,7 +132,7 @@ export function FeuilleSource({ source, visible, onFermer }: { source: InfoSourc
 const s = feuille(() => StyleSheet.create({
   zone: { alignSelf: "flex-start", minHeight: CIBLE, justifyContent: "center", paddingRight: PAS * 3 },
   lien: { ...TYPO.micro, fontFamily: POLICE.texteMoyen },
-  feuille: { padding: PAS * 6, gap: PAS * 5 },
+  feuille: { padding: PAS * 6, gap: PAS * 4 },
   bloc: { gap: PAS * 2, padding: PAS * 4, borderRadius: RAYON.bloc, backgroundColor: couleurs.carte },
   bouton: { minHeight: CIBLE + 4, borderRadius: RAYON.bloc, backgroundColor: couleurs.ville, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 4 },
   boutonTexte: { color: couleurs.blanc, fontSize: 16, fontWeight: "500", textAlign: "center" },

@@ -69,7 +69,7 @@ export function Bienvenue() {
 
         {etape === 0 ? (
           <>
-            <View style={{ alignItems: "center", gap: PAS * 5 }}>
+            <View style={{ alignItems: "center", gap: PAS * 4 }}>
               {/* Le logo officiel, ses trois éléments : cercle ivoire, anneau gris, point ivoire.
                   La variante « mono » n'en a que deux — elle est faite pour les petits formats. */}
               <Logo size={120} variant="sombre" />
@@ -92,7 +92,7 @@ export function Bienvenue() {
                 returnKeyType="done" onSubmitEditing={() => setEtape(2)} placeholder="Votre prénom" placeholderTextColor={couleurs.sourd}
                 accessibilityLabel="Votre prénom"
                 style={{ minHeight: CIBLE + 12, borderRadius: RAYON.bloc, borderWidth: 1, borderColor: refuse ? couleurs.encre : couleurs.trait, backgroundColor: couleurs.carte,
-                  paddingHorizontal: PAS * 5, fontSize: 20, fontFamily: POLICE.titre, color: couleurs.encre, textAlign: "center" }} />
+                  paddingHorizontal: PAS * 6, fontSize: 20, fontFamily: POLICE.titre, color: couleurs.encre, textAlign: "center" }} />
               <Text style={[TYPO.note, { textAlign: "center" }]} accessibilityLiveRegion="polite">
                 {refuse ? "Un prénom : des lettres, un espace ou un trait d'union. Il ne sera pas gardé tel quel." : `Il reste sur cet appareil et n'est jamais envoyé. Sans prénom, Repère vous appellera « ${PRENOM_PAR_DEFAUT} ».`}
               </Text>
@@ -106,7 +106,7 @@ export function Bienvenue() {
 
         {etape === 2 ? (
           <>
-            <View style={{ gap: PAS * 5 }}>
+            <View style={{ gap: PAS * 4 }}>
               <Text style={[TYPO.affiche, { textAlign: "center" }]} {...niveauTitre(1)}>Ce que Repère ne fait pas</Text>
               <View style={{ gap: PAS * 4 }}>
                 {VALEURS.map(v => (

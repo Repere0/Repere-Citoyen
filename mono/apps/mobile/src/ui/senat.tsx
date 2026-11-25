@@ -155,7 +155,7 @@ export function PanneauSenat() {
 }
 
 const s = feuille(() => StyleSheet.create({
-  carte: { backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 5, gap: PAS * 4 },
+  carte: { backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 6, gap: PAS * 4 },
   legende: { flexDirection: "row", flexWrap: "wrap", rowGap: PAS, justifyContent: "space-between" },
   item: { flexDirection: "row", alignItems: "center", gap: PAS * 2, minHeight: CIBLE, width: "48%" },
   pastille: { width: 12, height: 12, borderRadius: 6 },

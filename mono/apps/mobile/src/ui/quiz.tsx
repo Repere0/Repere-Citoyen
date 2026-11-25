@@ -152,7 +152,7 @@ export function Quiz({ categorieDe }: { categorieDe: (cle: string) => string }) 
 
   const total = questions.length;
   const q = questions[rang];
-  const cadre = { flexGrow: 1, paddingHorizontal: PAS * 5, paddingTop: PAS * 3, paddingBottom: marges.bottom + PAS * 4, gap: PAS * 4, maxWidth: 560, width: "100%" as const, alignSelf: "center" as const };
+  const cadre = { flexGrow: 1, paddingHorizontal: PAS * 6, paddingTop: PAS * 3, paddingBottom: marges.bottom + PAS * 4, gap: PAS * 4, maxWidth: 560, width: "100%" as const, alignSelf: "center" as const };
   if (!q) return <View style={cadre}><Text style={TYPO.note}>Le quiz n'a pas de question à poser pour le moment.</Text></View>;
 
   const repondu = choix !== null;
@@ -238,7 +238,7 @@ export function Quiz({ categorieDe }: { categorieDe: (cle: string) => string }) 
     return (
       <ScrollView {...MARQUE_DEFILEMENT} contentContainerStyle={cadre} alwaysBounceVertical={false}>
         {enTete}
-        <Animated.View style={{ flex: 1, justifyContent: "center", gap: PAS * 5, opacity: entree }}>
+        <Animated.View style={{ flex: 1, justifyContent: "center", gap: PAS * 4, opacity: entree }}>
           {/* LE SCORE, en très gros. L'animation est un simple agrandissement qui retombe : rien de
               sonore, rien qui tourne, et rien du tout si les animations sont réduites (invariant 6). */}
           <Animated.View style={{ alignItems: "center", gap: PAS, transform: [{ scale: arrivee }] }}>

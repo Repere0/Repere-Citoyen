@@ -131,7 +131,7 @@ export default function Faq() {
           </View>
         ))}
       </ScrollView>
-      <View style={{ paddingHorizontal: PAS * 5, borderRadius: RAYON.carte, backgroundColor: couleurs.carte }}>
+      <View style={{ paddingHorizontal: PAS * 6, borderRadius: RAYON.carte, backgroundColor: couleurs.carte }}>
         {FAQ.map(x => (
           <Question key={x.q} q={x.q} ouvert={ouverte === x.q} basculer={() => basculer(x.q)}>
             {x.r.map(p => <Text key={p.slice(0, 24)} style={TYPO.corps}>{p}</Text>)}

@@ -119,7 +119,7 @@ export function Hemicycle() {
           : `${total} députés. Disposition indicative, groupes par ordre alphabétique : ce n'est pas le plan de la salle.`}
       </Text>
       {/* Deux faits, deux sources : le groupe de chaque député, et sa place dans la salle. Chacune se lit. */}
-      <View style={{ flexDirection: "row", flexWrap: "wrap", columnGap: PAS * 5 }}>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", columnGap: PAS * 4 }}>
         <PastilleSource nom={vraiPlan ? "Source des groupes" : "Source"}
           source={{ producteur: fichier.source.producteur, licence: fichier.source.licence, url: fichier.source.url, releve: fichier.genere_le }} />
         {vraiPlan && plan ? (
@@ -132,7 +132,7 @@ export function Hemicycle() {
 }
 
 const s = feuille(() => StyleSheet.create({
-  carte: { backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 5, gap: PAS * 4 },
+  carte: { backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 6, gap: PAS * 4 },
   legende: { flexDirection: "row", flexWrap: "wrap", rowGap: PAS, justifyContent: "space-between" },
   item: { flexDirection: "row", alignItems: "center", gap: PAS * 2, minHeight: CIBLE, width: "48%" },
   pastille: { width: 12, height: 12, borderRadius: 6 },

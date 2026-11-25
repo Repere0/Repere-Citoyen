@@ -49,7 +49,7 @@ export const ECHELLE_TYPO = [12, 14, 16, 20, 28, 40] as const;
 /* docs/historique/DESIGN.md (09/11/2026) : cartes au rayon 16, blocs et champs au rayon 12. */
 /* Variante A (11/11/2026) : cartes au rayon 24, blocs et champs au rayon 16. */
 /* Step Up (25/11/2026) : 20 pour les cartes, 12 pour les contrôles et les champs. */
-export const RAYON = { carte: 20, bloc: 12, pastille: 999 } as const;
+export const RAYON = { carte: 16, bloc: 12, pastille: 999 } as const; /* Polish (25/11/2026) : un seul arrondi de carte, 16 (rounded-2xl). */
 
 /* DA premium (07/11/2026, décision du porteur) : Manrope pour les titres, DM Sans pour le
    texte, IBM Plex Mono pour les dates et les chiffres. Toutes sous licence SIL OFL,
