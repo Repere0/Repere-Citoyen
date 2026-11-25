@@ -51,6 +51,7 @@ import { METHODE_COMPTES, USAGE_PAR_HABITANT, srcVote } from "../lib/sources";
 import { enfonce } from "../ui/mouvement";
 import { niveauTitre } from "../ui/titre";
 import { BandeauDemo } from "../ui/demo";
+import { BandeauAlertes } from "../ui/alertes";
 
 /* 09/11/2026 (maquettes Stitch) : l'accueil suit le thème choisi (Néo-Civique clair par défaut,
    Dark Luxury en sombre). Il était sombre en toutes circonstances depuis le 30/10/2026. */
@@ -619,6 +620,9 @@ export default function Accueil() {
                     <Bouton texte={`Oublier ${nomRetenue}`} discret onPress={oublier} />
                   </Carte>
                 ) : null}
+
+                {/* ADR 0013 (25/11/2026) : les alertes locales, à l'ouverture ; une proposition douce tant que rien n'est choisi. */}
+                <BandeauAlertes insee={retenue ? retenue.c : null} />
 
                 {/* Le quiz : une carte pleine largeur, à part des quatre accès (fond civique, bordure d'accent).
                     Sans commune (17/11/2026), il devient l'une des quatre cartes. */}

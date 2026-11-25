@@ -129,3 +129,23 @@ test("quiz : les points sont gardés dans repere.profil, pas dans une clé de pl
   assert.equal(valideProfil({ points: "beaucoup" }).points, 0);
   assert.equal(valideProfil({}).points, 0);
 });
+
+/* 25/11/2026 (ADR 0013) : les alertes locales, dans repere.profil ; null = jamais demandé, [] = refusé. */
+test("alertes : liste fixe, null gardé, nouveautés des 7 derniers jours seulement", async () => {
+  const { nouveautes, ALERTES } = await import("../packages/core/src/alertes.js");
+  assert.deepEqual(ALERTES, ["votes", "budgets", "elections", "actus"]);
+  assert.equal(valideProfil({}).alertes, null, "jamais demandé : null");
+  assert.deepEqual(valideProfil({ alertes: [] }).alertes, [], "refusé : [] gardé, on ne redemande pas");
+  assert.deepEqual(valideProfil({ alertes: ["actus", "pirate", "votes", "votes"] }).alertes, ["votes", "actus"]);
+  assert.equal(valideProfil({ alertes: "votes" }).alertes, null);
+  const n = nouveautes({
+    sujets: ["votes", "budgets", "actus", "elections"], aujourdhui: "2026-11-25",
+    scrutins: [{ n: "1", d: "2026-11-24", t: "Loi A" }, { n: "2", d: "2026-11-18", t: "Loi trop ancienne" }, { n: "3", d: "2026-11-26", t: "Futur" }],
+    evenements: [{ id: "e1", d: "2026-11-23", t: "Le budget de la commune est voté" }, { id: "e2", d: "2026-11-23", t: "Une fête" }],
+    actus: [{ titre: "Travaux rue X", date: "2026-11-22T10:00:00", lien: "https://x" }],
+    election: { nom: "Municipales", jours: 12 },
+  });
+  assert.deepEqual(n.map(x => x.sujet + ":" + x.d), ["elections:2026-11-25", "votes:2026-11-24", "budgets:2026-11-23", "actus:2026-11-22"]);
+  assert.deepEqual(nouveautes({ sujets: ["actus"], aujourdhui: "2026-11-25", scrutins: [{ n: "1", d: "2026-11-24", t: "Loi A" }] }), [], "un sujet non choisi ne remonte pas");
+  assert.deepEqual(nouveautes({ sujets: null, aujourdhui: "2026-11-25", scrutins: [{ n: "1", d: "2026-11-24", t: "Loi A" }] }), []);
+});

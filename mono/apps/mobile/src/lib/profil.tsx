@@ -26,6 +26,8 @@ export type Profil = {
   prenom: string;
   /* 13/11/2026 (ADR 0010) : les points du quiz civique. Jamais transmis, jamais comparés. */
   points: number;
+  /* 25/11/2026 (ADR 0013) : sujets d'alerte ; null = jamais demandé, [] = refusé. */
+  alertes?: string[] | null;
 };
 /* valideProfil est en JavaScript (@repere/core) : son type est rendu ici, une fois. */
 const valide = (x: unknown): Profil => valideProfil(x) as Profil;
