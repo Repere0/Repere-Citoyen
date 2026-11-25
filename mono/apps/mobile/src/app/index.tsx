@@ -52,6 +52,8 @@ import { enfonce } from "../ui/mouvement";
 import { niveauTitre } from "../ui/titre";
 import { BandeauDemo } from "../ui/demo";
 import { BandeauAlertes } from "../ui/alertes";
+import { TableauDeBord } from "../ui/bureau/tableau-de-bord";
+import { useBureau } from "../lib/bureau";
 
 /* 09/11/2026 (maquettes Stitch) : l'accueil suit le thème choisi (Néo-Civique clair par défaut,
    Dark Luxury en sombre). Il était sombre en toutes circonstances depuis le 30/10/2026. */
@@ -228,6 +230,7 @@ export default function Accueil() {
   const [beta, setBeta] = useState<Beta | null>(null);
   const [index, setIndex] = useState<Index | null>(null);
   const [filtre, setFiltre] = useState("");
+  const { bureau } = useBureau();
   const [champActif, setChampActif] = useState(false);
   const [cherche, setCherche] = useState(false);
   const [page, setPage] = useState(0);
@@ -542,7 +545,7 @@ export default function Accueil() {
         data={tout && !cherches.length ? toutes : trouvees}
         keyExtractor={l => l[0]}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={[s.page, { paddingTop: marges.top + PAS * 6, paddingBottom: marges.bottom + PAS * 6 }]}
+        contentContainerStyle={[s.page, bureau && { maxWidth: 1280, paddingHorizontal: PAS * 8 }, { paddingTop: marges.top + PAS * 6, paddingBottom: marges.bottom + PAS * 6 }]}
         ListHeaderComponent={
           <View style={s.tete}>
             {/* L'EN-TÊTE (07/11/2026, refonte de la zone haute) : une barre (marque à gauche, deux
@@ -611,7 +614,13 @@ export default function Accueil() {
                 style={s.champ}
               />
             </View>
-            {recherchant ? null : (
+            {recherchant ? null : bureau ? (
+              /* Dashboard desktop (porteur, 25/11/2026) : sur grand écran, les widgets remplacent les tuiles mobiles. */
+              <>
+                <BandeauAlertes insee={retenue ? retenue.c : null} />
+                <TableauDeBord communes={communes} ouvrir={ouvrir} />
+              </>
+            ) : (
               <>
                 {retenue && nomRetenue ? (
                   <Carte echelon="ville" titre="Votre commune, sur cet appareil">

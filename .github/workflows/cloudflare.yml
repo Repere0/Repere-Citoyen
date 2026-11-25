@@ -94,6 +94,9 @@ jobs:
       - name: Deployer
         if: steps.secrets.outputs.pret == 'oui'
         run: |
-          npx --yes wrangler@4.161.0 pages deploy dist --project-name=repere --branch=main \
+          # 25/11/2026 : lancé à la main sur une autre branche que main, le déploiement est un APERÇU
+          # (adresse <branche>.repere-enq.pages.dev), jamais la production.
+          BRANCHE="main"; if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then BRANCHE="${{ github.ref_name }}"; fi
+          npx --yes wrangler@4.161.0 pages deploy dist --project-name=repere --branch="$BRANCHE" \
             --commit-hash="${{ github.event.workflow_run.head_sha || github.sha }}" --commit-dirty=true
           echo "- Cloudflare Pages : deploye ($(date -u +%d/%m/%Y\ %H:%M) UTC)" >> "$GITHUB_STEP_SUMMARY"

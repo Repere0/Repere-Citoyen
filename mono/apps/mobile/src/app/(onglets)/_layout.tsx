@@ -13,6 +13,7 @@
 import { Platform, StyleSheet, Text, type ColorValue } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
+import { useBureau } from "../../lib/bureau";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LIBELLES } from "@repere/core";
 import { ACCENTS, couleurs } from "../../lib/theme";
@@ -58,8 +59,11 @@ export default function Onglets() {
      marge en bas (paddingBottom) ; avec un minimum fixe de 72 px, il ne restait que 43 px pour l'icône et le libellé,
      qui descendaient de 6 px sous la barre d'accueil (mesuré avec une marge de 34 px, tests/marges-ios-web.mjs). */
   const marges = useSafeAreaInsets();
+  const { bureau } = useBureau();
   return (
     <Tabs
+      /* Dashboard desktop (25/11/2026) : sur grand écran, la barre latérale remplace la barre du bas. */
+      tabBar={bureau ? () => null : undefined}
       screenOptions={{
         headerStyle: { backgroundColor: couleurs.sol },
         headerTintColor: couleurs.encre,
