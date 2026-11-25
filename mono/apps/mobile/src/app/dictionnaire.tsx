@@ -27,6 +27,7 @@ import { enfonce } from "../ui/mouvement";
    Rien n'y concerne une personne ni un parti. Un mot sans catégorie listée ici va dans « Institutions ». */
 import { CATEGORIES, CATEGORIE_DE, type Categorie } from "../lib/categories-mots";
 import { Repliable } from "../ui/repliable";
+import { BoutonPartageTexte } from "../ui/partage/partager-texte";
 const normaliser = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 type Entree = { cle: string; titre: string; corps: string; lettre: string };
@@ -61,7 +62,7 @@ export default function Dictionnaire() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: "Dictionnaire citoyen" }} />
+      <Stack.Screen options={{ title: "Dictionnaire citoyen", headerRight: () => <BoutonPartageTexte titre="Dictionnaire citoyen de Repère" chemin="dictionnaire" source="Définitions vérifiées par Repère." /> }} />
       <Question etiquette="Les mots de la vie publique" question="Dictionnaire"
         sous="Les mots de la vie publique, expliqués simplement. Des définitions courtes, exactes sur le plan institutionnel." />
       <>

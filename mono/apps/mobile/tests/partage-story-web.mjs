@@ -93,10 +93,18 @@ async function controler(nom) {
       .filter(x => x.h < 84 || x.b > 640 - 114);
     const source = e.querySelector('[data-testid="carte-source"]')?.textContent.trim() || "";
     const pied = e.querySelector('[data-testid="carte-pied"]')?.textContent.trim() || "";
+    const marque = e.querySelector('[data-testid="carte-marque"]')?.textContent.trim() || "";
+    const marqueEnHaut = (() => { const m = e.querySelector('[data-testid="carte-marque"]'), p = e.querySelector('[data-testid="carte-pied"]'); return !!m && !!p && m.getBoundingClientRect().top < p.getBoundingClientRect().top; })();
     /* L'adresse ne doit jamais être coupée par une ellipse (vu le 23/11 : « repere-cit… »). */
     const adresse = textes.find(t => /^[a-z0-9.-]+\.[a-z]{2,}$/.test(t.textContent.trim()));
     const adresseEntiere = !!adresse && adresse.scrollWidth <= adresse.clientWidth + 1;
-    return { logo, faibles, mots, horsZone, source, pied, adresseEntiere };
+    /* Step Up (25/11/2026) : la marque montée en haut a pris de la place, et le contenu de la carte A a recouvert la
+       source (vu à l'œil, pas par le banc). Aucun texte du contenu ne descend sous le haut de la source. */
+    const src = e.querySelector('[data-testid="carte-source"]');
+    const hautSource = src ? src.getBoundingClientRect().top : Infinity;
+    const chevauche = textes.filter(t => !t.closest('[data-testid="carte-source"]') && !t.closest('[data-testid="carte-pied"]'))
+      .filter(t => t.getBoundingClientRect().bottom > hautSource + 1).map(t => t.textContent.trim().slice(0, 30));
+    return { logo, faibles, mots, horsZone, source, pied, marque, marqueEnHaut, adresseEntiere, chevauche };
   });
   await p.evaluate(() => { const s = window.__story; document.getElementById("__story_style")?.remove(); s.c.removeAttribute("id"); s.c.setAttribute("style", s.style || ""); s.parent.insertBefore(s.c, s.suivant); });
   verifier(m.logo, `${nom} : logo present`);
@@ -104,7 +112,10 @@ async function controler(nom) {
   verifier(m.mots <= 55, `${nom} : ${m.mots} mots (au plus 55 : 45 pour le contenu, 10 pour le pied ajouté le 23/11/2026)`);
   verifier(!m.faibles.length, `${nom} : textes a 4,5:1 au moins${m.faibles.length ? " — faibles : " + JSON.stringify(m.faibles) : ""}`);
   verifier(/source|définition/i.test(m.source), `${nom} : la source est écrite au-dessus du pied (« ${m.source.slice(0, 60)} »)`);
-  verifier(/^Repère/.test(m.pied) && /\.[a-z]{2,}$/.test(m.pied), `${nom} : la marque, l'invitation et l'adresse sont en pied (« ${m.pied} »)`);
+  /* Step Up (porteur, 25/11/2026) : la marque en haut, l'appel à l'action (invitation et adresse) en pied. */
+  verifier(m.marque === "Repère" && m.marqueEnHaut, `${nom} : la marque est en haut de la carte (« ${m.marque} »)`);
+  verifier(/\.[a-z]{2,}→?$/.test(m.pied) && m.pied.length > 12, `${nom} : l'invitation et l'adresse sont en pied (« ${m.pied} »)`);
+  verifier(!m.chevauche.length, `${nom} : le contenu ne recouvre pas la source${m.chevauche.length ? " : " + JSON.stringify(m.chevauche) : ""}`);
   verifier(m.adresseEntiere, `${nom} : l'adresse publique est écrite en entier, sur sa propre ligne`);
   verifier(!m.horsZone.length, `${nom} : aucun texte dans les zones masquées par Instagram${m.horsZone.length ? " : " + JSON.stringify(m.horsZone) : ""}`);
 }

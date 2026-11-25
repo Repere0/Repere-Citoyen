@@ -5,6 +5,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { CIBLE, couleurs, PAS, TYPO } from "../lib/theme";
 import { COURRIEL_AVIS, lienAvis, MODE_DEMO } from "../lib/avis";
 import { enfonce } from "./mouvement";
+import { router } from "expo-router";
 
 export function ouvrirAvis() {
   if (!COURRIEL_AVIS) return;
@@ -18,8 +19,9 @@ export function ouvrirAvis() {
 export function BoutonAvis({ style }: { style?: object }) {
   if (!COURRIEL_AVIS) return null;
   return (
-    <Pressable onPress={ouvrirAvis} accessibilityRole="link" testID="laisser-un-avis"
-      accessibilityLabel="Laisser un avis. Ouvre votre messagerie avec un message pré-rempli."
+    /* Step Up (25/11/2026) : l'avis passe par trois questions (app/avis.tsx) avant la messagerie. */
+    <Pressable onPress={() => router.push("/avis")} accessibilityRole="link" testID="laisser-un-avis"
+      accessibilityLabel="Laisser un avis, en trois questions"
       style={({ pressed }) => [{ minHeight: CIBLE, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: PAS * 2 }, style, pressed && enfonce(true)]}>
       <Ionicons name="chatbubble-ellipses-outline" size={18} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
       <Text style={[TYPO.note, { color: couleurs.encre, fontWeight: "600" }]}>Laisser un avis</Text>

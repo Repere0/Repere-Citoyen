@@ -32,6 +32,7 @@ import { groupeDe, useGroupes, type TableGroupes, GROUPE_INCONNU } from "../lib/
 import { BadgeGroupe } from "../ui/badge-groupe";
 import { enfonce } from "../ui/mouvement";
 import { niveauTitre } from "../ui/titre";
+import { BoutonPartageTexte } from "../ui/partage/partager-texte";
 
 /* LES FILTRES PAR FONCTION (porteur, 09/11/2026). L'annuaire porte les députés et les exécutifs
    régionaux ; sénateurs et conseillers départementaux n'y sont pas encore : le filtre le dit. */
@@ -91,7 +92,7 @@ export default function Elus() {
   const bas = useBasSur();
   return (
     <View style={{ flex: 1, backgroundColor: couleurs.sol }}>
-      <Stack.Screen options={{ title: "Élus" }} />
+      <Stack.Screen options={{ title: "Élus", headerRight: () => <BoutonPartageTexte titre="Mes élus" chemin="elus" source="Sources officielles, indiquées sur chaque fiche." /> }} />
       <FlatList
         {...MARQUE_DEFILEMENT}
         data={etat === ETATS.SERVI && !ABSENTS[fonction] ? trouves : []}

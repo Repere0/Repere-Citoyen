@@ -122,6 +122,7 @@ export default function Coquille() {
                 <Stack.Screen name="actus" options={{ title: "Actualités" }} />
                 <Stack.Screen name="confort-lecture" options={{ title: "Confort de lecture" }} />
                 <Stack.Screen name="reglages" options={{ title: "Réglages" }} />
+                <Stack.Screen name="avis" options={{ title: "Donner mon avis" }} />
                 <Stack.Screen name="pour-vous" options={{ title: "Pour vous" }} />
                 <Stack.Screen name="elus" options={{ title: "Élus" }} />
                 <Stack.Screen name="presidentielle-2027" options={{ title: "Présidentielle 2027" }} />

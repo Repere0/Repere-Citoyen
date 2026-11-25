@@ -5,7 +5,7 @@
  * Désormais :
  *   - ZONES SÛRES d'Instagram et de TikTok : rien d'écrit dans les 250 px du haut ni les 340 px du bas (sur 1920),
  *     soit HAUT_SUR et BAS_SUR ici ; garde : tests/partage-story-web.mjs ;
- *   - en pied, la marque : le logo, « Repère », l'invitation et l'adresse publique (app.json, lib/adresse-publique.ts) ;
+ *   - en haut, la marque (logo et « Repère ») ; en pied, un bouton dessiné : l'invitation et l'adresse publique (Step Up, 25/11/2026) ;
  *   - la source juste au-dessus du pied, toujours écrite (invariant 4).
  * Deux fonds neutres (palette.ts, NEUTRES_CARTE), fixes quel que soit le thème du téléphone. */
 import type { ComponentRef, ReactNode, RefObject } from "react";
@@ -33,19 +33,24 @@ export function CarteStory({ refCarte, fond = "nuit", corps, source, invitation,
   return (
     <View ref={refCarte} collapsable={false} testID="carte-story"
       style={{ width: LARGEUR_CARTE, height: HAUTEUR_CARTE, backgroundColor: P.sol, paddingTop: HAUT_SUR, paddingBottom: BAS_SUR, paddingHorizontal: 30 }}>
+      {/* Step Up (porteur, 25/11/2026) : la marque EN HAUT, juste sous la zone masquée par Instagram ; l'appel à
+          l'action EN BAS, dans un bouton dessiné (contour, pas d'aplat : le texte garde 4,5:1 sur le fond de la carte). */}
+      <View testID="carte-marque" style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 12 }}>
+        <Logo size={34} c={P} />
+        <Text style={{ color: P.encre, fontFamily: POLICE.affiche, fontSize: 20, lineHeight: 24 }}>Repère</Text>
+      </View>
       {etiquette ? (
         <View style={{ paddingBottom: 12, marginBottom: 8, borderBottomWidth: filet ? 2 : 0, borderBottomColor: P.encre }}>{etiquette}</View>
       ) : null}
       <View style={{ flex: 1, justifyContent: "center", gap: 18 }}>{corps}</View>
       <Text testID="carte-source" numberOfLines={2} style={{ color: P.sourd, fontSize: 12, lineHeight: 16, marginBottom: 12 }}>{source}</Text>
-      <View testID="carte-pied" style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingTop: filet ? 12 : 0, borderTopWidth: filet ? 1 : 0, borderTopColor: P.encre }}>
-        <Logo size={34} c={P} />
+      <View testID="carte-pied" style={{ flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10, paddingHorizontal: 16, borderRadius: 999, borderWidth: 1.5, borderColor: P.encre }}>
         <View style={{ flex: 1 }}>
-          <Text style={{ color: P.encre, fontFamily: POLICE.affiche, fontSize: 19, lineHeight: 22 }}>Repère</Text>
+          <Text numberOfLines={1} style={{ color: P.encre, fontFamily: POLICE.texteMoyen, fontSize: 14, lineHeight: 20 }}>{invitation}</Text>
           {/* L'adresse a sa ligne : elle ne doit jamais être coupée (vu le 23/11 : « repere-cit… »). */}
-          <Text numberOfLines={1} style={{ color: P.sourd, fontFamily: POLICE.texte, fontSize: 12, lineHeight: 16 }}>{invitation}</Text>
           <Text numberOfLines={1} style={{ color: P.encre, fontFamily: POLICE.donneeForte, fontSize: 12, lineHeight: 16 }}>{HOTE_PUBLIC}</Text>
         </View>
+        <Text style={{ color: P.encre, fontFamily: POLICE.affiche, fontSize: 20, lineHeight: 24 }} accessible={false}>→</Text>
       </View>
     </View>
   );
@@ -66,5 +71,6 @@ export function Etiquette({ texte, droite, fond = "nuit" }: { texte: string; dro
 /* La taille d'un grand titre selon sa longueur : il tient toujours entre l'étiquette et la source. */
 export function tailleTitre(texte: string, grand = 40): number {
   const n = texte.length;
-  return n > 140 ? Math.round(grand * 0.55) : n > 90 ? Math.round(grand * 0.65) : n > 50 ? Math.round(grand * 0.8) : grand;
+  /* Step Up (25/11/2026) : la marque, montée en haut, prend 50 pt ; les titres longs descendent d'un cran. */
+  return n > 140 ? Math.round(grand * 0.5) : n > 90 ? Math.round(grand * 0.6) : n > 50 ? Math.round(grand * 0.72) : grand;
 }
