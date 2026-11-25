@@ -146,6 +146,7 @@ jobs:
           node apps/mobile/tests/fix-iphone-web.mjs http://localhost:8811
           node apps/mobile/tests/fraicheur-mouvement-web.mjs http://localhost:8811
           node apps/mobile/tests/mode-web.mjs http://localhost:8811
+          node apps/mobile/tests/alertes-web.mjs http://localhost:8811
           node apps/mobile/tests/audit-ui-web.mjs http://localhost:8811 apps/mobile/captures/audit
           # 13/11/2026 : refonte UX (ordre de la page commune, Paris, en-tete de Finances, FAQ, Repere du jour).
           node apps/mobile/tests/refonte-web.mjs http://localhost:8811

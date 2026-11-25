@@ -6,6 +6,7 @@
  * seulement ce qui est valide, et ce que chaque niveau de zoom garde. */
 
 import { THEMES } from "./themes.js";
+import { nettoyerAlertes } from "./alertes.js";
 
 export const NIVEAUX_ZOOM = ["rue", "region", "france"];
 export const TAILLES_TEXTE = [16, 18, 22, 26];
@@ -32,6 +33,8 @@ export const PROFIL_DEFAUT = {
   prenom: "",
   /* 13/11/2026 (ADR 0010) : les points du quiz civique, sur l'appareil seulement. */
   points: 0,
+  /* 25/11/2026 (ADR 0013) : les sujets d'alerte choisis ; null tant que la question n'a pas été posée. */
+  alertes: null,
 };
 
 /* Un prénom affichable : lettres, espaces, traits d'union et apostrophes, 24 caractères au plus. Tout le reste
@@ -105,8 +108,10 @@ export function valideProfil(v) {
     themes: Array.isArray(src.themes) ? [...new Set(src.themes)].filter(t => THEMES.includes(t)) : [],
     prenom: nettoyerPrenom(src.prenom),
     points: nettoyerPoints(src.points),
+    alertes: nettoyerAlertes(src.alertes),
   };
   for (const k of Object.keys(out)) if (out[k] === undefined) out[k] = PROFIL_DEFAUT[k];
+  /* null est une valeur (« jamais demandé ») : nettoyerAlertes la rend telle quelle. */
   return out;
 }
 

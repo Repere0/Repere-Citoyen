@@ -16,6 +16,9 @@ import { niveauTitre } from "../ui/titre";
 import { enfonce } from "../ui/mouvement";
 import { Interrupteur } from "../ui/interrupteur";
 import { BoutonAvis } from "../ui/demo";
+import { ALERTES, LIBELLE_ALERTE } from "@repere/core";
+
+const ICONE_ALERTE: Record<string, Icone> = { votes: "megaphone-outline", budgets: "wallet-outline", elections: "calendar-outline", actus: "newspaper-outline" };
 
 type Icone = keyof typeof Ionicons.glyphMap;
 
@@ -69,6 +72,23 @@ export default function Reglages() {
           onPress={() => modifier({ modeDaltonien: !profil?.modeDaltonien })} />
         <Filet />
         <Ligne icone="text-outline" texte="Taille, espacement et contraste" onPress={() => router.push("/confort-lecture")} />
+      </Groupe>
+
+      {/* ADR 0013 (25/11/2026) : des alertes locales, sans notification poussée ni serveur. Le bandeau de l'accueil dit,
+          à chaque ouverture, ce qui a été publié ces 7 jours sur les sujets cochés ici. */}
+      <Groupe titre="Mes alertes">
+        <Text style={[TYPO.note, { paddingVertical: PAS * 2 }]}>À l'ouverture, l'accueil vous dit ce qui a été publié sur ces sujets. Rien n'est envoyé.</Text>
+        {(ALERTES as string[]).map(a => {
+          const choisis = profil?.alertes || [];
+          const actif = choisis.includes(a);
+          return (
+            <View key={a}>
+              <Filet />
+              <Interrupteur icone={ICONE_ALERTE[a]} texte={LIBELLE_ALERTE[a as keyof typeof LIBELLE_ALERTE]} actif={actif}
+                onPress={() => modifier({ alertes: actif ? choisis.filter(x => x !== a) : [...choisis, a] })} />
+            </View>
+          );
+        })}
       </Groupe>
 
       <Groupe titre="Mon profil">
