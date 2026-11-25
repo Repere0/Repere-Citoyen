@@ -15,7 +15,6 @@ import { GLOSSAIRE, dateFr, definition, departementDe, jourParis, parHabitant, t
 import { chargerCatalogueScrutins } from "../../lib/donnees";
 import { useCommuneChoisie } from "../../lib/useCommune";
 import { useCouleurVote } from "../../lib/couleur-vote";
-import { useProfil } from "../../lib/profil";
 import { CIBLE, JAUGE, OMBRE, PAS, POLICE, RAYON, TYPO, couleurs } from "../../lib/theme";
 import { useBureau } from "../../lib/bureau";
 import { Hemicycle } from "../hemicycle";
@@ -26,18 +25,44 @@ import { niveauTitre } from "../titre";
 
 /* ---------- briques ---------- */
 
-function Widget({ titre, source, children, testID, lien }: { titre: string; source?: string | null; children: ReactNode; testID?: string; lien?: { texte: string; aller: () => void } }) {
-  return (
-    <View testID={testID} style={{ flex: 1, gap: PAS * 4, padding: PAS * 6, borderRadius: RAYON.carte, backgroundColor: couleurs.carte, ...OMBRE }}>
-      <Text style={TYPO.etiquette} {...niveauTitre(2)}>{titre}</Text>
+function Widget({ titre, source, children, testID, lien, accent = false, interactif = false }: { titre: string; source?: string | null; children: ReactNode; testID?: string; lien?: { texte: string; aller: () => void }; accent?: boolean;
+  /* La carte contient déjà des boutons (bulle « En clair », départements…) : elle n'est pas un lien en entier (pas de
+     contrôle dans un contrôle) ; le lien est alors écrit en bas. */
+  interactif?: boolean }) {
+  /* Bureau, seconde passe (porteur, 25/11/2026) : une carte qui mène quelque part est cliquable en entier, et le dit au
+     survol (filet d'encre, flèche qui avance). Le titre est en casse de phrase : une étiquette en capitales sur chaque
+     carte ne hiérarchise rien. */
+  const corps = (survol: boolean) => (
+    <>
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: PAS * 2 }}>
+        <Text style={[TYPO.section, accent && { color: couleurs.sol }]} {...niveauTitre(2)}>{titre}</Text>
+        {lien && !interactif ? <Ionicons name="arrow-forward" size={20} color={accent ? couleurs.sol : survol ? couleurs.encre : couleurs.sourd}
+          style={{ transform: [{ translateX: survol ? 4 : 0 }] }} accessible={false} importantForAccessibility="no" /> : null}
+      </View>
       <View style={{ flex: 1, gap: PAS * 4 }}>{children}</View>
-      {lien ? (
-        <Pressable onPress={lien.aller} accessibilityRole="link" style={({ pressed }) => [{ minHeight: CIBLE, justifyContent: "center", alignSelf: "flex-start" }, pressed && enfonce(true)]}>
-          <Text style={[TYPO.corps, { fontFamily: POLICE.texteMoyen, color: couleurs.lien }]}>{lien.texte} →</Text>
+      {lien && interactif ? (
+        <Pressable onPress={lien.aller} accessibilityRole="link"
+          style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [{ minHeight: CIBLE, flexDirection: "row", alignItems: "center", gap: PAS * 2, alignSelf: "flex-start", opacity: hovered ? 1 : 0.85 }, pressed && enfonce(true)]}>
+          {st => (
+            <>
+              <Text style={[TYPO.corps, { fontFamily: POLICE.texteMoyen, color: couleurs.lien, textDecorationLine: "none" }]}>{lien.texte}</Text>
+              <Ionicons name="arrow-forward" size={18} color={couleurs.lien} style={{ transform: [{ translateX: (st as { hovered?: boolean }).hovered ? 4 : 0 }] }} accessible={false} importantForAccessibility="no" />
+            </>
+          )}
         </Pressable>
       ) : null}
-      {source ? <Text style={TYPO.micro} testID="widget-source">{source}</Text> : null}
-    </View>
+      {source ? <Text style={[TYPO.micro, accent && { color: couleurs.sol, opacity: 0.8 }]} testID="widget-source">{source}</Text> : null}
+    </>
+  );
+  const base = { flex: 1, gap: PAS * 4, padding: PAS * 6, borderRadius: RAYON.carte, borderWidth: 1,
+    backgroundColor: accent ? couleurs.encre : couleurs.carte } as const;
+  if (!lien || interactif) return <View testID={testID} style={[base, { borderColor: couleurs.trait }]}>{corps(false)}</View>;
+  return (
+    <Pressable testID={testID} onPress={lien.aller} accessibilityRole="link" accessibilityLabel={`${titre}. ${lien.texte}`}
+      style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [base, { borderColor: hovered ? (accent ? couleurs.sol : couleurs.encre) : couleurs.trait },
+        hovered && { ...OMBRE }, pressed && enfonce(true)]}>
+      {st => corps(!!(st as { hovered?: boolean }).hovered)}
+    </Pressable>
   );
 }
 
@@ -106,7 +131,7 @@ function DernierScrutin() {
   ] : [];
   const total = parts.reduce((a, p) => a + p.v, 0);
   return (
-    <Widget testID="widget-scrutin" titre="Le dernier scrutin solennel"
+    <Widget testID="widget-scrutin" titre="Le dernier scrutin solennel" interactif
       source={src && src.producteur ? `Source : ${src.producteur}${src.maj ? `, relevé le ${dateFr(src.maj)}` : ""}. Le plus récent du catalogue, pas « le plus important ».` : null}
       lien={{ texte: "Tous les votes au Parlement", aller: () => router.push("/scrutins") }}>
       {s === undefined ? <Text style={TYPO.note}>Chargement…</Text> : s === null || !total ? (
@@ -154,13 +179,12 @@ function Budget() {
     { cle: "Autres dépenses", valeur: dep - sal - inv, couleur: JAUGE.autres },
   ] : null;
   return (
-    <Widget testID="widget-budget" titre={`Où va l'argent · ${pret.d.nomCommune} · ${pret.d.exercice.an}`} source={source}
+    <Widget testID="widget-budget" interactif titre={`Sur 100 € dépensés à ${pret.d.nomCommune}`} source={source}
       lien={{ texte: "Le budget en détail", aller: () => router.push("/finances") }}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 6, flexWrap: "wrap" }}>
-        {parts ? <Anneau parts={parts} /> : null}
+        {parts ? <Anneau parts={parts} taille={200} /> : null}
         <View style={{ flex: 1, minWidth: 200, gap: PAS * 2 }}>
-          <Text style={TYPO.chiffre}>{dep.toLocaleString("fr-FR")}{" "}€</Text>
-          <Text style={TYPO.note}>dépensés par habitant en {pret.d.exercice.an}</Text>
+          <Text style={TYPO.note}>En {pret.d.exercice.an}, par habitant : {dep.toLocaleString("fr-FR")}{" "}€ au total.</Text>
           {parts ? parts.map(p => (
             <View key={p.cle} style={{ flexDirection: "row", alignItems: "center", gap: PAS * 2 }}>
               <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: p.couleur }} />
@@ -182,7 +206,7 @@ function Agenda() {
     </Widget>
   );
   return (
-    <Widget testID="widget-agenda" titre="L'agenda de la semaine" lien={{ texte: "Tout le calendrier", aller: () => router.push("/a-venir") }}>
+    <Widget testID="widget-agenda" interactif titre="L'agenda de la semaine" lien={{ texte: "Tout le calendrier", aller: () => router.push("/a-venir") }}>
       <SemaineParlement sp={r.d.semaineParlement} lu={r.agendaLu} nom={r.d.nomCommune} />
     </Widget>
   );
@@ -219,22 +243,22 @@ export function CarteIdf({ communes, ouvrir }: { communes: [string, string, ...u
   const [dep, setDep] = useState<string | null>(null);
   const liste = useMemo(() => (dep ? communes.filter(c => departementDe(c[0]) === dep).sort((a, b) => a[1].localeCompare(b[1], "fr")) : []), [dep, communes]);
   return (
-    <Widget testID="widget-carte" titre="L'Île-de-France, département par département"
-      source="Plan schématique : chaque case est un département à sa place relative, pas sa forme réelle. Communes : découpage administratif Etalab.">
+    <Widget testID="widget-carte" interactif titre="Trouver sa commune sur le plan"
+      source="Plan schématique, pas une carte : chaque case est un département à sa place relative. Communes : découpage administratif Etalab.">
       <View style={{ gap: PAS }} accessibilityRole="radiogroup" aria-label="Départements d'Île-de-France">
         {[0, 1, 2].map(ligne => (
           <View key={ligne} style={{ flexDirection: "row", gap: PAS }}>
             {[0, 1, 2, 3].map(col => {
               const x = PLAN.find(p => p[1] === col && p[2] === ligne);
-              if (!x) return <View key={col} style={{ flex: 1, flexBasis: 0, minWidth: 0 }} />;
+              if (!x) return <View key={col} style={{ flex: 1, flexBasis: 0, minWidth: 0, paddingHorizontal: PAS * 2, borderWidth: 1, borderColor: "transparent" }} />;
               const actif = dep === x[0];
               return (
                 <Pressable key={col} onPress={() => setDep(actif ? null : x[0])} accessibilityRole="radio" accessibilityState={{ checked: actif }} aria-checked={actif}
                   accessibilityLabel={`${NOMS_DEP[x[0]]} (${x[0]})`} testID={`dep-${x[0]}`}
-                  style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [{ flex: 1, flexBasis: 0, minWidth: 0, minHeight: 72, padding: PAS * 2, borderRadius: RAYON.bloc, justifyContent: "center",
+                  style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [{ flex: 1, flexBasis: 0, minWidth: 0, minHeight: 56, padding: PAS * 2, borderRadius: RAYON.bloc, justifyContent: "center",
                     borderWidth: 1, borderColor: actif || hovered ? couleurs.encre : couleurs.trait, backgroundColor: actif ? couleurs.encre : couleurs.voile }, pressed && enfonce(true)]}>
-                  <Text style={[TYPO.corps, { fontFamily: POLICE.section, color: actif ? couleurs.sol : couleurs.encre }]}>{x[0]}</Text>
-                  <Text numberOfLines={2} style={[TYPO.note, { color: actif ? couleurs.sol : couleurs.sourd }]}>{NOMS_DEP[x[0]]}</Text>
+                  <Text style={[TYPO.corps, { fontFamily: POLICE.section, textAlign: "center", color: actif ? couleurs.sol : couleurs.encre }]}>{x[0]}</Text>
+                  
                 </Pressable>
               );
             })}
@@ -255,7 +279,7 @@ export function CarteIdf({ communes, ouvrir }: { communes: [string, string, ...u
             </View>
           </View>
         ) : <Text style={TYPO.corps}>La liste des communes n'est pas encore chargée sur cet appareil.</Text>
-      ) : <Text style={TYPO.note}>Choisissez un département pour voir ses communes.</Text>}
+      ) : <Text style={TYPO.note}>Choisissez un numéro de département pour voir ses communes.</Text>}
     </Widget>
   );
 }
@@ -263,7 +287,7 @@ export function CarteIdf({ communes, ouvrir }: { communes: [string, string, ...u
 function HemicycleWidget() {
   const fichier = useFichierGroupes();
   return (
-    <Widget testID="widget-hemicycle" titre="L'Assemblée nationale" lien={{ texte: "Les groupes et leurs députés", aller: () => router.push("/scrutins") }}>
+    <Widget testID="widget-hemicycle" interactif titre="L'Assemblée nationale aujourd'hui" lien={{ texte: "Les groupes et leurs députés", aller: () => router.push("/scrutins") }}>
       {/* Doctrine du vide : sans la table des groupes, une phrase, pas un cadre blanc. */}
       {fichier === undefined ? <Text style={TYPO.note}>Chargement…</Text>
         : fichier === null ? <Text style={TYPO.corps}>La composition de l'Assemblée n'a pas pu être lue sur cet appareil. La page du Parlement dit pourquoi.</Text>
@@ -273,62 +297,53 @@ function HemicycleWidget() {
   );
 }
 
-/* ---------- le tour guidé (onboarding web) ---------- */
-
-const ETAPES = [
-  { icone: "business-outline", titre: "1. Qui décide chez vous", corps: "Votre maire, vos conseillers, votre député, vos sénateurs : leurs noms et ce qu'ils votent, d'après les sources officielles." },
-  { icone: "wallet-outline", titre: "2. Où va votre argent", corps: "Le budget de votre commune, ramené à un habitant : salaires, investissements, autres dépenses." },
-  { icone: "document-text-outline", titre: "3. D'où viennent les chiffres", corps: "Chaque chiffre dit sa source et sa date. Repère ne donne pas d'avis : il montre, vous jugez." },
-] as const;
-
-function TourGuide() {
-  const { passer } = useProfil();
-  const [i, setI] = useState(0);
-  const e = ETAPES[i];
+/* LE CHIFFRE CLÉ : la seule carte en encre pleine, le seul très grand chiffre de la page (une audace, pas dix). */
+function ChiffreCle() {
+  const { r } = useCommuneChoisie();
+  const pret = r.pret ? r : null;
+  const hab = pret && pret.d.exercice ? parHabitant(pret.d.exercice.ex) : null;
+  const src = pret ? (pret.index?.sources?.comptes as { producteur?: string; maj?: string } | undefined) : undefined;
+  if (!pret || !hab || hab.depenses === null) return (
+    <Widget testID="widget-chiffre" titre="Le chiffre clé de votre commune" accent>
+      <Text style={[TYPO.corps, { color: couleurs.sol }]}>Tapez votre commune dans la recherche : ses dépenses par habitant s'afficheront ici, avec leur source.</Text>
+    </Widget>
+  );
   return (
-    <View testID="tour-guide" style={{ flexDirection: "row", alignItems: "center", gap: PAS * 6, padding: PAS * 6, borderRadius: RAYON.carte, backgroundColor: couleurs.carte, ...OMBRE }}>
-      <Ionicons name={e.icone} size={40} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
-      <View style={{ flex: 1, gap: PAS }}>
-        <Text style={TYPO.etiquette}>Comment ça marche · {i + 1} sur 3</Text>
-        <Text style={TYPO.section} {...niveauTitre(2)}>{e.titre}</Text>
-        <Text style={TYPO.corps}>{e.corps}</Text>
+    <Widget testID="widget-chiffre" accent titre={`${pret.d.nomCommune}, ${pret.d.exercice.an}`} lien={{ texte: "Le budget en détail", aller: () => router.push("/finances") }}
+      source={src && src.producteur ? `Source : ${src.producteur}${src.maj ? `, mis à jour le ${dateFr(src.maj)}` : ""}.` : null}>
+      <View style={{ flex: 1, justifyContent: "flex-end", gap: PAS * 2 }}>
+        {/* hors échelle : chiffre clé du bureau, 80 px (porteur : des chiffres plus grands sur ordinateur). */}
+        <Text style={{ fontFamily: POLICE.affiche, fontSize: 80 /* hors échelle : chiffre clé du bureau, porteur 25/11/2026 */, lineHeight: 84, letterSpacing: -3, color: couleurs.sol, fontVariant: ["tabular-nums"] }} numberOfLines={1}>
+          {hab.depenses.toLocaleString("fr-FR")}{" "}€
+        </Text>
+        <Text style={[TYPO.section, { fontFamily: POLICE.texte, color: couleurs.sol, opacity: 0.85 }]}>dépensés par habitant</Text>
       </View>
-      <View style={{ gap: PAS * 2 }}>
-        <Pressable onPress={() => (i < 2 ? setI(i + 1) : passer())} accessibilityRole="button" testID="tour-suivant"
-          style={({ pressed }) => [{ minHeight: CIBLE, paddingHorizontal: PAS * 6, borderRadius: RAYON.bloc, alignItems: "center", justifyContent: "center", backgroundColor: couleurs.encre }, pressed && enfonce(true)]}>
-          <Text style={[TYPO.corps, { color: couleurs.sol, fontFamily: POLICE.texteMoyen }]}>{i < 2 ? "Suivant" : "C'est parti"}</Text>
-        </Pressable>
-        <Pressable onPress={passer} accessibilityRole="button" testID="tour-passer"
-          style={({ pressed }) => [{ minHeight: CIBLE, alignItems: "center", justifyContent: "center" }, pressed && enfonce(true)]}>
-          <Text style={[TYPO.note, { color: couleurs.sourd }]}>Passer</Text>
-        </Pressable>
-      </View>
-    </View>
+    </Widget>
   );
 }
 
-/* ---------- la grille ---------- */
+/* ---------- la grille (Bento) ---------- */
 
+/* Douze colonnes, des cartes de tailles différentes : 8 + 4, puis 7 + 5, puis 5 + 3 + 4. Sous 1280 px, la dernière
+   ligne passe sur deux lignes, pour qu'aucune carte ne descende sous 300 px de large. */
 export function TableauDeBord({ communes, ouvrir }: { communes: [string, string, ...unknown[]][]; ouvrir: (insee: string, nom: string) => void }) {
-  const { profil } = useProfil();
   const { large } = useBureau();
-  /* Deux tiers / un tiers à partir de 1280 px ; moitié / moitié entre 1024 et 1280. */
-  const ligne = { flexDirection: "row" as const, gap: PAS * 6, alignItems: "stretch" as const };
-  const gauche = { flex: large ? 2 : 1 }, droite = { flex: 1 };
+  const ligne = { flexDirection: "row" as const, gap: PAS * 6, alignItems: "stretch" as const, flexWrap: "wrap" as const };
+  const col = (n: number, min = 300) => ({ flexGrow: n, flexShrink: 1, flexBasis: 0, minWidth: min });
   return (
-    <View testID="tableau-de-bord" style={{ gap: PAS * 6, marginTop: PAS * 2 }}>
-      {!profil ? <TourGuide /> : null}
+    <View testID="tableau-de-bord" style={{ gap: PAS * 6, marginTop: PAS * 4 }}>
       <View style={ligne}>
-        <View style={gauche}><DernierScrutin /></View>
-        <View style={droite}><MotDuJour /></View>
+        <View style={col(8, 460)}><DernierScrutin /></View>
+        <View style={col(4)}><ChiffreCle /></View>
       </View>
       <View style={ligne}>
-        <View style={{ flex: 1 }}><Budget /></View>
-        <View style={{ flex: 1 }}><Agenda /></View>
+        <View style={col(7, 420)}><HemicycleWidget /></View>
+        <View style={col(5, 360)}><Budget /></View>
       </View>
       <View style={ligne}>
-        <View style={gauche}><HemicycleWidget /></View>
-        <View style={droite}><CarteIdf communes={communes} ouvrir={ouvrir} /></View>
+        <View style={col(5, large ? 340 : 600)}><Agenda /></View>
+        <View style={col(3)}><MotDuJour /></View>
+        <View style={col(4)}><CarteIdf communes={communes} ouvrir={ouvrir} /></View>
       </View>
     </View>
   );

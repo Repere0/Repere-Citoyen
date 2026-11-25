@@ -33,8 +33,8 @@ function Entree({ e, chemin }: { e: (typeof ENTREES)[number]; chemin: string }) 
   return (
     <Pressable onPress={() => router.navigate(e.chemin as never)} accessibilityRole="link" accessibilityLabel={e.texte}
       aria-current={actif ? "page" : undefined} testID={`barre-${e.chemin.replace(/\W/g, "") || "accueil"}`}
-      style={({ pressed }) => [{ minHeight: CIBLE, flexDirection: "row", alignItems: "center", gap: PAS * 3, paddingHorizontal: PAS * 3,
-        borderRadius: RAYON.bloc, backgroundColor: actif ? couleurs.voile : "transparent" }, pressed && enfonce(true)]}>
+      style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [{ minHeight: CIBLE, flexDirection: "row", alignItems: "center", gap: PAS * 3, paddingHorizontal: PAS * 3,
+        borderRadius: RAYON.bloc, backgroundColor: actif ? couleurs.carte : hovered ? couleurs.trait : "transparent" }, pressed && enfonce(true)]}>
       <Ionicons name={actif ? (e.icone.replace("-outline", "") as Icone) : e.icone} size={20} color={actif ? couleurs.encre : couleurs.sourd} accessible={false} importantForAccessibility="no" />
       <Text style={[TYPO.corps, { color: actif ? couleurs.encre : couleurs.sourd, fontFamily: actif ? POLICE.section : POLICE.texteMoyen }]}>{e.texte}</Text>
     </Pressable>
@@ -46,12 +46,15 @@ export function BarreLaterale() {
   const { mode, setChoix } = useTheme();
   return (
     <View testID="barre-laterale" accessibilityRole="navigation" aria-label="Navigation principale"
-      style={{ width: LARGEUR_BARRE, borderRightWidth: 1, borderRightColor: couleurs.trait, backgroundColor: couleurs.carte }}>
-      <ScrollView {...MARQUE_DEFILEMENT} contentContainerStyle={{ padding: PAS * 4, gap: PAS, flexGrow: 1 }}>
+      /* Seconde passe (porteur, 25/11/2026) : un fond un ton plus soutenu que la page, pour que la barre se lise comme
+         un cadre ; l'entrée active prend le fond des cartes. */
+      style={{ width: LARGEUR_BARRE, borderRightWidth: 1, borderRightColor: couleurs.trait, backgroundColor: mode === "sombre" ? couleurs.carte : couleurs.voile }}>
+      <ScrollView {...MARQUE_DEFILEMENT} contentContainerStyle={{ paddingHorizontal: PAS * 4, paddingTop: PAS * 8, paddingBottom: PAS * 6, gap: PAS, flexGrow: 1 }}>
         <Pressable onPress={() => router.navigate("/")} accessibilityRole="link" accessibilityLabel="Repère, tableau de bord"
-          style={({ pressed }) => [{ flexDirection: "row", alignItems: "center", gap: PAS * 2, minHeight: CIBLE, marginBottom: PAS * 4 }, pressed && enfonce(true)]}>
-          <Logo size={28} variant={mode} />
-          <Text style={{ fontFamily: POLICE.affiche, fontSize: 20, color: couleurs.encre }}>Repère</Text>
+          style={({ pressed }) => [{ flexDirection: "row", alignItems: "center", gap: PAS * 3, minHeight: CIBLE, paddingHorizontal: PAS * 2, marginBottom: PAS * 8 }, pressed && enfonce(true)]}>
+          {/* Seconde passe : le logo en grand, encre pleine dans les deux thèmes (contraste du thème, pas un gris). */}
+          <Logo size={44} variant={mode} />
+          <Text style={{ fontFamily: POLICE.affiche, fontSize: 30 /* hors échelle : marque du bureau, porteur 25/11/2026 */, lineHeight: 34, letterSpacing: -0.8, color: couleurs.encre }}>Repère</Text>
         </Pressable>
         {ENTREES.map(e => <Entree key={e.chemin} e={e} chemin={chemin} />)}
         <View style={{ flex: 1, minHeight: PAS * 6 }} />

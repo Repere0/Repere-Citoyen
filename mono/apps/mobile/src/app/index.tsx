@@ -53,6 +53,7 @@ import { niveauTitre } from "../ui/titre";
 import { BandeauDemo } from "../ui/demo";
 import { BandeauAlertes } from "../ui/alertes";
 import { TableauDeBord } from "../ui/bureau/tableau-de-bord";
+import { HeroBureau } from "../ui/bureau/hero";
 import { useBureau } from "../lib/bureau";
 
 /* 09/11/2026 (maquettes Stitch) : l'accueil suit le thème choisi (Néo-Civique clair par défaut,
@@ -545,14 +546,14 @@ export default function Accueil() {
         data={tout && !cherches.length ? toutes : trouvees}
         keyExtractor={l => l[0]}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={[s.page, bureau && { maxWidth: 1280, paddingHorizontal: PAS * 8 }, { paddingTop: marges.top + PAS * 6, paddingBottom: marges.bottom + PAS * 6 }]}
+        contentContainerStyle={[s.page, bureau && { maxWidth: 1600, paddingHorizontal: PAS * 10 }, { paddingTop: marges.top + PAS * 6, paddingBottom: marges.bottom + PAS * 6 }]}
         ListHeaderComponent={
           <View style={s.tete}>
             {/* L'EN-TÊTE (07/11/2026, refonte de la zone haute) : une barre (marque à gauche, deux
                 outils à droite), une ligne d'état discrète (date des données, vue), puis le pitch,
                 UNE action principale (chercher une commune) et trois accès rapides en tuiles.
                 Avant : sept éléments empilés, quatre styles de lien, le logo seul au milieu. */}
-            <View style={s.barreHaut}>
+            <View style={[s.barreHaut, bureau && { display: "none" }]}>
               {/* Step Up (porteur, 25/11/2026) : la marque quitte la barre ; le logo, en grand, ouvre l'accueil (plus bas). */}
               <View />
               <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -577,7 +578,7 @@ export default function Accueil() {
             </View>
             {/* Invariant 9 : la date des données reste visible, en tête, sans prendre la place du contenu. */}
             {/* Step Up (25/11/2026) : le gros logo, puis la date des données (invariant 9), centrés. */}
-            <View style={{ alignItems: "center", gap: PAS * 4, marginTop: PAS * 2 }}>
+            <View style={[{ alignItems: "center", gap: PAS * 4, marginTop: PAS * 2 }, bureau && { display: "none" }]}>
               <Logo size={64} variant={modeTheme} />
               <DatePublication />
             </View>
@@ -593,10 +594,12 @@ export default function Accueil() {
                 « Bonjour » : le prénom vient de repere.profil, jamais du réseau ; sans prénom, « Citoyen ». */}
             {/* 17/11/2026 : en mode démo, une ligne discrète au-dessus de tout, avec « Laisser un avis ». */}
             <BandeauDemo />
-            <Text style={[s.bonjour, { textAlign: "center" }]} testID="bonjour" {...niveauTitre(1)}>Bonjour {prenom || "Citoyen"}</Text>
-            <Text style={[s.sousTitre, { textAlign: "center" }]}>Ce qui se passe chez vous, expliqué simplement.</Text>
+            <Text style={[s.bonjour, { textAlign: "center" }, bureau && { display: "none" }]} testID="bonjour" {...niveauTitre(1)}>Bonjour {prenom || "Citoyen"}</Text>
+            <Text style={[s.sousTitre, { textAlign: "center" }, bureau && { display: "none" }]}>Ce qui se passe chez vous, expliqué simplement.</Text>
             <Text style={s.titreCache} nativeID="question">Où habitez-vous ?</Text>
-            <View style={[s.champLigne, champActif && Platform.OS === "web" && { borderColor: D.encre }]}>
+            {/* Bureau : la recherche vit dans le bloc d'accueil (ui/bureau/hero.tsx), la même logique. */}
+            <HeroBureau actif={bureau}>
+            <View style={[s.champLigne, champActif && Platform.OS === "web" && { borderColor: D.encre }, bureau && { minHeight: 64, borderRadius: RAYON.bloc }]}>
               <Ionicons name="search" size={22} color={D.sourd} accessible={false} importantForAccessibility="no" style={{ marginRight: PAS * 2 }} />
               <TextInput
                 value={filtre}
@@ -614,6 +617,7 @@ export default function Accueil() {
                 style={s.champ}
               />
             </View>
+            </HeroBureau>
             {recherchant ? null : bureau ? (
               /* Dashboard desktop (porteur, 25/11/2026) : sur grand écran, les widgets remplacent les tuiles mobiles. */
               <>

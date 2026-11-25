@@ -27,15 +27,23 @@ const ouvrir = async (largeur, hauteur, profil) => {
   verifier(await page.getByPlaceholder(/Votre ville ou code postal/).isVisible(), "1440 px : la recherche de commune est visible");
   verifier(await page.getByTestId("tour-guide").isVisible(), "première visite : le tour guidé est proposé");
   if (CAP) await page.screenshot({ path: CAP + "/bureau-accueil.png" });
-  await page.getByTestId("tour-suivant").click(); await page.getByTestId("tour-suivant").click(); await page.getByTestId("tour-suivant").click();
-  await page.waitForTimeout(400);
-  verifier(await page.getByTestId("tour-guide").count() === 0, "après la 3e étape, le tour guidé disparaît");
+  /* Seconde passe (porteur, 25/11/2026) : pas une colonne centrée, un bloc d'accueil, une grille qui prend la largeur. */
+  verifier(await page.getByTestId("hero").isVisible(), "le bloc d'accueil (hero) est là");
+  const largeur = (await page.getByTestId("tableau-de-bord").boundingBox()).width;
+  verifier(largeur >= 1000, `à 1440 px, la grille prend la largeur (${Math.round(largeur)} px, attendu 1000 au moins)`);
+  const scr = await page.getByTestId("widget-scrutin").boundingBox(), chf = await page.getByTestId("widget-chiffre").boundingBox();
+  verifier(Math.abs(scr.y - chf.y) < 2 && scr.width > chf.width * 1.5, "Bento : le scrutin et le chiffre clé sont côte à côte, de tailles différentes");
+  await page.getByTestId("tour-passer").click(); await page.waitForTimeout(400);
+  verifier(await page.getByTestId("tour-guide").count() === 0, "« J'ai compris » ferme le tour guidé");
   await page.reload({ waitUntil: "networkidle" }); await page.getByTestId("tableau-de-bord").waitFor({ timeout: 15000 });
-  verifier(await page.getByTestId("tour-guide").count() === 0, "après rechargement, il ne revient pas");
+  verifier(await page.getByTestId("tour-guide").count() === 0, "après rechargement, il ne revient pas de lui-même");
+  await page.getByTestId("faire-le-tour").click(); await page.waitForTimeout(300);
+  verifier(await page.getByTestId("tour-guide").isVisible(), "« Faire le tour » le rouvre");
+  await page.getByTestId("faire-le-tour").click(); await page.waitForTimeout(300);
   /* Doctrine du vide : chaque widget porte une phrase sous son titre. */
   const widgets = page.locator('[data-testid^="widget-"]:not([data-testid="widget-source"])');
   const n = await widgets.count();
-  verifier(n >= 6, `six widgets au moins (${n})`);
+  verifier(n >= 7, `sept widgets au moins (${n})`);
   for (let i = 0; i < n; i++) {
     const t = (await widgets.nth(i).innerText()).trim().split("\n").filter(Boolean);
     verifier(t.length >= 2, `widget ${await widgets.nth(i).getAttribute("data-testid")} : il dit quelque chose (« ${(t[1] || "").slice(0, 40)} »)`);

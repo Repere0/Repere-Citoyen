@@ -5,7 +5,7 @@
 import { Platform, useWindowDimensions } from "react-native";
 
 export const LG = 1024, XL = 1280;
-export const LARGEUR_BARRE = 240;
+export const LARGEUR_BARRE = 272;
 
 export const estBureau = (largeur: number, os: string = Platform.OS) => os === "web" && largeur >= LG;
 
