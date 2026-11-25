@@ -1,8 +1,9 @@
 /* Le cadre commun des ecrans : defilement, marges sures, largeur de lecture,
  * et l'etat d'une commune qui n'est pas prete (chargement, panne, absence).
  * Chaque ecran de detail commence par UNE question, en grand. */
-import { useBureau } from "../lib/bureau";
+import { poserStylesBureau, useBureau } from "../lib/bureau";
 import { MARQUE_DEFILEMENT } from "../lib/defilement-ios";
+import { useEffect } from "react";
 import type { ReactNode } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -37,13 +38,17 @@ export function Page({ children, sansDate = false }: { children: ReactNode; sans
   useTheme();
   /* Bureau (porteur, 25/11/2026) : la colonne s'élargit et prend de l'air ; le texte garde une longueur de ligne lisible. */
   const { bureau } = useBureau();
+  useEffect(() => { if (bureau) poserStylesBureau(); }, [bureau]);
   return (
-    <ScrollView {...MARQUE_DEFILEMENT} style={{ backgroundColor: couleurs.sol }} contentContainerStyle={[s.page, bureau && { maxWidth: 1040, paddingHorizontal: PAS * 10 }, { paddingTop: sansDate ? PAS * 4 : PAS * 6, paddingBottom: marges.bottom + PAS * 10 }]}>
+    <ScrollView {...MARQUE_DEFILEMENT} style={{ backgroundColor: couleurs.sol }} contentContainerStyle={[s.page, bureau && { maxWidth: 1280, paddingHorizontal: PAS * 12 }, { paddingTop: sansDate ? PAS * 4 : PAS * 6, paddingBottom: marges.bottom + PAS * 10 }]}>
       {sansDate ? null : <DatePublication flottant />}
       <BandeauFraicheur />
       {/* 23/11/2026 (ADR 0012) : arrivé par un lien, sans prénom, le lecteur lit d'abord ; le bandeau propose la suite. */}
       <BandeauDecouverte />
-      <Entree style={{ gap: PAS * 4, width: "100%" }}>{children}</Entree>
+      <Entree style={{ gap: PAS * 4, width: "100%" }}>
+        {/* Bureau : deux colonnes de lecture (lib/bureau.ts, poserStylesBureau). */}
+        {bureau ? <View style={{ gap: PAS * 4 }} {...({ dataSet: { bureauColonnes: "1" } } as object)}>{children}</View> : children}
+      </Entree>
       {/* « Copier le lien » (web, 12/11/2026) : sur TOUS les écrans, en bas de page, bien visible. */}
       <View style={{ alignSelf: "flex-start", marginTop: PAS * 4 }}><BoutonCopierLien /></View>
     </ScrollView>

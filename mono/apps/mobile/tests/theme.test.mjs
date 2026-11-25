@@ -35,14 +35,14 @@ test("theme — le clair garde les valeurs de l'application (aucune régression 
   const n = NEUTRES_PAR_MODE.clair;
   assert.deepEqual(
     { sol: n.sol, carte: n.carte, encre: n.encre, sourd: n.sourd, trait: n.trait, voile: n.voile, lien: n.lien },
-    /* Step Up (porteur, 25/11/2026) : gris chauds, la même famille que le sombre (remplace l'ardoise Néo-Civique du 09/11). */
-    { sol: "#F7F6F3", carte: "#FFFFFF", encre: "#" + "1A1917", sourd: "#" + "5F5C55", trait: "#E6E3DC", voile: "#EFEDE8", lien: "#" + "1A1917" },
+    /* Refonte premium (porteur, 25/11/2026) : gris froids doux, page gris pâle, cartes blanches. */
+    { sol: "#F9FAFB", carte: "#FFFFFF", encre: "#" + "111827", sourd: "#" + "5B6270", trait: "#E5E7EB", voile: "#F3F4F6", lien: "#" + "111827" },
   );
   assert.deepEqual(TEINTES_PAR_MODE.clair, {
     ville: "#dbeaee", agglo: "#e4f3f7", dept: "#f7ece4", region: "#efe7fb", france: "#ecebe8",
   });
   assert.deepEqual(ECHELONS_PAR_MODE.clair, { ...ECHELONS }, "le clair garde les cinq couleurs d'echelon, France comprise");
-  assert.equal(OMBRE_PAR_MODE.clair.shadowColor, "#1A1917");
+  assert.equal(OMBRE_PAR_MODE.clair.shadowColor, "#111827");
 });
 
 /* ---- 2. contrastes du texte, dans les deux modes -------------------- */
@@ -82,7 +82,8 @@ for (const m of ["clair", "sombre"]) {
    test fige la valeur : si elle bouge, il echoue et oblige a relire. */
 /* 2,35 depuis la carte sombre #1F1E1B (DA premium, 07/11/2026 ; 2,37 sur #1F1D1A) : le point
    reçoit toujours le contour de l'encre (SEUIL_POINT). */
-const EXCEPTIONS_NON_TEXTE = { "sombre:region": 2.35 };
+/* 25/11/2026 (refonte premium, carte sombre #171D26) : 2,38. */
+const EXCEPTIONS_NON_TEXTE = { "sombre:region": 2.38 };
 for (const m of ["clair", "sombre"]) {
   test(`theme ${m} — chaque echelon atteint 3:1 sur la carte, exception documentee exceptee`, () => {
     const carte = NEUTRES_PAR_MODE[m].carte;
@@ -234,7 +235,7 @@ test("logo — icone iOS carree 1024 px sans transparence ; fonds du demarrage e
   const tuile = "#F7F7F9";
   /* V34 (ordre du CEO) : le démarrage passe en sombre, #161513, avec le repère en #F3F0EA
      (BLOCAGES 36). La tuile de l'icône iOS et l'icône adaptative Android restent claires. */
-  assert.equal(app.splash.backgroundColor, "#141311", "fond du demarrage : sol sombre minéral (07/11/2026)");
+  assert.equal(app.splash.backgroundColor, "#0D1117", "fond du demarrage : sol sombre graphite (25/11/2026)");
   assert.equal(app.android.adaptiveIcon.backgroundColor, tuile, "fond adaptatif Android : tuile du logo");
   const png = fs.readFileSync(path.join(import.meta.dirname, "..", "assets", "icon.png"));
   assert.equal(png.readUInt32BE(16), 1024, "largeur de l'icone");
@@ -254,7 +255,8 @@ test("theme — couleurs de vote : 4,5:1 sur la carte claire, 3:1 sur la carte s
   /* Couleurs Stitch (09/11/2026, porteur, « tout Stitch ») : sous les seuils, MESURÉES et figées.
      Elles ne servent qu'à remplir des barres et des pastilles ; le vote est écrit dans l'encre.
      La variante daltonienne, elle, garde les seuils A2. */
-  const MESURES_STITCH = { votePour: [2.98, 5.59], voteContre: [6.29, 2.65], voteAbstention: [2.56, 6.50] };
+  /* 25/11/2026 (refonte premium, carte sombre #171D26) : le sombre gagne un peu partout (pour 5,68, contre 2,69, abstention 6,60). */
+  const MESURES_STITCH = { votePour: [2.98, 5.68], voteContre: [6.29, 2.69], voteAbstention: [2.56, 6.60] };
   for (const [nom, c] of Object.entries(COULEURS_VOTE)) {
     const clair = r(c, NEUTRES_PAR_MODE.clair.carte), sombre = r(c, NEUTRES_PAR_MODE.sombre.carte);
     assert.deepEqual([clair.toFixed(2), sombre.toFixed(2)], MESURES_STITCH[nom].map(x => x.toFixed(2)), `contraste de ${nom} a change : relire la decision du 09/11/2026`);

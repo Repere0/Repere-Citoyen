@@ -47,7 +47,7 @@ test("aperçu de lien (23/11/2026, audit C6) : og:url et og:image absolus, grand
   assert.ok(h.includes(`<meta property="og:image" content="${adresse}/og-image.png" />`), "og:image absolue");
   assert.ok(h.includes('<meta name="twitter:card" content="summary_large_image" />'), "grande carte");
   assert.ok(existsSync(new URL("../public/og-image.png", import.meta.url)), "public/og-image.png existe");
-  const avecTheme = injecterBalises(HTML.replace("</head>", '<meta name="theme-color" content="#141311">\n</head>'), app);
+  const avecTheme = injecterBalises(HTML.replace("</head>", '<meta name="theme-color" content="#0D1117">\n</head>'), app);
   assert.equal((avecTheme.match(/name="theme-color"/g) || []).length, 1, "theme-color écrit une seule fois");
   const sansAdresse = { ...app, expo: { ...app.expo, extra: {} } };
   assert.ok(!injecterBalises(HTML, sansAdresse).includes("og:image"), "sans adresse : pas d'image introuvable");

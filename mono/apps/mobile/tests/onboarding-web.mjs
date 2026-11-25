@@ -49,7 +49,7 @@ const lireProfil = page => page.evaluate(() => JSON.parse(localStorage.getItem("
     return { n: cercles.length, couleurs: cercles.map(e => { const c = getComputedStyle(e); return c.borderTopColor !== "rgba(0, 0, 0, 0)" ? c.borderTopColor : c.backgroundColor; }) };
   });
   verifier(ronds.n === 3, "écran 1 : le logo a ses TROIS éléments concentriques (" + ronds.n + ")");
-  verifier(ronds.couleurs.includes("rgb(156, 154, 146)"), "écran 1 : l'anneau intermédiaire est bien gris (" + ronds.couleurs.join(" / ") + ")");
+  verifier(ronds.couleurs.includes("rgb(156, 163, 175)"), "écran 1 : l'anneau intermédiaire est bien gris (" + ronds.couleurs.join(" / ") + ")");
   verifier((await page.getByTestId("continuer-0").innerText()).trim() === "Commencer", "écran 1 : le bouton dit « Commencer »");
   if (CAP) await page.screenshot({ path: `${CAP}/bienvenue-0.png` });
   await page.getByTestId("continuer-0").click();
@@ -92,7 +92,7 @@ const lireProfil = page => page.evaluate(() => JSON.parse(localStorage.getItem("
   await voile.waitFor({ state: "detached", timeout: 5000 });
   const duree = Date.now() - vu;
   verifier(pointeur === "none", "lancement suivant : le voile ne capte aucun geste (pointer-events " + pointeur + ")");
-  verifier(fond === "rgb(20, 19, 17)", "lancement suivant : fond #141311 (" + fond + ")");
+  verifier(fond === "rgb(13, 17, 23)", "lancement suivant : fond #0D1117 (" + fond + ")");
   verifier(duree <= 1500, "lancement suivant : le voile part en 1,5 s au plus (" + duree + " ms)");
   await page.waitForTimeout(1200);
   verifier(await page.getByTestId("barriere-bienvenue").count() === 0 && await page.getByTestId("bonjour").count() === 1, "au lancement suivant : pas de question, le bonjour est là");

@@ -688,7 +688,7 @@ export default function Accueil() {
               <Vide titre={phrase.titre} corps={phrase.corps}
                 action="Réessayer" onAction={() => setEssai(n => n + 1)} />
             ) : null}
-            {!recherchant && !cherches.length && !tout && recentes.length ? (
+            {!bureau && !recherchant && !cherches.length && !tout && recentes.length ? (
               <View style={{ gap: PAS * 2 }}>
                 <Text style={s.note}>Ouvertes pendant cette session</Text>
                 {recentes.map(c => (
@@ -707,7 +707,8 @@ export default function Accueil() {
                 <Bouton texte="Fermer la liste" discret onPress={() => setTout(false)} />
               </View>
             ) : null}
-            {etat === ETATS.SERVI && !cherches.length && !tout && !recherchant && !premiere ? (
+            {/* Bureau : le tableau de bord se suffit ; ces rappels vivent dans la FAQ et la page Confidentialité. */}
+            {!bureau && etat === ETATS.SERVI && !cherches.length && !tout && !recherchant && !premiere ? (
               <>
                 <Text style={s.note}>La bêta couvre les {communes.length} communes d'Île-de-France qui ont une fiche.</Text>
                 {/* Maquette Stitch : les réassurances en pied. « Compris en 4 secondes » n'est pas

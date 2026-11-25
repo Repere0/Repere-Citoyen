@@ -66,11 +66,11 @@ function horsParis() {
   }
 }
 
-export function SemaineParlement({ sp, lu, nom }: { sp: Semaine | null | undefined; lu: boolean; nom: string }) {
+export function SemaineParlement({ sp, lu, nom, style }: { sp: Semaine | null | undefined; lu: boolean; nom: string; style?: object }) {
   const aller = () => router.push("/a-venir");
   if (!lu || !sp || !sp.institutions.length) {
     return (
-      <View testID="semaine-parlement" style={s.carte}>
+      <View testID="semaine-parlement" style={[s.carte, style]}>
         <AvecPicto picto="parlement"><Text style={TYPO.etiquette} {...niveauTitre(2)}>Cette semaine au Parlement</Text></AvecPicto>
         <Text style={s.phrase}>{typo(AGENDA_PAS_ARRIVE.titre)}</Text>
         <Text style={TYPO.note}>{typo(AGENDA_PAS_ARRIVE.corps)}</Text>
@@ -102,7 +102,7 @@ export function SemaineParlement({ sp, lu, nom }: { sp: Semaine | null | undefin
   ].filter(Boolean) as string[];
 
   return (
-    <View testID="semaine-parlement" style={s.carte}>
+    <View testID="semaine-parlement" style={[s.carte, style]}>
       <AvecPicto picto="parlement"><Text style={TYPO.etiquette} {...niveauTitre(2)}>Cette semaine au Parlement</Text></AvecPicto>
       <Text style={s.phrase}>{typo(phrase)}</Text>
 
