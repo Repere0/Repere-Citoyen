@@ -152,7 +152,7 @@ export function Vide({ titre, corps, lien, action, onAction, icone = "file-tray-
       <View style={s.videIcone}>
         <Ionicons name={icone} size={26} color={couleurs.sourd} accessible={false} importantForAccessibility="no" />
       </View>
-      <Text style={[TYPO.reponse, { fontSize: 17, lineHeight: 24 }]}>{titre}</Text>
+      <Text style={[TYPO.reponse, { fontSize: 16, lineHeight: 24 }]}>{titre}</Text>
       {corps ? <Text style={TYPO.note}>{corps}</Text> : null}
       {lien ? <LienSortant url={lien.url} texte={lien.texte} /> : null}
       {action && onAction ? <Bouton texte={action} onPress={onAction} /> : null}
@@ -183,16 +183,16 @@ const s = feuille(() => StyleSheet.create({
     minHeight: CIBLE, flexDirection: "row", alignItems: "center", justifyContent: "space-between",
     borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: couleurs.trait, marginTop: PAS,
   },
-  actionTexte: { fontSize: 17, fontWeight: "500", color: couleurs.lien },
-  texte: { fontSize: 17, lineHeight: 24, color: couleurs.encre },
+  actionTexte: { fontSize: 16, fontWeight: "500", color: couleurs.lien },
+  texte: { fontSize: 16, lineHeight: 24, color: couleurs.encre },
   fort: { fontWeight: "600" },
-  sourd: { color: couleurs.sourd, fontSize: 15, lineHeight: 21 },
+  sourd: { color: couleurs.sourd, fontSize: 16, lineHeight: 21 },
   source: { gap: PAS, paddingTop: PAS * 2, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: couleurs.trait },
   sourceTexte: { fontSize: 14, lineHeight: 20, color: couleurs.sourd },
   lien: { minHeight: CIBLE, justifyContent: "center" },
   /* En encre, souligne : la couleur de ville sur le gris d'une phrase d'absence
      faisait 4,38:1 (mesure du 30/09/2026), sous le seuil AA. */
-  lienTexte: { fontSize: 15, color: couleurs.encre },
+  lienTexte: { fontSize: 16, color: couleurs.encre },
   vide: { gap: PAS * 3, padding: PAS * 6, backgroundColor: couleurs.carte, borderRadius: RAYON.carte },
   videIcone: { width: 48, height: 48, borderRadius: 24, backgroundColor: couleurs.voile, alignItems: "center", justifyContent: "center" },
   bouton: {
@@ -200,5 +200,5 @@ const s = feuille(() => StyleSheet.create({
     backgroundColor: ACCENTS.autorite,
   },
   boutonDiscret: { backgroundColor: couleurs.voile },
-  boutonTexte: { color: ACCENTS.surAutorite, fontSize: 17, fontFamily: POLICE.section },
+  boutonTexte: { color: ACCENTS.surAutorite, fontSize: 16, fontFamily: POLICE.section },
 }));

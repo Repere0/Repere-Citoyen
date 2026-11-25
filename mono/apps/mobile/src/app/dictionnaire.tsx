@@ -75,7 +75,7 @@ export default function Dictionnaire() {
           accessibilityLabel="Rechercher un mot du dictionnaire"
           autoCorrect={false}
           style={{ flex: 1, minHeight: 48, borderWidth: 1, borderColor: couleurs.trait, borderRadius: 999,
-            paddingHorizontal: 16, color: couleurs.encre, backgroundColor: couleurs.carte, fontSize: 17 }}
+            paddingHorizontal: 16, color: couleurs.encre, backgroundColor: couleurs.carte, fontSize: 16 }}
         />
         {recherche.length > 0 ? (
           <Pressable onPress={() => setRecherche("")} accessibilityRole="button" accessibilityLabel="Effacer la recherche"

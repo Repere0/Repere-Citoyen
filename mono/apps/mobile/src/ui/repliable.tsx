@@ -19,7 +19,7 @@ export function Repliable({ texte, style }: { texte: string; style?: StyleProp<T
       <Pressable onPress={() => ouvrir(!ouvert)} accessibilityRole="button" accessibilityState={{ expanded: ouvert }}
         aria-expanded={ouvert} testID="repliable"
         style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", alignSelf: "flex-start", ...enfonce(pressed) })}>
-        <Text style={{ fontFamily: POLICE.titre, fontSize: 15, color: couleurs.lien }}>{ouvert ? "Réduire" : "Lire la suite"}</Text>
+        <Text style={{ fontFamily: POLICE.titre, fontSize: 16, color: couleurs.lien }}>{ouvert ? "Réduire" : "Lire la suite"}</Text>
       </Pressable>
     </View>
   );

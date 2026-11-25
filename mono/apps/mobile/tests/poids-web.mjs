@@ -35,8 +35,8 @@ try {
   verifier(recu.ttf.length === 0, `aucune police TTF demandée${recu.ttf.length ? " : " + recu.ttf.join(", ") : ""}`);
   verifier(recu.police > 0 && recu.police <= PLAFOND_POLICES, `polices : ${Math.round(recu.police / 1024)} Ko (plafond ${PLAFOND_POLICES / 1024} Ko)`);
   verifier(recu.js <= PLAFOND_JS, `JavaScript : ${Math.round(recu.js / 1024)} Ko non compressés (plafond ${PLAFOND_JS / 1024} Ko)`);
-  const rendu = await page.evaluate(() => document.fonts.check("16px Manrope_800ExtraBold") && document.fonts.check("16px ionicons"));
-  verifier(rendu, "Manrope et Ionicons sont chargées");
+  const rendu = await page.evaluate(() => document.fonts.check("16px Inter_700Bold") && document.fonts.check("16px ionicons"));
+  verifier(rendu, "Inter et Ionicons sont chargées");
 } finally { await b.close(); }
 if (echecs) { console.log(`${echecs} échec(s)`); process.exit(1); }
 console.log("poids du premier écran : dans les plafonds");

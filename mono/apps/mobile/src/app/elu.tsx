@@ -70,7 +70,7 @@ function Lien({ texte, onPress, etiquette }: { texte: string; onPress: () => voi
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={etiquette ?? texte}
       style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", alignSelf: "flex-start", ...enfonce(pressed) })}>
-      <Text style={{ color: couleurs.lien, fontWeight: "500", fontSize: 15 }}>{texte}</Text>
+      <Text style={{ color: couleurs.lien, fontWeight: "500", fontSize: 16 }}>{texte}</Text>
     </Pressable>
   );
 }
@@ -255,7 +255,7 @@ export default function Elu() {
                         {([["p", "pour"], ["c", "contre"], ["a", comptes.a > 1 ? "abstentions" : "abstention"]] as const).map(([k, mot]) => (
                           <View key={k} style={{ flexDirection: "row", alignItems: "center", gap: PAS }}>
                             <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: COULEURS_VOTE[k] }} />
-                            <Text style={[TYPO.donnee, { fontSize: 15, lineHeight: 21, color: couleurs.encre }]}>{comptes[k]} {mot}</Text>
+                            <Text style={[TYPO.donnee, { fontSize: 16, lineHeight: 21, color: couleurs.encre }]}>{comptes[k]} {mot}</Text>
                           </View>
                         ))}
                       </View>

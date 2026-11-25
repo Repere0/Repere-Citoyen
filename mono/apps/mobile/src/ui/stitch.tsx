@@ -80,6 +80,8 @@ export function VoteBarTricolor({ pour, contre, abstention, position, qui }: {
 }
 
 /* ── Le contrôle segmenté ──────────────────────────────────────────────── */
+/* Step Up (25/11/2026) : plus de point devant l'onglet actif. Il décalait le libellé (« 100 € citoyen » sortait
+   du centre, signalé comme un bug). L'onglet actif se lit par sa carte blanche, son ombre et sa graisse. */
 export function Onglets<T extends string>({ valeurs, actif, choisir, etiquette }: {
   valeurs: { cle: T; texte: string }[]; actif: T; choisir: (c: T) => void; etiquette: string;
 }) {
@@ -91,8 +93,7 @@ export function Onglets<T extends string>({ valeurs, actif, choisir, etiquette }
           <Pressable key={v.cle} onPress={() => choisir(v.cle)} accessibilityRole="tab" accessibilityState={{ selected: on }}
             accessibilityLabel={v.texte}
             style={({ pressed }) => [s.segment, on && s.segmentActif, pressed && enfonce(true)]}>
-            {on ? <View style={[s.point, { backgroundColor: ACCENTS.civique }]} /> : null}
-            <Text numberOfLines={2} style={[s.segmentTexte, on && { color: couleurs.encre }]}>{v.texte}</Text>
+            <Text numberOfLines={2} style={[s.segmentTexte, on && { color: couleurs.encre, fontFamily: POLICE.section }]}>{v.texte}</Text>
           </Pressable>
         );
       })}
@@ -122,11 +123,11 @@ const s = feuille(() => StyleSheet.create({
   badgeDepute: { alignSelf: "flex-start", backgroundColor: couleurs.voile, paddingHorizontal: PAS * 2, paddingVertical: PAS, borderRadius: 6 },
   /* Refonte « légère » : une jauge fine. */
   piste: { flexDirection: "row", height: 6, borderRadius: 3, overflow: "hidden", backgroundColor: couleurs.voile, gap: 2 },
-  segments: { flexDirection: "row", padding: 4, gap: 4, borderRadius: RAYON.pastille, backgroundColor: couleurs.voile },
-  segment: { flex: 1, minHeight: CIBLE - 4, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: PAS, paddingHorizontal: PAS, borderRadius: RAYON.pastille },
-  segmentActif: { backgroundColor: couleurs.carte },
+  segments: { flexDirection: "row", padding: 4, gap: 4, borderRadius: RAYON.bloc, backgroundColor: couleurs.voile },
+  segment: { flex: 1, minHeight: CIBLE - 4, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS, borderRadius: RAYON.bloc - 2 },
+  segmentActif: { backgroundColor: couleurs.carte, shadowColor: couleurs.encre, shadowOpacity: 0.12, shadowRadius: 3, shadowOffset: { width: 0, height: 1 }, elevation: 1 },
   /* Pas de capitales : à 360 px, « PLAFONDS » se coupait au milieu du mot (capture du 09/11/2026). */
-  segmentTexte: { ...TYPO.micro, fontFamily: POLICE.texteGras, color: couleurs.sourd, textAlign: "center" },
+  segmentTexte: { ...TYPO.micro, fontFamily: POLICE.texteMoyen, color: couleurs.sourd, textAlign: "center" },
   badgeRepere: { flexDirection: "row", alignItems: "center", gap: PAS * 2, alignSelf: "flex-start" },
 }));
 

@@ -99,8 +99,10 @@ export function DateDonnee({ quoi, date, url, testID, avant }: { quoi: string; d
           {lienSource}
         </View>
       ) : null}
-      <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", columnGap: PAS * 2 }}>
-        <Text style={{ fontSize: 14, lineHeight: 19, color: couleurs.sourd }}>
+      {/* Step Up (25/11/2026) : en 14 px la date passe sur deux lignes ; l'icône reste à côté (plus sur une troisième
+         ligne), pour garder la réponse héros d'Aujourd'hui dans le premier écran (parcours-web, 390 x 844). */}
+      <View style={{ flexDirection: "row", alignItems: "center", columnGap: PAS * 2 }}>
+        <Text style={{ fontSize: 14, lineHeight: 19, color: couleurs.sourd, flexShrink: 1 }}>
           {quoi} du {dateFr(jour)} · {ilYa(age)}
         </Text>
         {avant ? null : lienSource}
@@ -113,5 +115,5 @@ const s = feuille(() => StyleSheet.create({
   bandeau: { borderLeftWidth: 3, borderLeftColor: couleurs.encre, backgroundColor: couleurs.voile,
     borderTopRightRadius: RAYON.bloc, borderBottomRightRadius: RAYON.bloc, paddingHorizontal: PAS * 3, paddingVertical: PAS * 2, gap: PAS },
   bouton: { minHeight: CIBLE, justifyContent: "center", alignSelf: "flex-start" },
-  boutonTexte: { fontSize: 15, fontWeight: "500", color: couleurs.lien },
+  boutonTexte: { fontSize: 16, fontWeight: "500", color: couleurs.lien },
 }));

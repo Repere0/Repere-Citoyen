@@ -93,6 +93,6 @@ const s = feuille(() => StyleSheet.create({
   },
   frais: { borderWidth: 1, borderRadius: 16, paddingHorizontal: PAS * 3, borderBottomWidth: 1 },
   point: { width: 6, height: 6, borderRadius: 3, backgroundColor: couleurs.encre },
-  etiquette: { ...TYPO.micro, fontSize: 13, letterSpacing: 0.6, color: couleurs.sourd },
+  etiquette: { ...TYPO.micro, fontSize: 14, letterSpacing: 0.6, color: couleurs.sourd },
   texte: { ...TYPO.note, color: couleurs.encre },
 }));

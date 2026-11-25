@@ -49,7 +49,7 @@ export function BarreSegments({ segments, hauteur = 32, etiquette }: { segments:
           return (
             <View key={x.cle} style={{ flex: x.valeur, backgroundColor: x.couleur, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, overflow: "hidden" }}>
               {large && x.icone && hauteur >= 40 && x.valeur / total >= 0.3 ? <Ionicons name={x.icone} size={18} color={texteSur(x.couleur)} /> : null}
-              {large && x.dedans ? <Text numberOfLines={1} ellipsizeMode="clip" style={{ fontFamily: POLICE.section, fontSize: hauteur >= 40 ? 15 : 13, color: texteSur(x.couleur), fontVariant: ["tabular-nums"] }}>{x.dedans}</Text> : null}
+              {large && x.dedans ? <Text numberOfLines={1} ellipsizeMode="clip" style={{ fontFamily: POLICE.section, fontSize: hauteur >= 40 ? 16 : 14, color: texteSur(x.couleur), fontVariant: ["tabular-nums"] }}>{x.dedans}</Text> : null}
             </View>
           );
         })}

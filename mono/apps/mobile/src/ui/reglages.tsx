@@ -1,26 +1,12 @@
-/* LE REGLAGE D'AFFICHAGE : une roue dans l'en-tete, qui ouvre trois choix
- * (systeme, clair, sombre), puis les réglages de lecture et les pages d'information. V34 bloc 7 (audit) : la roue est un contour qui suit le thème, sans
- * pastille noire : elle ne rivalise plus avec le titre de l'écran, et la cible reste de 48 px. */
-import { useState } from "react";
+/* LA DROITE DE L'EN-TÊTE : la bascule clair / sombre et la roue, qui ouvre l'écran Réglages (Step Up, 25/11/2026).
+ * V34 bloc 7 (audit) : la roue est un contour qui suit le thème, sans pastille noire ; la cible reste de 48 px. */
 import type { ReactNode } from "react";
-import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { CIBLE, PAS, RAYON, TYPO, couleurs, feuille, type ChoixTheme } from "../lib/theme";
-import { VOILE_MODAL } from "../lib/palette";
-import { useTheme } from "../lib/themeChoix";
-import { useBienvenue } from "../lib/bienvenue";
 import { router } from "expo-router";
+import { CIBLE, PAS, couleurs, feuille } from "../lib/theme";
+import { useTheme } from "../lib/themeChoix";
 import { enfonce } from "./mouvement";
-import { BoutonAvis } from "./demo";
-import { useProfil } from "../lib/profil";
-import { niveauTitre } from "./titre";
-
-const OPTIONS: { valeur: ChoixTheme; libelle: string }[] = [
-  { valeur: "systeme", libelle: "Système" },
-  { valeur: "clair", libelle: "Clair" },
-  { valeur: "sombre", libelle: "Sombre" },
-];
-
 /* LA DROITE DE L'EN-TÊTE D'UN ONGLET (23/11/2026, audit M3) : un écran qui ajoute un bouton (partager) garde la bascule
    et les réglages. Avant, Finances et le Calendrier les perdaient : trois dessins d'en-tête différents. */
 export function DroiteEnTete({ children }: { children?: ReactNode }) {
@@ -28,12 +14,11 @@ export function DroiteEnTete({ children }: { children?: ReactNode }) {
 }
 
 export function BoutonReglages() {
-  const [ouvert, setOuvert] = useState(false);
   const { mode, setChoix } = useTheme();
   const versClair = mode === "sombre";
   return (
     <>
-      {/* 12/11/2026 (porteur) : une bascule directe clair / sombre, visible sur tous les onglets. « Système » reste dans la roue. */}
+      {/* 12/11/2026 (porteur) : une bascule directe clair / sombre, visible sur tous les onglets. */}
       <Pressable
         onPress={() => setChoix(versClair ? "clair" : "sombre")}
         accessibilityRole="button"
@@ -42,114 +27,20 @@ export function BoutonReglages() {
       >
         <Ionicons name={versClair ? "sunny-outline" : "moon-outline"} size={22} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
       </Pressable>
+      {/* Step Up (25/11/2026) : la roue ouvre l'écran Réglages (app/reglages.tsx), plus une fenêtre de huit boutons. */}
       <Pressable
-        onPress={() => setOuvert(true)}
-        accessibilityRole="button"
-        accessibilityLabel="Réglages de l'affichage"
+        onPress={() => router.push("/reglages")}
+        accessibilityRole="link"
+        accessibilityLabel="Réglages"
         style={({ pressed }) => [s.roue, pressed && enfonce(true)]}
       >
         <Ionicons name="settings-outline" size={22} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
       </Pressable>
-      <ChoixAffichage visible={ouvert} onFermer={() => setOuvert(false)} />
     </>
-  );
-}
-
-function ChoixAffichage({ visible, onFermer }: { visible: boolean; onFermer: () => void }) {
-  const { choix, setChoix } = useTheme();
-  const { modifier } = useProfil();
-  const { ouvrir: ouvrirBienvenue } = useBienvenue();
-  return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onFermer}>
-      <Pressable style={s.voile} onPress={onFermer} accessibilityRole="button" accessibilityLabel="Fermer les réglages">
-        <View style={s.carte} accessibilityViewIsModal>
-          <Text style={TYPO.corps} {...niveauTitre(2)}>Affichage</Text>
-          {OPTIONS.map(o => {
-            const actif = choix === o.valeur;
-            return (
-              <Pressable
-                key={o.valeur}
-                onPress={() => { setChoix(o.valeur); onFermer(); }}
-                accessibilityRole="radio"
-                accessibilityState={{ checked: actif }}
-                aria-checked={actif}
-                style={({ pressed }) => [s.option, actif && s.optionActive, pressed && enfonce(true)]}
-              >
-                <Text style={[s.optionTexte, actif && s.optionTexteActif]}>{o.libelle}</Text>
-              </Pressable>
-            );
-          })}
-          <View style={{ height: 1, backgroundColor: couleurs.trait, marginVertical: PAS }} />
-          {/* 11/11/2026 : la roue est le seul point d'entrée des réglages et des informations, sur tous les
-              onglets. Le confort de lecture n'était atteignable que depuis l'ancien accueil. */}
-          <Pressable
-            onPress={() => { onFermer(); router.push("/confort-lecture"); }}
-            accessibilityRole="link" accessibilityLabel="Confort de lecture"
-            style={({ pressed }) => [s.option, pressed && enfonce(true)]}
-          >
-            <Text style={s.optionTexte}>Confort de lecture</Text>
-          </Pressable>
-          {/* 14/11/2026 (porteur) : changer de prénom. Le prénom est vidé, et la coquille redresse aussitôt la
-              question du prénom (ui/bienvenue.tsx) ; les autres réglages ne bougent pas. */}
-          <Pressable
-            onPress={() => { onFermer(); modifier({ prenom: "" }); ouvrirBienvenue(); /* ADR 0012 : la bienvenue se pose sur la page ouverte */ }}
-            accessibilityRole="button" accessibilityLabel="Changer de prénom" testID="changer-prenom"
-            style={({ pressed }) => [s.option, pressed && enfonce(true)]}
-          >
-            <Text style={s.optionTexte}>Changer de prénom</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => { onFermer(); router.push("/confidentialite"); }}
-            accessibilityRole="link"
-            style={({ pressed }) => [s.option, pressed && enfonce(true)]}
-          >
-            <Text style={s.optionTexte}>Confidentialité</Text>
-          </Pressable>
-          {/* 17/11/2026 : obligatoires pour les magasins d'applications et pour la loi (LCEN, art. 1-1). */}
-          <Pressable
-            onPress={() => { onFermer(); router.push("/mentions-legales"); }}
-            accessibilityRole="link"
-            style={({ pressed }) => [s.option, pressed && enfonce(true)]}
-          >
-            <Text style={s.optionTexte}>Mentions légales</Text>
-          </Pressable>
-          {/* 13/11/2026 (porteur) : « Soutenir Repère ». Aucun paiement n'y est encaissé (voir l'écran). */}
-          <Pressable
-            onPress={() => { onFermer(); router.push("/soutenir"); }}
-            accessibilityRole="link"
-            style={({ pressed }) => [s.option, pressed && enfonce(true)]}
-          >
-            <Text style={s.optionTexte}>Soutenir Repère</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => { onFermer(); router.push("/a-propos"); }}
-            accessibilityRole="link"
-            style={({ pressed }) => [s.option, pressed && enfonce(true)]}
-          >
-            <Text style={s.optionTexte}>À propos</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => { onFermer(); router.push("/faq"); }}
-            accessibilityRole="link"
-            style={({ pressed }) => [s.option, pressed && enfonce(true)]}
-          >
-            <Text style={s.optionTexte}>Questions fréquentes</Text>
-          </Pressable>
-          {/* 17/11/2026 : l'avis du lecteur, par sa messagerie (lib/avis.ts). Absent si aucune adresse n'est réglée. */}
-          <BoutonAvis style={s.option} />
-        </View>
-      </Pressable>
-    </Modal>
   );
 }
 
 const s = feuille(() => StyleSheet.create({
   /* 23/11/2026 (audit M3) : sans cercle, comme les boutons de l'accueil ; un seul dessin d'en-tête dans toute l'application. */
   roue: { minWidth: CIBLE, minHeight: CIBLE, borderRadius: CIBLE / 2, alignItems: "center", justifyContent: "center" },
-  voile: { flex: 1, backgroundColor: VOILE_MODAL, justifyContent: "center", padding: PAS * 5 },
-  carte: { backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 4, gap: PAS * 2 },
-  option: { minHeight: CIBLE, borderRadius: RAYON.bloc, borderWidth: 1, borderColor: couleurs.trait, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 4 },
-  optionActive: { backgroundColor: couleurs.encre, borderColor: couleurs.encre },
-  optionTexte: { color: couleurs.encre, fontSize: 17, fontWeight: "500" },
-  optionTexteActif: { color: couleurs.sol },
 }));

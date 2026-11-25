@@ -35,7 +35,7 @@ try {
     const texte = await commune.first().innerText().catch(() => "");
     verifier(!texte.includes("‹"), `${chemin} : plus de chevron de retour sur un onglet (« ${texte.trim()} »)`);
     verifier(await page.getByRole("button", { name: /^Passer en mode (clair|sombre)$/ }).count() >= 1, `${chemin} : la bascule clair / sombre est là`);
-    verifier(await page.getByRole("button", { name: "Réglages de l'affichage" }).count() >= 1, `${chemin} : les réglages sont là`);
+    verifier(await page.getByRole("link", { name: "Réglages", exact: true }).count() >= 1, `${chemin} : les réglages sont là`);
   }
   await page.goto(`${BASE}/finances`, { waitUntil: "networkidle" });
   await page.waitForTimeout(2500);

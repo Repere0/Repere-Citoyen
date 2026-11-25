@@ -104,7 +104,7 @@ export default function RepereDuJourEcran() {
             <Bloc etiquette="Le prochain rendez-vous">
               <View style={{ flexDirection: "row", alignItems: "baseline", gap: PAS * 2 }} accessible
                 accessibilityLabel={jours === 0 ? `Aujourd'hui : ${prochaine.titre}` : `Dans ${jours} jour${jours > 1 ? "s" : ""} : ${prochaine.titre}, le ${dateFr(prochaine.date as string)}`}>
-                <Text style={[TYPO.chiffre, { fontSize: 48, lineHeight: 52 }]}>{jours === 0 ? "Aujourd'hui" : jours}</Text>
+                <Text style={[TYPO.chiffre, { fontSize: 40, lineHeight: 52 }]}>{jours === 0 ? "Aujourd'hui" : jours}</Text>
                 {jours === 0 ? null : <Text style={TYPO.note}>jour{jours > 1 ? "s" : ""}</Text>}
               </View>
               <Text style={TYPO.corps}>{prochaine.titre}, le {dateFr(prochaine.date as string)}.</Text>

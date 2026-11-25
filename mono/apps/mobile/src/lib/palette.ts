@@ -33,9 +33,12 @@ export type Neutres = {
    pour les liens. Contrastes mesurés dans tests/theme.test.mjs. Le gris secondaire est l'ardoise
    #475569 de Stitch, pas son #64748B : celui-ci tombe à 3,86:1 sur les teintes d'échelon et
    à 4,28:1 sur les pastilles (mesuré dans le navigateur, parcours-web), sous le seuil AA. */
+/* Step Up (porteur, 25/11/2026) : la MÊME famille de gris chauds que le sombre. Avant : ardoise bleutée
+   (#F8FAFC, #0F172A, #475569) en clair, gris chauds en sombre ; l'audit UI y voyait deux applications.
+   Contrastes calculés : encre sur sol 16,6:1, sourd sur sol 6,1:1, sourd sur carte 6,6:1 (AA : 4,5:1). */
 const NEUTRES_CLAIR: Neutres = {
-  sol: "#F8FAFC", carte: "#FFFFFF", encre: "#0F172A", sourd: "#475569",
-  trait: "#E8EEF3", voile: "#EDF4F7", blanc: "#ffffff", lien: "#0F172A",
+  sol: "#F7F6F3", carte: "#FFFFFF", encre: "#1A1917", sourd: "#5F5C55",
+  trait: "#E6E3DC", voile: "#EFEDE8", blanc: "#ffffff", lien: "#1A1917",
 };
 
 /* Neutres du sombre : même famille chaude que le clair (pas de bleu), mesurés
@@ -95,7 +98,8 @@ export const NEUTRES_CARTE: Record<FondCarte, Neutres> = {
 /* Ombres : en sombre, l'ombre se voit par l'opacité du noir, pas par l'encre. */
 export const OMBRE_PAR_MODE = {
   /* Refonte « légère » (09/11/2026) : une ombre à peine visible. */
-  clair: { shadowColor: "#171614", shadowOpacity: 0.03, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 1 },
+  /* Step Up (25/11/2026) : une ombre douce qui détache la carte du sol ivoire. */
+  clair: { shadowColor: "#1A1917", shadowOpacity: 0.07, shadowRadius: 16, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
   /* DA premium (07/11/2026) : noir à 20 %, flou 20, décalage 5. Le clair, gardé par le banc
      de non-régression, n'est pas touché. */
   /* docs/historique/DESIGN.md (09/11/2026) : en sombre, la profondeur vient des surfaces et des filets, pas d'une ombre

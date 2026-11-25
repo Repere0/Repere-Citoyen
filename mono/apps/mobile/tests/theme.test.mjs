@@ -35,14 +35,14 @@ test("theme — le clair garde les valeurs de l'application (aucune régression 
   const n = NEUTRES_PAR_MODE.clair;
   assert.deepEqual(
     { sol: n.sol, carte: n.carte, encre: n.encre, sourd: n.sourd, trait: n.trait, voile: n.voile, lien: n.lien },
-    /* Néo-Civique des maquettes Stitch (09/11/2026, invariant 7 amendé par le porteur, « tout Stitch »). */
-    { sol: "#F8FAFC", carte: "#FFFFFF", encre: "#" + "0F172A", sourd: "#" + "475569", trait: "#E8EEF3", voile: "#EDF4F7", lien: "#" + "0F172A" },
+    /* Step Up (porteur, 25/11/2026) : gris chauds, la même famille que le sombre (remplace l'ardoise Néo-Civique du 09/11). */
+    { sol: "#F7F6F3", carte: "#FFFFFF", encre: "#" + "1A1917", sourd: "#" + "5F5C55", trait: "#E6E3DC", voile: "#EFEDE8", lien: "#" + "1A1917" },
   );
   assert.deepEqual(TEINTES_PAR_MODE.clair, {
     ville: "#dbeaee", agglo: "#e4f3f7", dept: "#f7ece4", region: "#efe7fb", france: "#ecebe8",
   });
   assert.deepEqual(ECHELONS_PAR_MODE.clair, { ...ECHELONS }, "le clair garde les cinq couleurs d'echelon, France comprise");
-  assert.equal(OMBRE_PAR_MODE.clair.shadowColor, "#171614");
+  assert.equal(OMBRE_PAR_MODE.clair.shadowColor, "#1A1917");
 });
 
 /* ---- 2. contrastes du texte, dans les deux modes -------------------- */

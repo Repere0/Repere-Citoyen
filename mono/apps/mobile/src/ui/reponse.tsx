@@ -90,7 +90,7 @@ const s = feuille(() => StyleSheet.create({
      première carte avait un bouton plein : « Où va cet argent ? » clair, « Comprendre ce vote » et « Le projet »
      sombres, lus comme un défaut d'affichage. */
   suite: { flex: 1, minHeight: CIBLE + 4, borderRadius: RAYON.pastille, paddingHorizontal: PAS * 5, alignItems: "center", justifyContent: "center", backgroundColor: ACCENTS.autorite },
-  suiteTexte: { fontSize: 17, fontFamily: POLICE.section, color: ACCENTS.surAutorite },
+  suiteTexte: { fontSize: 16, fontFamily: POLICE.section, color: ACCENTS.surAutorite },
   rond: { width: CIBLE, height: CIBLE, borderRadius: CIBLE / 2, backgroundColor: couleurs.voile, alignItems: "center", justifyContent: "center" },
   plus: { minHeight: CIBLE + 4, flexDirection: "row", alignItems: "center", paddingHorizontal: PAS * 4, backgroundColor: couleurs.carte,
     borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: couleurs.trait },

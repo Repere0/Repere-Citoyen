@@ -87,7 +87,7 @@ function Puce({ texte, actif, onPress, etiquette }: { texte: string; actif: bool
     <Pression onPress={onPress} etiquette={etiquette} role="radio" etat={{ checked: actif }}
       style={{ minHeight: CIBLE, minWidth: CIBLE, paddingHorizontal: PAS * 4, borderRadius: RAYON.pastille, alignItems: "center", justifyContent: "center",
         backgroundColor: actif ? ACCENTS.autorite : couleurs.voile }}>
-      <Text style={{ fontSize: 15, fontFamily: POLICE.section, color: actif ? ACCENTS.surAutorite : couleurs.encre }}>{texte}</Text>
+      <Text style={{ fontSize: 16, fontFamily: POLICE.section, color: actif ? ACCENTS.surAutorite : couleurs.encre }}>{texte}</Text>
     </Pression>
   );
 }

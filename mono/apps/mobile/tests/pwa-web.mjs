@@ -28,7 +28,7 @@ const etat = await page.evaluate(async () => {
 const polices = await page.evaluate(() => [...document.fonts].filter(f => f.status === "loaded").map(f => f.family.replace(/["']/g, "")));
 ok(!assets.some(a => a.u.includes("node_modules")), "aucune adresse ne passe par node_modules");
 ok(assets.length > 0 && assets.every(a => a.s < 400), `polices et icônes : toutes les réponses sont valides (${assets.length})`);
-ok(["Manrope_800ExtraBold", "DMSans_400Regular"].every(f => polices.includes(f)), "Manrope et DM Sans sont chargées : " + polices.join(", "));
+ok(["Inter_700Bold", "Inter_400Regular"].every(f => polices.includes(f)), "Inter (titres et texte) est chargée : " + polices.join(", "));
 ok(polices.some(f => /ionicons/i.test(f)), "la police d'icônes Ionicons est chargée");
 ok(etat.actif, "le service worker est actif");
 ok(etat.cles.includes("/index.html") && etat.cles.some(c => c.startsWith("/_expo/static/js/")), `la coquille est en cache (${etat.cles.length} fichiers)`);
