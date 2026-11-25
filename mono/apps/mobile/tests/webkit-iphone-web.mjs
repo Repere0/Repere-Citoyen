@@ -61,8 +61,8 @@ const neuf = async (init) => {
   if (vu && vu.length === 3) {
     const teintes = vu.map(e => (e.couleurBord !== "rgba(0, 0, 0, 0)" && parseFloat(e.bord) > 0 ? e.couleurBord : e.fond));
     dit("teintes : " + teintes.join(" / "));
-    ok(teintes.some(t => /156,\s*154,\s*146/.test(t)), "logo : l'anneau intermediaire est gris #9C9A92");
-    ok(teintes.filter(t => /245,\s*244,\s*240/.test(t)).length >= 2, "logo : le cercle exterieur et le point sont ivoire #F5F4F0");
+    ok(teintes.some(t => /156,\s*163,\s*175/.test(t)), "logo : l'anneau intermediaire est gris #9CA3AF");
+    ok(teintes.filter(t => /243,\s*244,\s*246/.test(t)).length >= 2, "logo : le cercle exterieur et le point sont clair #F3F4F6");
     ok(vu.every(e => e.visible === "visible" && parseFloat(e.opacite) > 0.9), "logo : les trois elements sont peints (ni invisibles, ni transparents)");
     ok(vu.every(e => e.l > 4 && e.h > 4), "logo : aucun element ecrase a zero");
   }
