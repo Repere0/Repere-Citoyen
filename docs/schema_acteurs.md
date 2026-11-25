@@ -30,47 +30,47 @@ une seule fois sont reprises a part, plus bas.
 | `acteur.etatCivil.ident.trigramme.@xmlns:xsi` | texte | 2476 | http://www.w3.org/2001/XMLSchema-instance |
 | `acteur.etatCivil.ident.trigramme.@xsi:nil` | texte | 2476 | true |
 | `acteur.etatCivil.infoNaissance.dateNais` | texte | 2983 | 1953-08-01 · 1935-01-26 |
-| `acteur.etatCivil.infoNaissance.villeNais` | texte | 2154 | Lille · Fontevraud-l'Abbaye |
-| `acteur.etatCivil.infoNaissance.depNais` | texte | 1999 | Nord · Maine-et-Loire |
-| `acteur.etatCivil.infoNaissance.paysNais` | texte | 1789 | France · Maroc |
+| `acteur.etatCivil.infoNaissance.villeNais` | texte | 2155 | Lille · Fontevraud-l'Abbaye |
+| `acteur.etatCivil.infoNaissance.depNais` | texte | 2000 | Nord · Maine-et-Loire |
+| `acteur.etatCivil.infoNaissance.paysNais` | texte | 1790 | France · Maroc |
 | `acteur.etatCivil.dateDeces.@xmlns:xsi` | texte | 2726 | http://www.w3.org/2001/XMLSchema-instance |
 | `acteur.etatCivil.dateDeces.@xsi:nil` | texte | 2726 | true |
-| `acteur.profession.libelleCourant` | texte | 2081 | Ancien directeur d'une société de recrutement · Inspecteur général de l'équipement |
-| `acteur.profession.socProcINSEE.catSocPro` | texte | 2102 | Anciens artisans, commerçants, chefs d'entreprise · Cadres de la fonction publique, professions intellectuelles et  artistiques |
-| `acteur.profession.socProcINSEE.famSocPro` | texte | 2102 | Retraités · Cadres et professions intellectuelles supérieures |
+| `acteur.profession.libelleCourant` | texte | 2082 | Ancien directeur d'une société de recrutement · Inspecteur général de l'équipement |
+| `acteur.profession.socProcINSEE.catSocPro` | texte | 2103 | Anciens artisans, commerçants, chefs d'entreprise · Cadres de la fonction publique, professions intellectuelles et  artistiques |
+| `acteur.profession.socProcINSEE.famSocPro` | texte | 2103 | Retraités · Cadres et professions intellectuelles supérieures |
 | `acteur.uri_hatvp.@xmlns:xsi` | texte | 2477 | http://www.w3.org/2001/XMLSchema-instance |
 | `acteur.uri_hatvp.@xsi:nil` | texte | 2477 | true |
-| `acteur.adresses.adresse[]` | liste | 2083 | de 2 a 11 entrees |
-| `acteur.adresses.adresse[].@xmlns:xsi` | texte | 9003 | http://www.w3.org/2001/XMLSchema-instance |
-| `acteur.adresses.adresse[].@xsi:type` | texte | 9003 | AdressePostale_Type · AdresseTelephonique_Type |
-| `acteur.adresses.adresse[].uid` | texte | 9003 | AD386857 · AD395657 |
-| `acteur.adresses.adresse[].type` | texte | 9003 | 0 · 11 |
-| `acteur.adresses.adresse[].typeLibelle` | texte | 9003 | Adresse officielle · Téléphone |
-| `acteur.adresses.adresse[].poids` | texte/vide | 9003 | 1 · 22 |
-| `acteur.adresses.adresse[].adresseDeRattachement` | texte/vide | 9003 | AD386857 · AD726542 |
-| `acteur.adresses.adresse[].intitule` | texte/vide | 2804 | Assemblée nationale, · Casier de la Poste, |
-| `acteur.adresses.adresse[].numeroRue` | texte/vide | 2804 | 126 · 7 |
-| `acteur.adresses.adresse[].nomRue` | texte/vide | 2804 | Rue de l'Université, · Avenue Roger Schwob |
-| `acteur.adresses.adresse[].complementAdresse` | texte/vide | 2804 | Palais Bourbon, · BP 49 |
-| `acteur.adresses.adresse[].codePostal` | texte/vide | 2804 | 75355 · 33150 |
-| `acteur.adresses.adresse[].ville` | texte/vide | 2804 | Paris 07 SP · Cenon |
-| `acteur.adresses.adresse[].valElec` | texte/vide | 6199 | 01 40 63 75 53 · 01 40 63 79 37 |
+| `acteur.adresses.adresse[]` | liste | 2084 | de 2 a 11 entrees |
+| `acteur.adresses.adresse[].@xmlns:xsi` | texte | 9005 | http://www.w3.org/2001/XMLSchema-instance |
+| `acteur.adresses.adresse[].@xsi:type` | texte | 9005 | AdressePostale_Type · AdresseTelephonique_Type |
+| `acteur.adresses.adresse[].uid` | texte | 9005 | AD386857 · AD395657 |
+| `acteur.adresses.adresse[].type` | texte | 9005 | 0 · 11 |
+| `acteur.adresses.adresse[].typeLibelle` | texte | 9005 | Adresse officielle · Téléphone |
+| `acteur.adresses.adresse[].poids` | texte/vide | 9005 | 1 · 22 |
+| `acteur.adresses.adresse[].adresseDeRattachement` | texte/vide | 9005 | AD386857 · AD726542 |
+| `acteur.adresses.adresse[].intitule` | texte/vide | 2805 | Assemblée nationale, · Casier de la Poste, |
+| `acteur.adresses.adresse[].numeroRue` | texte/vide | 2805 | 126 · 7 |
+| `acteur.adresses.adresse[].nomRue` | texte/vide | 2805 | Rue de l'Université, · Avenue Roger Schwob |
+| `acteur.adresses.adresse[].complementAdresse` | texte/vide | 2805 | Palais Bourbon, · BP 49 |
+| `acteur.adresses.adresse[].codePostal` | texte/vide | 2805 | 75355 · 33150 |
+| `acteur.adresses.adresse[].ville` | texte/vide | 2805 | Paris 07 SP · Cenon |
+| `acteur.adresses.adresse[].valElec` | texte/vide | 6200 | 01 40 63 75 53 · 01 40 63 79 37 |
 | `acteur.mandats.mandat[]` | liste | 2995 | de 2 a 814 entrees |
-| `acteur.mandats.mandat[].@xmlns:xsi` | texte | 98216 | http://www.w3.org/2001/XMLSchema-instance |
-| `acteur.mandats.mandat[].@xsi:type` | texte | 98216 | MandatSimple_Type · MandatMission_Type |
-| `acteur.mandats.mandat[].uid` | texte | 98216 | PM391145 · PM15423365 |
-| `acteur.mandats.mandat[].acteurRef` | texte | 98216 | PA1001 · PA1002 |
-| `acteur.mandats.mandat[].legislature` | texte/vide | 98216 | 13 · 14 |
-| `acteur.mandats.mandat[].typeOrgane` | texte | 98216 | DELEGBUREAU · GOUVERNEMENT |
-| `acteur.mandats.mandat[].dateDebut` | texte | 98216 | 2007-06-28 · 2010-03-22 |
-| `acteur.mandats.mandat[].datePublication` | texte/vide | 98216 | 2010-03-23 · 2012-06-27 |
-| `acteur.mandats.mandat[].dateFin` | texte/vide | 98216 | 2008-10-08 · 2010-11-13 |
-| `acteur.mandats.mandat[].preseance` | texte/vide | 98216 | 24 · 50 |
-| `acteur.mandats.mandat[].nominPrincipale` | texte | 98216 | 0 · 1 |
-| `acteur.mandats.mandat[].infosQualite.codeQualite` | texte/vide | 98216 | Membre · membre |
-| `acteur.mandats.mandat[].infosQualite.libQualite` | texte | 98216 | Membre · membre |
-| `acteur.mandats.mandat[].infosQualite.libQualiteSex` | texte/vide | 98216 | Membre · membre |
-| `acteur.mandats.mandat[].organes.organeRef` | texte | 98095 | PO391141 · PO384206 |
+| `acteur.mandats.mandat[].@xmlns:xsi` | texte | 98232 | http://www.w3.org/2001/XMLSchema-instance |
+| `acteur.mandats.mandat[].@xsi:type` | texte | 98232 | MandatSimple_Type · MandatMission_Type |
+| `acteur.mandats.mandat[].uid` | texte | 98232 | PM391145 · PM15423365 |
+| `acteur.mandats.mandat[].acteurRef` | texte | 98232 | PA1001 · PA1002 |
+| `acteur.mandats.mandat[].legislature` | texte/vide | 98232 | 13 · 14 |
+| `acteur.mandats.mandat[].typeOrgane` | texte | 98232 | DELEGBUREAU · GOUVERNEMENT |
+| `acteur.mandats.mandat[].dateDebut` | texte | 98232 | 2007-06-28 · 2010-03-22 |
+| `acteur.mandats.mandat[].datePublication` | texte/vide | 98232 | 2010-03-23 · 2012-06-27 |
+| `acteur.mandats.mandat[].dateFin` | texte/vide | 98232 | 2008-10-08 · 2010-11-13 |
+| `acteur.mandats.mandat[].preseance` | texte/vide | 98232 | 24 · 50 |
+| `acteur.mandats.mandat[].nominPrincipale` | texte | 98232 | 0 · 1 |
+| `acteur.mandats.mandat[].infosQualite.codeQualite` | texte/vide | 98232 | Membre · membre |
+| `acteur.mandats.mandat[].infosQualite.libQualite` | texte | 98232 | Membre · membre |
+| `acteur.mandats.mandat[].infosQualite.libQualiteSex` | texte/vide | 98232 | Membre · membre |
+| `acteur.mandats.mandat[].organes.organeRef` | texte | 98111 | PO391141 · PO384206 |
 | `acteur.mandats.mandat[].libelle` | texte/vide | 6031 | Mise en place du plan de relance · L'avenir des trains d'équilibre du territoire |
 | `acteur.mandats.mandat[].missionSuivanteRef` | texte/vide | 6031 | PM773756 · PM789978 |
 | `acteur.mandats.mandat[].missionPrecedenteRef` | texte/vide | 6031 | PM769451 · PM786854 |
@@ -88,8 +88,8 @@ une seule fois sont reprises a part, plus bas.
 | `acteur.mandats.mandat[].mandature.placeHemicycle` | texte/vide | 3354 | 424 · 178 |
 | `acteur.mandats.mandat[].mandature.mandatRemplaceRef` | texte/vide | 3354 | PM267876 · PM386168 |
 | `acteur.mandats.mandat[].collaborateurs` | vide | 3220 |  |
-| `acteur.etatCivil.infoNaissance.paysNais.@xmlns:xsi` | texte | 1211 | http://www.w3.org/2001/XMLSchema-instance |
-| `acteur.etatCivil.infoNaissance.paysNais.@xsi:nil` | texte | 1211 | true |
+| `acteur.etatCivil.infoNaissance.paysNais.@xmlns:xsi` | texte | 1210 | http://www.w3.org/2001/XMLSchema-instance |
+| `acteur.etatCivil.infoNaissance.paysNais.@xsi:nil` | texte | 1210 | true |
 | `acteur.etatCivil.ident.trigramme` | texte | 524 | ADA · JGD |
 | `acteur.uri_hatvp` | texte | 523 | https://www.hatvp.fr/pages_nominatives/david-alain · https://www.hatvp.fr/pages_nominatives/guedj-jerome |
 | `acteur.etatCivil.dateDeces` | texte | 274 | 2025-02-16 · 2022-01-01 |
@@ -97,37 +97,37 @@ une seule fois sont reprises a part, plus bas.
 | `acteur.mandats.mandat[].suppleants.suppleant.dateFin` | texte/vide | 1034 | 2007-06-19 · 2012-06-19 |
 | `acteur.mandats.mandat[].suppleants.suppleant.suppleantRef` | texte | 1034 | PA267501 · PA333972 |
 | `acteur.mandats.mandat[].election.refCirconscription` | texte | 1290 | PO230806 · PO230733 |
-| `acteur.etatCivil.infoNaissance.villeNais.@xmlns:xsi` | texte | 846 | http://www.w3.org/2001/XMLSchema-instance |
-| `acteur.etatCivil.infoNaissance.villeNais.@xsi:nil` | texte | 846 | true |
-| `acteur.etatCivil.infoNaissance.depNais.@xmlns:xsi` | texte | 1001 | http://www.w3.org/2001/XMLSchema-instance |
-| `acteur.etatCivil.infoNaissance.depNais.@xsi:nil` | texte | 1001 | true |
-| `acteur.profession.libelleCourant.@xmlns:xsi` | texte | 919 | http://www.w3.org/2001/XMLSchema-instance |
-| `acteur.profession.libelleCourant.@xsi:nil` | texte | 919 | true |
-| `acteur.adresses.adresse.@xmlns:xsi` | texte | 840 | http://www.w3.org/2001/XMLSchema-instance |
-| `acteur.adresses.adresse.@xsi:type` | texte | 840 | AdresseSiteWeb_Type · AdressePostale_Type |
-| `acteur.adresses.adresse.uid` | texte | 840 | AD317085 · AD317633 |
-| `acteur.adresses.adresse.type` | texte | 840 | 23 · 0 |
-| `acteur.adresses.adresse.typeLibelle` | texte | 840 | Url sénateur · Adresse officielle |
-| `acteur.adresses.adresse.poids` | texte/vide | 840 | 1 |
-| `acteur.adresses.adresse.adresseDeRattachement` | vide | 840 |  |
+| `acteur.etatCivil.infoNaissance.villeNais.@xmlns:xsi` | texte | 845 | http://www.w3.org/2001/XMLSchema-instance |
+| `acteur.etatCivil.infoNaissance.villeNais.@xsi:nil` | texte | 845 | true |
+| `acteur.etatCivil.infoNaissance.depNais.@xmlns:xsi` | texte | 1000 | http://www.w3.org/2001/XMLSchema-instance |
+| `acteur.etatCivil.infoNaissance.depNais.@xsi:nil` | texte | 1000 | true |
+| `acteur.profession.libelleCourant.@xmlns:xsi` | texte | 918 | http://www.w3.org/2001/XMLSchema-instance |
+| `acteur.profession.libelleCourant.@xsi:nil` | texte | 918 | true |
+| `acteur.adresses.adresse.@xmlns:xsi` | texte | 839 | http://www.w3.org/2001/XMLSchema-instance |
+| `acteur.adresses.adresse.@xsi:type` | texte | 839 | AdresseSiteWeb_Type · AdressePostale_Type |
+| `acteur.adresses.adresse.uid` | texte | 839 | AD317085 · AD317633 |
+| `acteur.adresses.adresse.type` | texte | 839 | 23 · 0 |
+| `acteur.adresses.adresse.typeLibelle` | texte | 839 | Url sénateur · Adresse officielle |
+| `acteur.adresses.adresse.poids` | texte/vide | 839 | 1 |
+| `acteur.adresses.adresse.adresseDeRattachement` | vide | 839 |  |
 | `acteur.adresses.adresse.valElec` | texte | 808 | https://www.senat.fr/senateur/debre_isabelle04081k.html · https://www.senat.fr/senateur/del_picchia_robert98018t.html |
-| `acteur.profession.socProcINSEE.catSocPro.@xmlns:xsi` | texte | 898 | http://www.w3.org/2001/XMLSchema-instance |
-| `acteur.profession.socProcINSEE.catSocPro.@xsi:nil` | texte | 898 | true |
-| `acteur.profession.socProcINSEE.famSocPro.@xmlns:xsi` | texte | 898 | http://www.w3.org/2001/XMLSchema-instance |
-| `acteur.profession.socProcINSEE.famSocPro.@xsi:nil` | texte | 898 | true |
-| `acteur.adresses.adresse.intitule` | texte | 32 | Casier de la Poste, · Assemblée nationale, |
-| `acteur.adresses.adresse.numeroRue` | texte/vide | 32 | 126 |
-| `acteur.adresses.adresse.nomRue` | texte/vide | 32 | Rue de l'Université, · Rue de l'université, |
-| `acteur.adresses.adresse.complementAdresse` | texte/vide | 32 | Palais Bourbon, |
-| `acteur.adresses.adresse.codePostal` | texte | 32 | 75355 |
-| `acteur.adresses.adresse.ville` | texte | 32 | Paris 07 SP |
+| `acteur.profession.socProcINSEE.catSocPro.@xmlns:xsi` | texte | 897 | http://www.w3.org/2001/XMLSchema-instance |
+| `acteur.profession.socProcINSEE.catSocPro.@xsi:nil` | texte | 897 | true |
+| `acteur.profession.socProcINSEE.famSocPro.@xmlns:xsi` | texte | 897 | http://www.w3.org/2001/XMLSchema-instance |
+| `acteur.profession.socProcINSEE.famSocPro.@xsi:nil` | texte | 897 | true |
+| `acteur.adresses.adresse.intitule` | texte | 31 | Casier de la Poste, · Assemblée nationale, |
+| `acteur.adresses.adresse.numeroRue` | texte/vide | 31 | 126 |
+| `acteur.adresses.adresse.nomRue` | texte/vide | 31 | Rue de l'Université, · Rue de l'université, |
+| `acteur.adresses.adresse.complementAdresse` | texte/vide | 31 | Palais Bourbon, |
+| `acteur.adresses.adresse.codePostal` | texte | 31 | 75355 |
+| `acteur.adresses.adresse.ville` | texte | 31 | Paris 07 SP |
 | `acteur.mandats.mandat[].organes.organeRef[]` | liste/texte | 410 | de 2 a 7 entrees · PO702890 · PO702892 |
 | `acteur.mandats.mandat[].collaborateurs.collaborateur[]` | liste | 131 | de 2 a 6 entrees |
-| `acteur.mandats.mandat[].collaborateurs.collaborateur[].qualite` | texte | 469 | M. · Mme |
-| `acteur.mandats.mandat[].collaborateurs.collaborateur[].prenom` | texte | 469 | Thomas · Bernard |
-| `acteur.mandats.mandat[].collaborateurs.collaborateur[].nom` | texte | 469 | Jacquelin · Combes |
-| `acteur.mandats.mandat[].collaborateurs.collaborateur[].dateDebut` | vide | 469 |  |
-| `acteur.mandats.mandat[].collaborateurs.collaborateur[].dateFin` | vide | 469 |  |
+| `acteur.mandats.mandat[].collaborateurs.collaborateur[].qualite` | texte | 470 | M. · Mme |
+| `acteur.mandats.mandat[].collaborateurs.collaborateur[].prenom` | texte | 470 | Thomas · Bernard |
+| `acteur.mandats.mandat[].collaborateurs.collaborateur[].nom` | texte | 470 | Jacquelin · Combes |
+| `acteur.mandats.mandat[].collaborateurs.collaborateur[].dateDebut` | vide | 470 |  |
+| `acteur.mandats.mandat[].collaborateurs.collaborateur[].dateFin` | vide | 470 |  |
 | `acteur.adresses.@xmlns:xsi` | texte | 77 | http://www.w3.org/2001/XMLSchema-instance |
 | `acteur.adresses.@xsi:nil` | texte | 77 | true |
 | `acteur.mandats.mandat.@xmlns:xsi` | texte | 5 | http://www.w3.org/2001/XMLSchema-instance |
