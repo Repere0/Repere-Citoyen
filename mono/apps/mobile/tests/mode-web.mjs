@@ -1,4 +1,4 @@
-/* MODE D'AFFICHAGE PERSISTÉ (V35, bloc 1, D67) : le choix de la roue des réglages
+/* MODE D'AFFICHAGE PERSISTÉ (V35, bloc 1, D67) : le choix de l'écran Réglages
  * (Système, Clair, Sombre) est gardé dans repere.profil, sans nouvelle clé, et il
  * survit à un rechargement. Les autres réglages du profil ne sont pas écrasés.
  * Usage : node apps/mobile/tests/mode-web.mjs http://localhost:8811 */
@@ -28,10 +28,19 @@ const page = await contexte.newPage();
 const erreurs = [];
 page.on("pageerror", e => erreurs.push(String(e.message || e).slice(0, 160)));
 const profil = () => page.evaluate(() => JSON.parse(localStorage.getItem("repere.profil") || "null"));
+/* Step Up (25/11/2026) : l'écran Réglages, deux interrupteurs (« Suivre le téléphone », « Mode sombre »). */
+const coche = async nom => (await page.getByRole("switch", { name: new RegExp("^" + nom) }).getAttribute("aria-checked")) === "true";
+const basculer = async nom => { await page.getByRole("switch", { name: new RegExp("^" + nom) }).click(); await page.waitForTimeout(300); };
 const choisir = async nom => {
-  await page.getByRole("button", { name: "Réglages de l'affichage" }).first().click();
-  await page.getByRole("radio", { name: nom }).first().click();
+  await page.getByRole("link", { name: "Réglages", exact: true }).first().click();
+  await page.getByRole("switch", { name: /^Suivre le téléphone/ }).waitFor({ timeout: 10000 });
+  if (nom === "Système") { if (!(await coche("Suivre le téléphone"))) await basculer("Suivre le téléphone"); }
+  else {
+    if (await coche("Suivre le téléphone")) await basculer("Suivre le téléphone");
+    if ((await coche("Mode sombre")) !== (nom === "Sombre")) await basculer("Mode sombre");
+  }
   await page.waitForTimeout(400);
+  await page.goto(BASE + "/qui-decide", { waitUntil: "networkidle" }); await page.waitForTimeout(600);
 };
 
 /* Un écran à barre d'onglets : c'est là que se trouve la roue des réglages. Le système est clair. */

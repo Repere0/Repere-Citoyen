@@ -166,8 +166,8 @@ const lireProfil = page => page.evaluate(() => JSON.parse(localStorage.getItem("
   await page.getByTestId("bonjour").waitFor({ timeout: 10000 });
   verifier((await page.getByTestId("bonjour").innerText()).trim() === "Bonjour Citoyen", "après « Passer » : « Bonjour Citoyen »");
   /* L'accueil n'a pas d'en-tête : le bouton des réglages est dans les onglets. */
-  await page.goto(BASE + "/a-venir", { waitUntil: "networkidle" });
-  await page.getByRole("button", { name: "Réglages de l'affichage" }).first().click();
+  /* Step Up (25/11/2026) : les réglages sont un écran. */
+  await page.goto(BASE + "/reglages", { waitUntil: "networkidle" });
   await page.getByTestId("changer-prenom").click();
   await page.getByTestId("barriere-bienvenue").waitFor({ state: "visible", timeout: 10000 });
   verifier(await page.getByLabel(/Votre prénom/).count() === 1, "« Changer de prénom » : la question du prénom revient, sans refaire le logo");

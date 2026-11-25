@@ -549,13 +549,8 @@ export default function Accueil() {
                 UNE action principale (chercher une commune) et trois accès rapides en tuiles.
                 Avant : sept éléments empilés, quatre styles de lien, le logo seul au milieu. */}
             <View style={s.barreHaut}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 2 }}>
-                {/* Le logo vit dans la marque, une seule fois (brief V47) ; il ne flotte plus au milieu du hero. */}
-                {/* Le logo de Repère tel quel (ui/logo.tsx) : anneau, anneau intermédiaire gris, point.
-                    La variante « mono » (sans anneau gris) avait été posée ici par erreur le 09/11/2026. */}
-                <Logo size={26} variant={modeTheme} />
-                <Text style={s.marque} accessibilityLabel="Repère">Repère<Text style={{ color: E.ville }}>.</Text></Text>
-              </View>
+              {/* Step Up (porteur, 25/11/2026) : la marque quitte la barre ; le logo, en grand, ouvre l'accueil (plus bas). */}
+              <View />
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 {/* 12/11/2026 (porteur) : la bascule clair / sombre, à un geste dès l'accueil. */}
                 <Pressable onPress={() => choisirTheme(modeTheme === "sombre" ? "clair" : "sombre")} accessibilityRole="button"
@@ -563,9 +558,10 @@ export default function Accueil() {
                   style={({ pressed }) => [s.outil, pressed && enfonce(true)]}>
                   <Ionicons name={modeTheme === "sombre" ? "sunny-outline" : "moon-outline"} size={22} color={D.encre} accessible={false} importantForAccessibility="no" />
                 </Pressable>
-                <Pressable onPress={() => router.push("/confort-lecture")} accessibilityRole="link" accessibilityLabel="Confort de lecture"
+                {/* Step Up (25/11/2026) : les réglages (dont le confort de lecture) ont leur écran, comme depuis les onglets. */}
+                <Pressable onPress={() => router.push("/reglages")} accessibilityRole="link" accessibilityLabel="Réglages"
                   style={({ pressed }) => [s.outil, pressed && enfonce(true)]}>
-                  <Ionicons name="text-outline" size={22} color={D.encre} />
+                  <Ionicons name="settings-outline" size={22} color={D.encre} accessible={false} importantForAccessibility="no" />
                 </Pressable>
                 {/* V37 bloc 3 : la recherche globale (communes, élus, scrutins). */}
                 <Pressable onPress={() => router.push("/recherche")} accessibilityRole="button"
@@ -576,7 +572,9 @@ export default function Accueil() {
               </View>
             </View>
             {/* Invariant 9 : la date des données reste visible, en tête, sans prendre la place du contenu. */}
-            <View style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", columnGap: PAS * 3 }}>
+            {/* Step Up (25/11/2026) : le gros logo, puis la date des données (invariant 9), centrés. */}
+            <View style={{ alignItems: "center", gap: PAS * 4, marginTop: PAS * 2 }}>
+              <Logo size={64} variant={modeTheme} />
               <DatePublication />
             </View>
             {/* LE PITCH : une citation, en grand. Demande du CEO (30/10/2026) : elle remplace le paragraphe.
@@ -591,10 +589,10 @@ export default function Accueil() {
                 « Bonjour » : le prénom vient de repere.profil, jamais du réseau ; sans prénom, « Citoyen ». */}
             {/* 17/11/2026 : en mode démo, une ligne discrète au-dessus de tout, avec « Laisser un avis ». */}
             <BandeauDemo />
-            <Text style={s.bonjour} testID="bonjour" {...niveauTitre(1)}>Bonjour {prenom || "Citoyen"}</Text>
-            <Text style={s.sousTitre}>Ce qui se passe chez vous, expliqué simplement.</Text>
+            <Text style={[s.bonjour, { textAlign: "center" }]} testID="bonjour" {...niveauTitre(1)}>Bonjour {prenom || "Citoyen"}</Text>
+            <Text style={[s.sousTitre, { textAlign: "center" }]}>Ce qui se passe chez vous, expliqué simplement.</Text>
             <Text style={s.titreCache} nativeID="question">Où habitez-vous ?</Text>
-            <View style={[s.champLigne, { borderColor: ACCENTS.autorite }, champActif && Platform.OS === "web" && { borderColor: E.ville }]}>
+            <View style={[s.champLigne, champActif && Platform.OS === "web" && { borderColor: D.encre }]}>
               <Ionicons name="search" size={22} color={D.sourd} accessible={false} importantForAccessibility="no" style={{ marginRight: PAS * 2 }} />
               <TextInput
                 value={filtre}
@@ -639,7 +637,7 @@ export default function Accueil() {
                   {(premiere ? ACCES_PREMIERE : ACCES).map(a => (
                     <Pressable key={a.texte} onPress={a.ouvrir} accessibilityRole="link" accessibilityLabel={a.etiquette}
                       style={({ pressed }) => [s.tuile, pressed && enfonce(true)]}>
-                      <Ionicons name={`${a.icone}-outline` as keyof typeof Ionicons.glyphMap} size={22} color={D.encre} accessible={false} importantForAccessibility="no" />
+                      <View style={s.tuileIcone}><Ionicons name={`${a.icone}-outline` as keyof typeof Ionicons.glyphMap} size={20} color={D.encre} accessible={false} importantForAccessibility="no" /></View>
                       <Text style={s.tuileTexte}>{a.texte}</Text>
                     </Pressable>
                   ))}
@@ -776,19 +774,20 @@ export default function Accueil() {
 
 const s = feuille(() => StyleSheet.create({
   page: { paddingHorizontal: PAS * 4, gap: PAS * 2, maxWidth: 640, width: "100%", alignSelf: "center" },
-  tete: { gap: PAS * 3, marginBottom: PAS * 2 },
+  tete: { gap: PAS * 4, marginBottom: PAS * 2 },
   /* Taille 26 : la pastille « Chercher » passe sous le logo au lieu de sortir de la marge. */
   barreHaut: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   outil: { width: CIBLE, height: CIBLE, alignItems: "center", justifyContent: "center" },
   tuiles: { flexDirection: "row", flexWrap: "wrap", gap: PAS * 2 },
   /* Fond D.voile : la teinte demandée par le porteur à 3 unités près, sans couleur hors palette. */
-  tuile: { width: "48%", flexGrow: 1, minHeight: 76, gap: PAS * 2, padding: PAS * 3, borderRadius: 16, backgroundColor: D.carte, ...(Platform.OS === "web" ? { borderWidth: 1, borderColor: FILET_TUILE.filet } : {}), justifyContent: "space-between" },
-  tuileTexte: { fontFamily: POLICE.titre, fontSize: 14, lineHeight: 20, color: D.encre },
+  /* Step Up (25/11/2026) : des cartes aérées, l'icône dans une pastille, une ombre douce au lieu du filet. */
+  tuile: { width: "48%", flexGrow: 1, minHeight: 112, gap: PAS * 3, padding: PAS * 4, borderRadius: RAYON.carte, backgroundColor: D.carte, ...OMBRE, justifyContent: "space-between" },
+  tuileIcone: { width: 40, height: 40, borderRadius: RAYON.bloc, backgroundColor: D.voile, alignItems: "center", justifyContent: "center" },
+  tuileTexte: { fontFamily: POLICE.titre, fontSize: 16, lineHeight: 24, color: D.encre },
   marque: { fontFamily: POLICE.affiche, fontSize: 20, color: D.encre },
   /* L'action principale : plus haute, filet plus marqué (refonte du 09/11/2026). */
   chercher: { minHeight: 60, borderRadius: RAYON.bloc, backgroundColor: D.carte, borderWidth: 1.5, borderColor: D.sourd, paddingHorizontal: PAS * 5, flexDirection: "row", alignItems: "center", gap: PAS * 3, marginTop: PAS * 4, ...OMBRE },
   titreCache: { position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0 },
-  tuileIcone: { width: 36, height: 36, borderRadius: 12, alignItems: "center", justifyContent: "center" },
   chercherTexte: { fontFamily: POLICE.titre, fontSize: 16, color: D.encre },
   citation: { fontFamily: POLICE.affiche, fontSize: 28, lineHeight: 40, letterSpacing: -0.8, color: D.encre, marginTop: PAS * 6 },
   carte: { gap: PAS * 3, padding: PAS * 5, borderRadius: RAYON.carte, backgroundColor: D.carte, ...OMBRE },
@@ -808,8 +807,9 @@ const s = feuille(() => StyleSheet.create({
   confiance: { gap: PAS, padding: PAS * 4, borderRadius: RAYON.bloc, backgroundColor: D.voile, marginTop: PAS * 2 },
   question: { fontFamily: POLICE.titre, fontSize: 20, lineHeight: 26, color: D.encre, marginTop: PAS * 6 },
   champLigne: {
-    flexDirection: "row", alignItems: "center", minHeight: 60, borderRadius: 999, borderWidth: 2, borderColor: D.trait,
-    backgroundColor: D.carte, paddingLeft: PAS * 5, ...OMBRE,
+    /* Step Up (25/11/2026) : un champ calme (filet fin, rayon 16), plus le cadre noir épais de 2 px. */
+    flexDirection: "row", alignItems: "center", minHeight: 56, borderRadius: 16, borderWidth: 1, borderColor: D.trait,
+    backgroundColor: D.carte, paddingLeft: PAS * 4,
   },
   loupe: { width: 18, height: 18, marginRight: PAS * 2 },
   loupeRond: { position: "absolute", top: 0, left: 0, width: 13, height: 13, borderRadius: 7, borderWidth: 2, borderColor: D.sourd },
@@ -823,12 +823,12 @@ const s = feuille(() => StyleSheet.create({
     ...(Platform.OS === "web" ? ({ outlineStyle: "none" } as object) : {}),
   },
   note: { fontFamily: POLICE.texte, fontSize: 14, lineHeight: 22, color: D.sourd },
-  bonjour: { fontFamily: POLICE.section, fontSize: 28, lineHeight: 40, letterSpacing: -0.6, color: D.encre, marginTop: PAS * 4 },
-  sousTitre: { fontFamily: POLICE.titre, fontSize: 20, lineHeight: 28, color: D.sourd },
+  bonjour: { fontFamily: POLICE.section, fontSize: 28, lineHeight: 36, letterSpacing: -0.4, color: D.encre, marginTop: PAS * 2 },
+  sousTitre: { fontFamily: POLICE.texte, fontSize: 16, lineHeight: 24, color: D.sourd },
   jouer: { minHeight: 36, paddingHorizontal: PAS * 4, borderRadius: 999, backgroundColor: D.encre, alignItems: "center", justifyContent: "center" },
   jouerTexte: { fontFamily: POLICE.titre, fontSize: 16, color: D.sol },
   accroche: { fontFamily: POLICE.affiche, fontSize: 20, lineHeight: 30, letterSpacing: -0.2, color: D.encre, marginTop: PAS * 4 },
-  soutenir: { minHeight: CIBLE + 4, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: PAS * 2, paddingHorizontal: PAS * 4, borderRadius: 999, borderWidth: 1.5, borderColor: D.encre, alignSelf: "center", marginTop: PAS * 2 },
+  soutenir: { minHeight: CIBLE, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: PAS * 2, paddingHorizontal: PAS * 4, borderRadius: RAYON.bloc, borderWidth: 1, borderColor: D.trait, backgroundColor: D.carte, marginTop: PAS * 2 },
   jeunes: { minHeight: CIBLE + 16, flexDirection: "row", alignItems: "center", gap: PAS * 3, padding: PAS * 4, borderRadius: 16, backgroundColor: ACCENTS.fondCivique, borderWidth: 1.5, borderColor: ACCENTS.autorite },
   reassurances: { gap: PAS * 2 },
   reassurance: { flexDirection: "row", alignItems: "center", gap: PAS * 2 },

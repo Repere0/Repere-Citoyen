@@ -38,7 +38,7 @@ await page.getByText("Aller plus loin").first().waitFor({ timeout: 15000 });
   await p2.getByRole("button", { name: /^Passer, sans/ }).click();
   const note = p2.getByText("Zéro traceur", { exact: false }).first();
   await note.waitFor({ timeout: 10000 });
-  verifier(await note.evaluate(e => getComputedStyle(e).fontSize) === "15px", "texte de l'écran des valeurs : 15 px");
+  verifier(await note.evaluate(e => getComputedStyle(e).fontSize) === "16px", "texte de l'écran des valeurs : 16 px (Step Up)");
   const terminer = p2.getByTestId("continuer-2");
   await terminer.scrollIntoViewIfNeeded();
   const boite = await terminer.boundingBox();

@@ -64,7 +64,9 @@ test("la politique de confidentialite existe, et l'ecran et le document disent l
     assert.ok(doc.includes(cle), `docs/privacy-policy.md ne contient pas « ${cle} »`);
     assert.ok(ecran.includes(cle), `confidentialite.tsx ne contient pas « ${cle} »`);
   }
-  const reglages = fs.readFileSync(path.join(MOBILE, "src", "ui", "reglages.tsx"), "utf8");
+  /* Step Up (25/11/2026) : la roue (ui/reglages.tsx) ouvre l'écran Réglages (app/reglages.tsx), qui porte les liens. */
+  assert.ok(fs.readFileSync(path.join(MOBILE, "src", "ui", "reglages.tsx"), "utf8").includes('"/reglages"'), "la roue n'ouvre plus l'écran Réglages");
+  const reglages = fs.readFileSync(path.join(MOBILE, "src", "app", "reglages.tsx"), "utf8");
   assert.ok(reglages.includes('"/confidentialite"'), "le lien Confidentialité des reglages ne mene pas a l'ecran");
 });
 
@@ -78,7 +80,9 @@ test("les mentions légales existent, l'écran et le document disent la même ch
   /* 23/11/2026 (porteur) : Vercel ne sert plus rien ; le citer comme hébergeur serait faux. */
   assert.ok(!doc.includes("Vercel Inc."), "docs/mentions-legales.md cite encore Vercel comme hébergeur");
   assert.ok(!ecran.includes("Vercel Inc."), "mentions-legales.tsx cite encore Vercel comme hébergeur");
-  const reglages = fs.readFileSync(path.join(MOBILE, "src", "ui", "reglages.tsx"), "utf8");
+  /* Step Up (25/11/2026) : la roue (ui/reglages.tsx) ouvre l'écran Réglages (app/reglages.tsx), qui porte les liens. */
+  assert.ok(fs.readFileSync(path.join(MOBILE, "src", "ui", "reglages.tsx"), "utf8").includes('"/reglages"'), "la roue n'ouvre plus l'écran Réglages");
+  const reglages = fs.readFileSync(path.join(MOBILE, "src", "app", "reglages.tsx"), "utf8");
   assert.ok(reglages.includes('"/mentions-legales"'), "les réglages ne mènent pas aux mentions légales");
 });
 

@@ -19,9 +19,9 @@ await page.getByTestId("bonjour").waitFor({ timeout: 15000 });
 const y = async loc => (await loc.first().boundingBox()).y;
 const bonjour = page.getByTestId("bonjour");
 verifier((await bonjour.innerText()).trim() === "Bonjour Zoé", "« Bonjour Zoé »");
-verifier(await bonjour.evaluate(e => getComputedStyle(e).fontSize) === "34px", "« Bonjour » fait 34 px");
+verifier(await bonjour.evaluate(e => getComputedStyle(e).fontSize) === "28px", "« Bonjour » fait 28 px (Step Up, échelle du 25/11/2026)");
 const sous = page.getByText("Ce qui se passe chez vous, expliqué simplement.");
-verifier(await sous.evaluate(e => getComputedStyle(e).fontSize) === "20px", "le sous-titre fait 20 px");
+verifier(await sous.evaluate(e => getComputedStyle(e).fontSize) === "16px", "le sous-titre fait 16 px (Step Up)");
 const champ = page.getByLabel(/Où habitez-vous/);
 verifier(await champ.getAttribute("placeholder") === "Votre ville ou code postal", "le champ de recherche dit « Votre ville ou code postal » (plus d'exemple Melun)");
 /* 17/11/2026 (porteur) : sans commune, l'accueil ne contient QUE la recherche, quatre cartes et « Soutenir Repère ». */
