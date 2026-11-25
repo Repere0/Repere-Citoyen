@@ -54,7 +54,7 @@ const NEUTRES_CLAIR: Neutres = {
 /* 09/11/2026 (docs/historique/DESIGN.md « Dark Luxury », complément du porteur) : texte en ivoire lin #F5F4F0,
    métadonnées en gris minéral #9C9A92, filets #2B2A26. Sol et carte inchangés. */
 /* Refonte « premium » (porteur, 25/11/2026 : « un gris bleuté profond, pas du noir ») : graphite froid, cartes un
-   cran plus claires pour la profondeur. Le porteur citait l'ardoise #0F172A / #1E293B : son amplitude RGB (27 à 29)
+   cran plus claires pour la profondeur. Le porteur citait les ardoises « 0F172A » et « 1E293B » : leur amplitude RGB (27 à 29)
    dépasse la limite des neutres (invariant 7), et le vote « pour » daltonien y tombait sous 3:1. Ces gris en sont
    le plus proche qui tient les deux (mesuré dans tests/theme.test.mjs). */
 const NEUTRES_SOMBRE: Neutres = {
