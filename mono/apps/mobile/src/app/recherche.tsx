@@ -178,7 +178,7 @@ export default function Recherche() {
           placeholderTextColor={couleurs.sourd} autoCorrect={false} autoCapitalize="none" autoFocus returnKeyType="search"
           accessibilityLabel="Rechercher une commune, un élu ou un scrutin"
           onFocus={() => setFocus(true)} onBlur={() => setFocus(false)}
-          style={{ flex: 1, minHeight: CIBLE + 8, paddingHorizontal: PAS * 2, fontSize: 17, color: couleurs.encre, outlineStyle: "none" } as object} />
+          style={{ flex: 1, minHeight: CIBLE + 8, paddingHorizontal: PAS * 2, fontSize: 16, color: couleurs.encre, outlineStyle: "none" } as object} />
       </View>
 
       <ChipsThemes actif={theme} choisir={setTheme} />

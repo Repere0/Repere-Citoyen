@@ -41,10 +41,15 @@ export const PAS = 4;
    saisie : Safari iOS zoome en dessous), 20 (marque et sous-titres), 48 (le grand chiffre d'un écran).
    Toute autre taille écrite en dur est refusée par tests/echelle.test.mjs ; les cartes de partage
    (images de 1 080 px) en sont exclues. Les espacements suivent PAS (4) ; 1 et 2 restent permis (filets). */
-export const ECHELLE_TYPO = [12, 13, 14, 15, 16, 17, 20, 22, 28, 34, 48] as const;
+/* REFONTE « STEP UP » (porteur, 25/11/2026) : SIX tailles, une police. L'audit d'un développeur UI jugeait
+   l'interface disparate : 11 tailles, 3 familles et 7 graisses, gris bleutés en clair et chauds en sombre.
+   Échelle : 40 (grand chiffre), 28 (titre d'écran), 20 (section), 16 (texte, champs : Safari iOS ne zoome pas),
+   14 (note), 12 (étiquette, barre basse). */
+export const ECHELLE_TYPO = [12, 14, 16, 20, 28, 40] as const;
 /* docs/historique/DESIGN.md (09/11/2026) : cartes au rayon 16, blocs et champs au rayon 12. */
 /* Variante A (11/11/2026) : cartes au rayon 24, blocs et champs au rayon 16. */
-export const RAYON = { carte: 24, bloc: 16, pastille: 999 } as const;
+/* Step Up (25/11/2026) : 20 pour les cartes, 12 pour les contrôles et les champs. */
+export const RAYON = { carte: 20, bloc: 12, pastille: 999 } as const;
 
 /* DA premium (07/11/2026, décision du porteur) : Manrope pour les titres, DM Sans pour le
    texte, IBM Plex Mono pour les dates et les chiffres. Toutes sous licence SIL OFL,
@@ -52,28 +57,30 @@ export const RAYON = { carte: 24, bloc: 16, pastille: 999 } as const;
    Une famille par graisse : sous Android, fontWeight ne choisit pas une autre famille. */
 type Polices = { affiche: string; section: string; titre: string; texte: string; texteMoyen: string; texteGras: string; donnee: string; donneeForte: string };
 /* Stitch (09/11/2026) : une famille par thème. Le sombre garde celles du 07/11. */
+/* Step Up (porteur, 25/11/2026) : Inter seule, dans les deux thèmes (SIL OFL, embarquée). Remplace Manrope,
+   DM Sans et IBM Plex Mono. Les chiffres sont à chasse fixe (tabular-nums) là où ils se comparent. */
 export const POLICES_PAR_MODE: Readonly<Record<Mode, Polices>> = {
   /* Refonte « légère » (porteur, 09/11/2026) : les mêmes familles dans les deux thèmes. Titres en
      Manrope SemiBold (plus d'ExtraBold), texte en DM Sans, données en IBM Plex Mono. */
   clair: {
-    affiche: "Manrope_800ExtraBold",
-    section: "Manrope_700Bold",
-    titre: "Manrope_600SemiBold",
-    texte: "DMSans_400Regular",
-    texteMoyen: "DMSans_500Medium",
-    texteGras: "DMSans_700Bold",
-    donnee: "IBMPlexMono_400Regular",
-    donneeForte: "IBMPlexMono_600SemiBold",
+    affiche: "Inter_700Bold",
+    section: "Inter_600SemiBold",
+    titre: "Inter_600SemiBold",
+    texte: "Inter_400Regular",
+    texteMoyen: "Inter_500Medium",
+    texteGras: "Inter_700Bold",
+    donnee: "Inter_400Regular",
+    donneeForte: "Inter_600SemiBold",
   },
   sombre: {
-    affiche: "Manrope_800ExtraBold",
-    section: "Manrope_700Bold",
-    titre: "Manrope_600SemiBold",
-    texte: "DMSans_400Regular",
-    texteMoyen: "DMSans_500Medium",
-    texteGras: "DMSans_700Bold",
-    donnee: "IBMPlexMono_400Regular",
-    donneeForte: "IBMPlexMono_600SemiBold",
+    affiche: "Inter_700Bold",
+    section: "Inter_600SemiBold",
+    titre: "Inter_600SemiBold",
+    texte: "Inter_400Regular",
+    texteMoyen: "Inter_500Medium",
+    texteGras: "Inter_700Bold",
+    donnee: "Inter_400Regular",
+    donneeForte: "Inter_600SemiBold",
   },
 };
 
@@ -128,22 +135,23 @@ function construire(m: Mode) {
     /* VARIANTE A (porteur, 11/11/2026) : échelle 34 / 28 / 22 / 17 / 15 / 13. Les chiffres héros sont en
        Manrope à chiffres alignés ; IBM Plex Mono ne sert plus qu'aux petites données (TYPO.donnee).
        Remplace « titres de 24 px au plus » (09/11) et « Plex Mono pour les grands chiffres » (07/11). */
-    affiche: { fontFamily: POLICE.affiche, fontSize: sz(34), lineHeight: lh(40), color: couleurs.encre, letterSpacing: -0.8 },
-    chiffre: { fontFamily: POLICE.affiche, fontSize: sz(34), lineHeight: lh(40), color: couleurs.encre, letterSpacing: -1, fontVariant: ["tabular-nums" as const] },
-    stat: { fontFamily: POLICE.section, fontSize: sz(28), lineHeight: lh(34), color: couleurs.encre, letterSpacing: -0.5, fontVariant: ["tabular-nums" as const] },
-    /* la question d'un écran */
-    question: { fontFamily: POLICE.affiche, fontSize: sz(28), lineHeight: lh(34), color: couleurs.encre, letterSpacing: -0.5 },
+    /* Step Up (25/11/2026) : six tailles (ECHELLE_TYPO), une police, interlignes sur la grille de 4. */
+    affiche: { fontFamily: POLICE.affiche, fontSize: sz(40), lineHeight: lh(44), color: couleurs.encre, letterSpacing: -0.8 },
+    chiffre: { fontFamily: POLICE.affiche, fontSize: sz(40), lineHeight: lh(44), color: couleurs.encre, letterSpacing: -0.8, fontVariant: ["tabular-nums" as const] },
+    stat: { fontFamily: POLICE.section, fontSize: sz(28), lineHeight: lh(36), color: couleurs.encre, letterSpacing: -0.4, fontVariant: ["tabular-nums" as const] },
+    /* la question d'un écran (titre de niveau 1) */
+    question: { fontFamily: POLICE.section, fontSize: sz(28), lineHeight: lh(36), color: couleurs.encre, letterSpacing: -0.4 },
     /* un titre de section, entre deux groupes de cartes */
-    section: { fontFamily: POLICE.section, fontSize: sz(22), lineHeight: lh(28), color: couleurs.encre, letterSpacing: -0.3 },
+    section: { fontFamily: POLICE.section, fontSize: sz(20), lineHeight: lh(28), color: couleurs.encre, letterSpacing: -0.2 },
     /* la réponse d'une carte */
-    reponse: { fontFamily: POLICE.titre, fontSize: sz(17), lineHeight: lh(24), color: couleurs.encre },
-    corps: { fontFamily: POLICE.texte, fontSize: sz(15), lineHeight: lh(22), color: couleurs.encre },
-    note: { fontFamily: POLICE.texte, fontSize: sz(14), lineHeight: lh(21), color: couleurs.sourd },
-    /* l'étiquette au-dessus d'une réponse, en capitales de style */
-    etiquette: { fontFamily: POLICE.texteMoyen, fontSize: sz(13), lineHeight: lh(18), letterSpacing: 0.8, textTransform: "uppercase" as const, color: couleurs.sourd },
+    reponse: { fontFamily: POLICE.titre, fontSize: sz(16), lineHeight: lh(24), color: couleurs.encre },
+    corps: { fontFamily: POLICE.texte, fontSize: sz(16), lineHeight: lh(24), color: couleurs.encre },
+    note: { fontFamily: POLICE.texte, fontSize: sz(14), lineHeight: lh(20), color: couleurs.sourd },
+    /* l'étiquette au-dessus d'une réponse, en capitales */
+    etiquette: { fontFamily: POLICE.section, fontSize: sz(12), lineHeight: lh(16), letterSpacing: 0.6, textTransform: "uppercase" as const, color: couleurs.sourd },
     micro: { fontFamily: POLICE.texte, fontSize: sz(14), lineHeight: lh(20), color: couleurs.sourd },
     /* une date ou une donnée chiffrée en ligne (frise, pastilles) */
-    donnee: { fontFamily: POLICE.donnee, fontSize: sz(14), lineHeight: lh(20), color: couleurs.sourd },
+    donnee: { fontFamily: POLICE.donnee, fontSize: sz(14), lineHeight: lh(20), color: couleurs.sourd, fontVariant: ["tabular-nums" as const] },
   };
   /* Les trois gris d'une répartition de vote : ils se distinguent aussi par leur
      libellé et leur nombre, jamais par la couleur seule (accessibilité). */

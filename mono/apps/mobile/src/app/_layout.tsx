@@ -21,14 +21,10 @@ import { Bienvenue } from "../ui/bienvenue";
 import { bienvenueDressee, ContexteBienvenue } from "../lib/bienvenue";
 import { poserDefilementIos } from "../lib/defilement-ios";
 import { useFonts } from "expo-font";
-import { Manrope_800ExtraBold } from "@expo-google-fonts/manrope/800ExtraBold";
-import { Manrope_700Bold } from "@expo-google-fonts/manrope/700Bold";
-import { Manrope_600SemiBold } from "@expo-google-fonts/manrope/600SemiBold";
-import { DMSans_400Regular } from "@expo-google-fonts/dm-sans/400Regular";
-import { DMSans_500Medium } from "@expo-google-fonts/dm-sans/500Medium";
-import { DMSans_700Bold } from "@expo-google-fonts/dm-sans/700Bold";
-import { IBMPlexMono_400Regular } from "@expo-google-fonts/ibm-plex-mono/400Regular";
-import { IBMPlexMono_600SemiBold } from "@expo-google-fonts/ibm-plex-mono/600SemiBold";
+import { Inter_400Regular } from "@expo-google-fonts/inter/400Regular";
+import { Inter_500Medium } from "@expo-google-fonts/inter/500Medium";
+import { Inter_600SemiBold } from "@expo-google-fonts/inter/600SemiBold";
+import { Inter_700Bold } from "@expo-google-fonts/inter/700Bold";
 import { FournisseurSelection, useSelection } from "../lib/selection";
 import { FournisseurCommune } from "../lib/useCommune";
 import { appliquerChoix, appliquerLecture, couleurs, useModeSysteme, type ChoixTheme } from "../lib/theme";
@@ -90,7 +86,7 @@ export default function Coquille() {
   const [demandee, setDemandee] = useState(false);
   const dressee = bienvenueDressee(barriere, chemin, demandee);
   const bienvenue = useMemo(() => ({ ouvrir: () => setDemandee(true) }), []);
-  const [polices, erreur] = useFonts({ Manrope_800ExtraBold, Manrope_700Bold, DMSans_400Regular, DMSans_500Medium, DMSans_700Bold, IBMPlexMono_400Regular, IBMPlexMono_600SemiBold, Manrope_600SemiBold });
+  const [polices, erreur] = useFonts({ Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold });
   if (!polices && !erreur) return null;
   return (
     <FournisseurTheme value={valeur}>

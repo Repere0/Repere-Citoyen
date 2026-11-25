@@ -27,7 +27,7 @@ export function ChipsThemes({ actif, choisir, themes }: { actif?: string | null;
               borderRadius: RAYON.pastille, borderWidth: 1, borderColor: on ? couleurs.encre : couleurs.trait,
               backgroundColor: on ? couleurs.encre : couleurs.carte, opacity: pressed ? 0.7 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] })}>
             <Ionicons name={ICONE_THEME[t] ?? "pricetag-outline"} size={18} color={on ? couleurs.sol : couleurs.encre} accessible={false} importantForAccessibility="no" />
-            <Text style={{ fontSize: 15, fontFamily: POLICE.texteMoyen, color: on ? couleurs.sol : couleurs.encre }}>{t}</Text>
+            <Text style={{ fontSize: 16, fontFamily: POLICE.texteMoyen, color: on ? couleurs.sol : couleurs.encre }}>{t}</Text>
           </Pressable>
         );
       })}

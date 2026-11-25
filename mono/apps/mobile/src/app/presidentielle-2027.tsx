@@ -108,7 +108,7 @@ function CarteCandidat({ c, photo }: { c: PresidentialCandidate; photo?: PhotoEl
           <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 2, paddingHorizontal: PAS * 3, minHeight: 28, borderRadius: RAYON.pastille,
             backgroundColor: BADGE_DECLARATION.fond, borderWidth: 1, borderColor: BADGE_DECLARATION.filet }}>
             <Ionicons name="megaphone-outline" size={14} color={BADGE_DECLARATION.texte} accessible={false} importantForAccessibility="no" />
-            <Text style={{ fontSize: 13, lineHeight: 18, fontFamily: POLICE.section, color: BADGE_DECLARATION.texte }}>Déclaration de candidature</Text>
+            <Text style={{ fontSize: 14, lineHeight: 18, fontFamily: POLICE.section, color: BADGE_DECLARATION.texte }}>Déclaration de candidature</Text>
           </View>
         ) : null}
         {c.sources && c.sources.length ? (
@@ -192,7 +192,7 @@ export default function Presidentielle2027() {
         <Pressable onPress={() => Linking.openURL(DEMARCHES[0].url)} accessibilityRole="link"
           accessibilityLabel={`${DEMARCHES[0].texte}, ouvre le site officiel service-public`}
           style={({ pressed }) => ({ minHeight: CIBLE + 4, borderRadius: RAYON.pastille, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 5, backgroundColor: ACCENTS.autorite, ...enfonce(pressed) })}>
-          <Text style={{ fontSize: 17, fontFamily: POLICE.section, color: ACCENTS.surAutorite }}>Vérifier mon inscription</Text>
+          <Text style={{ fontSize: 16, fontFamily: POLICE.section, color: ACCENTS.surAutorite }}>Vérifier mon inscription</Text>
         </Pressable>
         <Text style={TYPO.micro}>Le bouton ouvre le service officiel, sur service-public.gouv.fr.</Text>
       </View>

@@ -113,5 +113,5 @@ const s = feuille(() => StyleSheet.create({
   bandeau: { borderLeftWidth: 3, borderLeftColor: couleurs.encre, backgroundColor: couleurs.voile,
     borderTopRightRadius: RAYON.bloc, borderBottomRightRadius: RAYON.bloc, paddingHorizontal: PAS * 3, paddingVertical: PAS * 2, gap: PAS },
   bouton: { minHeight: CIBLE, justifyContent: "center", alignSelf: "flex-start" },
-  boutonTexte: { fontSize: 15, fontWeight: "500", color: couleurs.lien },
+  boutonTexte: { fontSize: 16, fontWeight: "500", color: couleurs.lien },
 }));

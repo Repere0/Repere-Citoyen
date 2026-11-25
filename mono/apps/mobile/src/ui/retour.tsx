@@ -7,7 +7,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSelection } from "../lib/selection";
 import { router, useRootNavigationState } from "expo-router";
 import { LIBELLES } from "@repere/core";
-import { couleurs, CIBLE } from "../lib/theme";
+import { couleurs, CIBLE, POLICE } from "../lib/theme";
 import { enfonce } from "./mouvement";
 
 /* AUDIT UI, VAGUE 2 (16/11/2026) : le libellé dit l'écran où l'on revient VRAIMENT. Avant, il était
@@ -56,9 +56,11 @@ export function Retour({ texte, etiquette }: { texte?: string; etiquette?: strin
       onPress={() => (router.canGoBack() ? router.back() : router.replace("/"))}
       accessibilityRole="button"
       accessibilityLabel={nom}
-      style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, justifyContent: "center", paddingHorizontal: 8, ...enfonce(pressed) })}
+      style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, flexDirection: "row", alignItems: "center", gap: 4, paddingLeft: 4, paddingRight: 8, ...enfonce(pressed) })}
     >
-      <Text style={{ fontSize: 17, color: couleurs.lien, fontWeight: "500" }}>‹ {mot}</Text>
+      {/* Step Up (25/11/2026) : une vraie flèche, à la place du caractère « ‹ », trop fin à l'écran. */}
+      <Ionicons name="chevron-back" size={24} color={couleurs.lien} accessible={false} importantForAccessibility="no" />
+      <Text numberOfLines={1} style={{ fontSize: 16, color: couleurs.lien, fontFamily: POLICE.texteMoyen }}>{mot}</Text>
     </Pressable>
   );
 }
@@ -78,11 +80,12 @@ export function ChangerCommune() {
       onPress={() => router.dismissTo("/")}
       accessibilityRole="button"
       accessibilityLabel={choix?.nom ? `Changer de commune (${choix.nom}) : revenir à l'accueil` : "Changer de commune : revenir à l'accueil"}
-      style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, maxWidth: 170, flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 8, ...enfonce(pressed) })}
+      style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, maxWidth: 180, flexDirection: "row", alignItems: "center", gap: 4, paddingLeft: 4, paddingRight: 8, ...enfonce(pressed) })}
     >
-      <Ionicons name="location-outline" size={18} color={couleurs.lien} accessible={false} importantForAccessibility="no" />
-      <Text numberOfLines={1} style={{ flexShrink: 1, fontSize: 17, color: couleurs.lien, fontWeight: "500" }}>{nom}</Text>
-      <Ionicons name="chevron-down" size={14} color={couleurs.lien} accessible={false} importantForAccessibility="no" />
+      {/* Step Up (25/11/2026, porteur) : la flèche de retour est partout, onglets compris ; ici elle ramène à l'accueil,
+         et le nom de la commune dit où l'on est (le nom accessible le dit aussi). */}
+      <Ionicons name="chevron-back" size={24} color={couleurs.lien} accessible={false} importantForAccessibility="no" />
+      <Text numberOfLines={1} style={{ flexShrink: 1, fontSize: 16, color: couleurs.lien, fontFamily: POLICE.texteMoyen }}>{nom}</Text>
     </Pressable>
   );
 }

@@ -139,7 +139,7 @@ function Case({ iso, jour, nb, onPress, taille }: { iso: string; jour: string; n
       {grand ? <Text style={{ fontSize: 14, color: couleurs.sourd, fontWeight: "500" }}>{LETTRES[rangLundi(iso)]}</Text> : null}
       <View style={{ width: grand ? 40 : 34, height: grand ? 40 : 34, borderRadius: 999, alignItems: "center", justifyContent: "center",
         backgroundColor: choisi ? ACCENTS.autorite : "transparent" }}>
-        <Text style={{ fontFamily: POLICE.donneeForte, fontSize: grand ? 17 : 15, color: choisi ? ACCENTS.surAutorite : couleurs.encre }}>{numero}</Text>
+        <Text style={{ fontFamily: POLICE.donneeForte, fontSize: grand ? 16 : 16, color: choisi ? ACCENTS.surAutorite : couleurs.encre }}>{numero}</Text>
       </View>
       {/* Un point bien visible sous les jours de séance (porteur, 09/11/2026) : la couleur de
           l'échelon national, celui du Parlement. */}
@@ -255,7 +255,7 @@ export default function AVenir() {
                   <View testID="cal-prochain" accessible accessibilityLabel={`Prochain rendez-vous : ${quandCourt}${heure ? `, ${heure}` : ""}. ${g.titre}. ${g.institution}.`}
                     style={{ gap: PAS * 2, padding: PAS * 6, borderRadius: RAYON.carte + 4, backgroundColor: couleurs.carte }}>
                     <Text style={TYPO.etiquette}>Prochain rendez-vous</Text>
-                    <Text style={[TYPO.affiche, { fontSize: 34, lineHeight: 40 }]}>{quandCourt}</Text>
+                    <Text style={[TYPO.affiche, { fontSize: 28, lineHeight: 40 }]}>{quandCourt}</Text>
                     <Text style={TYPO.reponse} numberOfLines={3}>{g.titre}</Text>
                     <Text style={TYPO.note}>{[majuscule(jourFr(g.jour) || ""), heure ? heure.replace(/ /g, "\u00a0") : null, g.institution].filter(Boolean).join(" · ")}</Text>
                   </View>
@@ -319,7 +319,7 @@ export default function AVenir() {
                 <Pressable onPress={() => setSuite(true)} accessibilityRole="button"
                   accessibilityLabel={`Voir les ${parJour(montres).length - JOURS_OUVERTS} jours suivants`}
                   style={({ pressed }) => ({ minHeight: CIBLE + 4, borderRadius: 999, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 5, backgroundColor: ACCENTS.autorite, ...enfonce(pressed) })}>
-                  <Text style={{ fontSize: 17, fontFamily: POLICE.section, color: ACCENTS.surAutorite }}>Voir les {parJour(montres).length - JOURS_OUVERTS} jours suivants</Text>
+                  <Text style={{ fontSize: 16, fontFamily: POLICE.section, color: ACCENTS.surAutorite }}>Voir les {parJour(montres).length - JOURS_OUVERTS} jours suivants</Text>
                 </Pressable>
               ) : null}
               {montres.length ? (

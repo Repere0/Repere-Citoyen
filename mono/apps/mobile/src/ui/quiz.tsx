@@ -188,7 +188,7 @@ export function Quiz({ categorieDe }: { categorieDe: (cle: string) => string }) 
   const bouton = (texte: string, action: () => void, id?: string) => (
     <Pressable onPress={action} accessibilityRole="button" accessibilityLabel={texte} testID={id}
       style={({ pressed }) => ({ minHeight: CIBLE + 8, borderRadius: RAYON.pastille, alignItems: "center", justifyContent: "center", backgroundColor: ACCENTS.autorite, opacity: pressed ? 0.8 : 1 })}>
-      <Text style={{ fontSize: 17, fontFamily: POLICE.section, color: ACCENTS.surAutorite }}>{texte}</Text>
+      <Text style={{ fontSize: 16, fontFamily: POLICE.section, color: ACCENTS.surAutorite }}>{texte}</Text>
     </Pressable>
   );
 
@@ -324,7 +324,7 @@ export function Quiz({ categorieDe }: { categorieDe: (cle: string) => string }) 
                 style={({ pressed }) => ({ minHeight: CIBLE + 12, flexDirection: "row", alignItems: "center", gap: PAS * 3, paddingVertical: PAS * 2, paddingHorizontal: PAS * 4,
                   borderRadius: RAYON.bloc, backgroundColor: fond, borderWidth: 1, borderColor: plein ? fond : couleurs.trait,
                   opacity: etat === "autre" ? 0.5 : pressed ? 0.75 : 1, transform: [{ scale: pressed && !repondu ? 0.985 : 1 }] })}>
-                <Text style={{ flex: 1, fontFamily: POLICE.titre, fontSize: 17, lineHeight: 22, color: encre }}>{p.texte}</Text>
+                <Text style={{ flex: 1, fontFamily: POLICE.titre, fontSize: 16, lineHeight: 22, color: encre }}>{p.texte}</Text>
                 {plein ? (
                   <View style={{ flexDirection: "row", alignItems: "center", gap: PAS }}>
                     <Text style={{ fontFamily: POLICE.texteGras, fontSize: 14, color: encre }}>{etat === "juste" ? "Juste" : "Faux"}</Text>

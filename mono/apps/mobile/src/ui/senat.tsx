@@ -161,5 +161,5 @@ const s = feuille(() => StyleSheet.create({
   pastille: { width: 12, height: 12, borderRadius: 6 },
   fiche: { flexDirection: "row", alignItems: "center", gap: PAS * 3, backgroundColor: couleurs.carte, borderRadius: RAYON.bloc, padding: PAS * 3, minHeight: CIBLE + 12 },
   avatar: { width: 40, height: 40, borderRadius: 20, borderWidth: 2, alignItems: "center", justifyContent: "center", backgroundColor: couleurs.voile },
-  initiales: { fontFamily: POLICE.texteGras, fontSize: 15, color: couleurs.encre },
+  initiales: { fontFamily: POLICE.texteGras, fontSize: 16, color: couleurs.encre },
 }));

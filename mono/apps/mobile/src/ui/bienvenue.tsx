@@ -51,7 +51,7 @@ export function Bienvenue() {
   const bouton = (texte: string, action: () => void, id?: string) => (
     <Pressable onPress={action} accessibilityRole="button" accessibilityLabel={texte} testID={id}
       style={({ pressed }) => ({ minHeight: CIBLE + 8, borderRadius: RAYON.pastille, alignItems: "center", justifyContent: "center", backgroundColor: ACCENTS.autorite, ...enfonce(pressed) })}>
-      <Text style={{ fontSize: 17, fontFamily: POLICE.section, color: ACCENTS.surAutorite }}>{texte}</Text>
+      <Text style={{ fontSize: 16, fontFamily: POLICE.section, color: ACCENTS.surAutorite }}>{texte}</Text>
     </Pressable>
   );
   const discret = (texte: string, etiquette: string, action: () => void) => (
@@ -74,7 +74,7 @@ export function Bienvenue() {
                   La variante « mono » n'en a que deux — elle est faite pour les petits formats. */}
               <Logo size={120} variant="sombre" />
               <Text style={[TYPO.affiche, { textAlign: "center" }]} {...niveauTitre(1)}>Repère</Text>
-              <Text style={[TYPO.corps, { textAlign: "center", fontSize: 17, lineHeight: 26 }]}>
+              <Text style={[TYPO.corps, { textAlign: "center", fontSize: 16, lineHeight: 26 }]}>
                 Qui décide chez vous, et où va votre argent. Deux questions, des réponses sourcées.
               </Text>
             </View>

@@ -112,7 +112,7 @@ export default function Elus() {
               <TextInput value={filtre} onChangeText={setFiltre} placeholder="Nom, département ou fonction"
                 placeholderTextColor={couleurs.sourd} autoCorrect={false} autoCapitalize="none" returnKeyType="search"
                 accessibilityLabel="Chercher un élu : nom, département ou fonction"
-                style={{ flex: 1, minHeight: CIBLE + 8, paddingHorizontal: PAS * 2, fontSize: 17, color: couleurs.encre }} />
+                style={{ flex: 1, minHeight: CIBLE + 8, paddingHorizontal: PAS * 2, fontSize: 16, color: couleurs.encre }} />
             </View>
             {/* Filtres par fonction : des pastilles qui défilent (cinq libellés ne tiennent pas en une ligne à 360 px). */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: PAS * 2 }}

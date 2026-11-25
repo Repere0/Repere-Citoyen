@@ -42,7 +42,7 @@ export default function Soutenir() {
         accessibilityLabel="Faire un don : bientôt disponible, en attente de la création de l'association"
         style={{ minHeight: CIBLE + 8, borderRadius: RAYON.pastille, alignItems: "center", justifyContent: "center",
           backgroundColor: couleurs.voile, borderWidth: 1, borderColor: couleurs.trait }}>
-        <Text style={{ fontSize: 17, fontFamily: POLICE.section, color: couleurs.sourd }}>Faire un don</Text>
+        <Text style={{ fontSize: 16, fontFamily: POLICE.section, color: couleurs.sourd }}>Faire un don</Text>
       </View>
       <Text style={[TYPO.note, { textAlign: "center" }]}>Bientôt disponible — en attente de la création de l'association.</Text>
       <Text style={TYPO.micro}>Repère ne collecte aujourd'hui aucun paiement et ne demande aucune coordonnée. Cette page le dira autrement le jour où ce sera le cas.</Text>

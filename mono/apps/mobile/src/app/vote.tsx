@@ -119,7 +119,7 @@ export default function Vote() {
               {/* Deux lignes au plus ; le titre officiel entier reste lisible d'un geste (jamais réécrit). */}
               <Pressable onPress={() => setTitreEntier(v => !v)} style={({ pressed }) => [{ minHeight: CIBLE, justifyContent: "center" }, pressed && enfonce(true)]} accessibilityRole="button" accessibilityState={{ expanded: titreEntier }}
                 accessibilityLabel={`${dossier ? dossier.intitule : titreLisible(vote.sc.t)}. ${titreEntier ? "Réduire le titre" : "Afficher le titre entier"}`}>
-                <Text style={[TYPO.corps, { fontFamily: POLICE.titre, fontSize: 17, lineHeight: 23 }]} numberOfLines={titreEntier ? undefined : 2}>
+                <Text style={[TYPO.corps, { fontFamily: POLICE.titre, fontSize: 16, lineHeight: 23 }]} numberOfLines={titreEntier ? undefined : 2}>
                   {dossier ? dossier.intitule : titreLisible(vote.sc.t)}
                 </Text>
               </Pressable>

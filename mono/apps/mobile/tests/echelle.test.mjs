@@ -41,8 +41,8 @@ test("garde — tailles de texte et espacements écrits en dur suivent le design
 
 test("la garde voit bien une taille, un espacement et un pas hors échelle", () => {
   assert.equal(ecarts("{ fontSize: 18, padding: 6, gap: PAS * 1.5 }").length, 3);
-  assert.equal(ecarts("{ fontSize: grand ? 18 : 15 }").length, 1);
-  assert.equal(ecarts("{ fontSize: 17, padding: 8, gap: PAS * 2, marginTop: 2 }").length, 0);
+  assert.equal(ecarts("{ fontSize: grand ? 18 : 16 }").length, 1);
+  assert.equal(ecarts("{ fontSize: 16, padding: 8, gap: PAS * 2, marginTop: 2 }").length, 0);
   assert.equal(ecarts("{ marginTop: 6 /* alignement optique */ }").length, 0);
 });
 

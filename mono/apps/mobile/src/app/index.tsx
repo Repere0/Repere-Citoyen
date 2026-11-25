@@ -629,7 +629,7 @@ export default function Accueil() {
                   style={({ pressed }) => [s.jeunes, pressed && enfonce(true)]}>
                   <Ionicons name="school-outline" size={28} color={ACCENTS.autorite} accessible={false} importantForAccessibility="no" />
                   <View style={{ flex: 1, gap: 2 }}>
-                    <Text style={[s.tuileTexte, { fontSize: 17 }]}>Testez votre culture civique</Text>
+                    <Text style={[s.tuileTexte, { fontSize: 16 }]}>Testez votre culture civique</Text>
                     <Text style={s.note}>Quatre définitions, une seule juste.</Text>
                   </View>
                   <View style={s.jouer}><Text style={s.jouerTexte}>Jouer</Text></View>
@@ -789,15 +789,15 @@ const s = feuille(() => StyleSheet.create({
   chercher: { minHeight: 60, borderRadius: RAYON.bloc, backgroundColor: D.carte, borderWidth: 1.5, borderColor: D.sourd, paddingHorizontal: PAS * 5, flexDirection: "row", alignItems: "center", gap: PAS * 3, marginTop: PAS * 4, ...OMBRE },
   titreCache: { position: "absolute", width: 1, height: 1, overflow: "hidden", opacity: 0 },
   tuileIcone: { width: 36, height: 36, borderRadius: 12, alignItems: "center", justifyContent: "center" },
-  chercherTexte: { fontFamily: POLICE.titre, fontSize: 17, color: D.encre },
-  citation: { fontFamily: POLICE.affiche, fontSize: 34, lineHeight: 40, letterSpacing: -0.8, color: D.encre, marginTop: PAS * 6 },
+  chercherTexte: { fontFamily: POLICE.titre, fontSize: 16, color: D.encre },
+  citation: { fontFamily: POLICE.affiche, fontSize: 28, lineHeight: 40, letterSpacing: -0.8, color: D.encre, marginTop: PAS * 6 },
   carte: { gap: PAS * 3, padding: PAS * 5, borderRadius: RAYON.carte, backgroundColor: D.carte, ...OMBRE },
   etiquette: { fontSize: 14, fontWeight: "500", color: D.sourd },
-  carteTitre: { fontFamily: POLICE.titre, fontSize: 17, lineHeight: 24, color: D.encre },
+  carteTitre: { fontFamily: POLICE.titre, fontSize: 16, lineHeight: 24, color: D.encre },
   chiffre: { fontFamily: POLICE.donneeForte, fontSize: 28, lineHeight: 34, letterSpacing: -0.5, color: D.encre },
-  vote: { fontFamily: POLICE.titre, fontSize: 17, lineHeight: 24, color: D.encre },
+  vote: { fontFamily: POLICE.titre, fontSize: 16, lineHeight: 24, color: D.encre },
   legende: { fontFamily: POLICE.texte, fontSize: 14, lineHeight: 22, color: D.sourd },
-  contexte: { fontSize: 15, lineHeight: 21, color: D.encre },
+  contexte: { fontSize: 16, lineHeight: 21, color: D.encre },
   /* Refonte « légère » : une jauge fine. */
   barre: { flexDirection: "row", height: 6, borderRadius: 3, overflow: "hidden", backgroundColor: D.voile, gap: 2 },
   badge: { alignSelf: "flex-start", paddingHorizontal: PAS * 2, paddingVertical: PAS, borderRadius: RAYON.bloc, backgroundColor: D.voile },
@@ -815,7 +815,7 @@ const s = feuille(() => StyleSheet.create({
   loupeRond: { position: "absolute", top: 0, left: 0, width: 13, height: 13, borderRadius: 7, borderWidth: 2, borderColor: D.sourd },
   loupeManche: { position: "absolute", right: 0, bottom: 1, width: 7, height: 2, borderRadius: 1, backgroundColor: D.sourd, transform: [{ rotate: "45deg" }] },
   champ: {
-    flex: 1, minHeight: CIBLE + 8, paddingHorizontal: PAS * 2, fontSize: 17, color: D.encre, borderRadius: 999,
+    flex: 1, minHeight: CIBLE + 8, paddingHorizontal: PAS * 2, fontSize: 16, color: D.encre, borderRadius: 999,
     /* Sur l'export web, le contour de focus par defaut du navigateur est orange :
        une sixieme couleur (invariant 7). Le contour de l'INPUT est supprime : la barre ENTIERE
        (loupe comprise) prend la couleur de la commune au focus (12/11/2026, Safari : le trait
@@ -823,11 +823,11 @@ const s = feuille(() => StyleSheet.create({
     ...(Platform.OS === "web" ? ({ outlineStyle: "none" } as object) : {}),
   },
   note: { fontFamily: POLICE.texte, fontSize: 14, lineHeight: 22, color: D.sourd },
-  bonjour: { fontFamily: POLICE.section, fontSize: 34, lineHeight: 40, letterSpacing: -0.6, color: D.encre, marginTop: PAS * 4 },
+  bonjour: { fontFamily: POLICE.section, fontSize: 28, lineHeight: 40, letterSpacing: -0.6, color: D.encre, marginTop: PAS * 4 },
   sousTitre: { fontFamily: POLICE.titre, fontSize: 20, lineHeight: 28, color: D.sourd },
   jouer: { minHeight: 36, paddingHorizontal: PAS * 4, borderRadius: 999, backgroundColor: D.encre, alignItems: "center", justifyContent: "center" },
-  jouerTexte: { fontFamily: POLICE.titre, fontSize: 15, color: D.sol },
-  accroche: { fontFamily: POLICE.affiche, fontSize: 22, lineHeight: 30, letterSpacing: -0.2, color: D.encre, marginTop: PAS * 4 },
+  jouerTexte: { fontFamily: POLICE.titre, fontSize: 16, color: D.sol },
+  accroche: { fontFamily: POLICE.affiche, fontSize: 20, lineHeight: 30, letterSpacing: -0.2, color: D.encre, marginTop: PAS * 4 },
   soutenir: { minHeight: CIBLE + 4, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: PAS * 2, paddingHorizontal: PAS * 4, borderRadius: 999, borderWidth: 1.5, borderColor: D.encre, alignSelf: "center", marginTop: PAS * 2 },
   jeunes: { minHeight: CIBLE + 16, flexDirection: "row", alignItems: "center", gap: PAS * 3, padding: PAS * 4, borderRadius: 16, backgroundColor: ACCENTS.fondCivique, borderWidth: 1.5, borderColor: ACCENTS.autorite },
   reassurances: { gap: PAS * 2 },
@@ -838,6 +838,6 @@ const s = feuille(() => StyleSheet.create({
     ...OMBRE,
   },
   pastille: { width: 10, height: 10, borderRadius: 5, backgroundColor: E.ville },
-  resultatNom: { flex: 1, fontSize: 17, color: D.encre, fontWeight: "500" },
+  resultatNom: { flex: 1, fontSize: 16, color: D.encre, fontWeight: "500" },
   resultatDep: { fontSize: 14, color: D.sourd, flexShrink: 1, textAlign: "right" },
 }));
