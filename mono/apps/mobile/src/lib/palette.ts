@@ -36,9 +36,12 @@ export type Neutres = {
 /* Step Up (porteur, 25/11/2026) : la MÊME famille de gris chauds que le sombre. Avant : ardoise bleutée
    (#F8FAFC, #0F172A, #475569) en clair, gris chauds en sombre ; l'audit UI y voyait deux applications.
    Contrastes calculés : encre sur sol 16,6:1, sourd sur sol 6,1:1, sourd sur carte 6,6:1 (AA : 4,5:1). */
+/* Refonte « premium » (porteur, 25/11/2026) : gris froids très doux, page gris pâle et cartes blanches, filets
+   fins. Le blanc des cartes garde les contrastes mesurés des couleurs de vote (A2). Amplitude RGB sous 24 partout :
+   l'interface reste neutre (invariant 7), sans amendement. */
 const NEUTRES_CLAIR: Neutres = {
-  sol: "#F7F6F3", carte: "#FFFFFF", encre: "#1A1917", sourd: "#5F5C55",
-  trait: "#E6E3DC", voile: "#EFEDE8", blanc: "#ffffff", lien: "#1A1917",
+  sol: "#F9FAFB", carte: "#FFFFFF", encre: "#111827", sourd: "#5B6270",
+  trait: "#E5E7EB", voile: "#F3F4F6", blanc: "#ffffff", lien: "#111827",
 };
 
 /* Neutres du sombre : même famille chaude que le clair (pas de bleu), mesurés
@@ -50,7 +53,16 @@ const NEUTRES_CLAIR: Neutres = {
    #F8FAFC et #94A3B8, liens en or mat. Sol, carte et trait inchangés (déjà ceux de Stitch). */
 /* 09/11/2026 (docs/historique/DESIGN.md « Dark Luxury », complément du porteur) : texte en ivoire lin #F5F4F0,
    métadonnées en gris minéral #9C9A92, filets #2B2A26. Sol et carte inchangés. */
+/* Refonte « premium » (porteur, 25/11/2026 : « un gris bleuté profond, pas du noir ») : graphite froid, cartes un
+   cran plus claires pour la profondeur. Le porteur citait les ardoises « 0F172A » et « 1E293B » : leur amplitude RGB (27 à 29)
+   dépasse la limite des neutres (invariant 7), et le vote « pour » daltonien y tombait sous 3:1. Ces gris en sont
+   le plus proche qui tient les deux (mesuré dans tests/theme.test.mjs). */
 const NEUTRES_SOMBRE: Neutres = {
+  sol: "#0D1117", carte: "#171D26", encre: "#F3F4F6", sourd: "#9CA3AF",
+  trait: "#2A313C", voile: "#212833", blanc: "#ffffff", lien: "#F3F4F6",
+};
+/* Les cartes de partage gardent le sombre chaud du 23/11 : leurs modèles A à D sont validés tels quels. */
+const NUIT_CARTE: Neutres = {
   sol: "#141311", carte: "#1F1E1B", encre: "#F5F4F0", sourd: "#9C9A92",
   trait: "#2B2A26", voile: "#2A2823", blanc: "#ffffff", lien: "#F5F4F0",
 };
@@ -65,8 +77,8 @@ const NEUTRES_SOMBRE: Neutres = {
    - surAutorite : le texte posé sur un bouton plein. */
 export type Accents = { autorite: string; texteAccent: string; civique: string; fondCivique: string; surAutorite: string };
 export const ACCENTS_PAR_MODE: Readonly<Record<Mode, Accents>> = Object.freeze({
-  clair: { autorite: "#0F172A", texteAccent: "#0F172A", civique: "#475569", fondCivique: "#EDF4F7", surAutorite: "#FFFFFF" },
-  sombre: { autorite: "#F5F4F0", texteAccent: "#F5F4F0", civique: "#9C9A92", fondCivique: "#2A2823", surAutorite: "#141311" },
+  clair: { autorite: "#111827", texteAccent: "#111827", civique: "#5B6270", fondCivique: "#F3F4F6", surAutorite: "#FFFFFF" },
+  sombre: { autorite: "#F3F4F6", texteAccent: "#F3F4F6", civique: "#9CA3AF", fondCivique: "#212833", surAutorite: "#0D1117" },
 });
 
 /* Les échelons : identiques dans les deux thèmes, sauf « France ». */
@@ -80,7 +92,7 @@ export const ECHELONS_PAR_MODE: Record<Mode, Record<Echelon, string>> = {
    12:1. Clair : valeurs de main, inchangées. */
 export const TEINTES_PAR_MODE: Record<Mode, Record<Echelon, string>> = {
   clair: { ville: "#dbeaee", agglo: "#e4f3f7", dept: "#f7ece4", region: "#efe7fb", france: "#ecebe8" },
-  sombre: { ville: "#1D2728", agglo: "#1C2B2C", dept: "#2E2218", region: "#281E31", france: "#1D1C1B" },
+  sombre: { ville: "#1D2728", agglo: "#1C2B2C", dept: "#2E2218", region: "#281E31", france: "#1B212B" },
 };
 
 export const NEUTRES_PAR_MODE: Record<Mode, Neutres> = { clair: NEUTRES_CLAIR, sombre: NEUTRES_SOMBRE };
@@ -91,7 +103,7 @@ export const NEUTRES_PAR_MODE: Record<Mode, Neutres> = { clair: NEUTRES_CLAIR, s
    - « ivoire » (B, D) : papier chaud. Contrastes calculés : encre 16,0:1, sourd 6,7:1 (seuil AA : 4,5:1). */
 export type FondCarte = "nuit" | "ivoire";
 export const NEUTRES_CARTE: Record<FondCarte, Neutres> = {
-  nuit: NEUTRES_SOMBRE,
+  nuit: NUIT_CARTE,
   ivoire: { sol: "#F5F1E8", carte: "#FFFFFF", encre: "#171614", sourd: "#57544D", trait: "#171614", voile: "#EAE4D6", blanc: "#ffffff", lien: "#171614" },
 };
 
@@ -99,7 +111,8 @@ export const NEUTRES_CARTE: Record<FondCarte, Neutres> = {
 export const OMBRE_PAR_MODE = {
   /* Refonte « légère » (09/11/2026) : une ombre à peine visible. */
   /* Step Up (25/11/2026) : une ombre douce qui détache la carte du sol ivoire. */
-  clair: { shadowColor: "#1A1917", shadowOpacity: 0.07, shadowRadius: 16, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  /* Premium (25/11/2026) : une ombre à peine là ; le filet fait le travail. */
+  clair: { shadowColor: "#111827", shadowOpacity: 0.04, shadowRadius: 12, shadowOffset: { width: 0, height: 2 }, elevation: 1 },
   /* DA premium (07/11/2026) : noir à 20 %, flou 20, décalage 5. Le clair, gardé par le banc
      de non-régression, n'est pas touché. */
   /* docs/historique/DESIGN.md (09/11/2026) : en sombre, la profondeur vient des surfaces et des filets, pas d'une ombre

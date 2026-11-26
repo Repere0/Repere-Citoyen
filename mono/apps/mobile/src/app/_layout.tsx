@@ -34,6 +34,8 @@ import { FournisseurTheme } from "../lib/themeChoix";
 import { NEUTRES_PAR_MODE, type Mode } from "../lib/palette";
 import { LIBELLES } from "@repere/core";
 import { Retour } from "../ui/retour";
+import { useBureau } from "../lib/bureau";
+import { BarreLaterale } from "../ui/bureau/barre-laterale";
 
 /* Le theme de navigation reprend les neutres de la palette (aucune couleur ici). */
 function themeDe(mode: Mode) {
@@ -84,7 +86,10 @@ export default function Coquille() {
   const chemin = usePathname();
   const barriere = !(etatProfil.profil && etatProfil.profil.prenom);
   const [demandee, setDemandee] = useState(false);
-  const dressee = bienvenueDressee(barriere, chemin, demandee);
+  /* Dashboard desktop (porteur, 25/11/2026) : sur grand écran, l'accueil EST l'onboarding (recherche au centre, tour
+     guidé en 3 étapes, ui/bureau/) ; la bienvenue au prénom ne se pose que si on la demande (Réglages). */
+  const { bureau } = useBureau();
+  const dressee = bienvenueDressee(barriere, chemin, demandee) && (!bureau || demandee);
   const bienvenue = useMemo(() => ({ ouvrir: () => setDemandee(true) }), []);
   const [polices, erreur] = useFonts({ Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold });
   if (!polices && !erreur) return null;
@@ -98,7 +103,9 @@ export default function Coquille() {
             <AdresseCommune />
             <StatusBar style={mode === "sombre" ? "light" : "dark"} />
             <ThemeProvider value={tema}>
-              <View style={{ flex: 1, display: dressee ? "none" : "flex" }} testID="application" accessibilityElementsHidden={dressee} importantForAccessibility={dressee ? "no-hide-descendants" : "auto"}>
+              <View style={{ flex: 1, display: dressee ? "none" : "flex", flexDirection: bureau ? "row" : "column" }} testID="application" accessibilityElementsHidden={dressee} importantForAccessibility={dressee ? "no-hide-descendants" : "auto"}>
+              {bureau ? <BarreLaterale /> : null}
+              <View style={{ flex: 1 }}>
               <Stack
                 screenOptions={{
                   headerStyle: { backgroundColor: couleurs.sol },
@@ -139,6 +146,7 @@ export default function Coquille() {
                 <Stack.Screen name="recherche" options={{ title: "Rechercher", animation: "slide_from_bottom", headerLeft: () => <Retour texte="Fermer" etiquette="Fermer la recherche" /> }} />
                 <Stack.Screen name="partager" options={{ title: "Partager", animation: "slide_from_bottom" }} />
               </Stack>
+              </View>
               </View>
               {barriere ? (
                 <View testID="barriere-bienvenue" style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, zIndex: 10, backgroundColor: fonds.sol, display: dressee ? "flex" : "none" }}>

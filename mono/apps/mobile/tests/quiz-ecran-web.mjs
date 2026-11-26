@@ -102,7 +102,7 @@ ok(frise.slice(0, -1).every(f => f && f.bas === 0), "frise des rangs : le fil de
 if (process.argv[3]) await page.screenshot({ path: process.argv[3] + "/quiz-rangs.png" });
 ok(await page.getByTestId("quiz-rejouer").count() === 1, "« Nouvelle manche » est le bouton principal");
 const plein = await page.getByTestId("quiz-rejouer").evaluate(e => getComputedStyle(e).backgroundColor);
-ok(plein === "rgb(15, 23, 42)" || plein === "rgb(245, 244, 240)", "« Nouvelle manche » est un bouton plein (" + plein + ")");
+ok(plein === "rgb(17, 24, 39)" || plein === "rgb(243, 244, 246)", "« Nouvelle manche » est un bouton plein (" + plein + ")");
 ok(!/classement|palmarès|meilleur/i.test(joint), "la modale ne compare personne : ce sont des paliers, pas un palmarès");
 await page.getByRole("button", { name: "Fermer la liste des rangs" }).click();
 await page.waitForTimeout(400);

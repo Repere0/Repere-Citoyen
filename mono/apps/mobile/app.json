@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon-sombre.png",
       "resizeMode": "contain",
-      "backgroundColor": "#141311"
+      "backgroundColor": "#0D1117"
     },
     "ios": {
       "supportsTablet": true,
@@ -43,8 +43,8 @@
       "lang": "fr",
       "display": "standalone",
       "orientation": "portrait",
-      "backgroundColor": "#141311",
-      "themeColor": "#141311"
+      "backgroundColor": "#0D1117",
+      "themeColor": "#0D1117"
     },
     "plugins": [
       "expo-router",

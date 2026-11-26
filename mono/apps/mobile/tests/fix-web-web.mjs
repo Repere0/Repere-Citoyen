@@ -19,15 +19,15 @@ await page.goto(BASE, { waitUntil: "networkidle" });
 await passerBienvenue(page);
 await page.waitForTimeout(1200);
 const fond = async () => rgb(await page.evaluate(() => { let e = document.elementFromPoint(4, 420); while (e) { const c = getComputedStyle(e).backgroundColor; if (c && c !== "rgba(0, 0, 0, 0)") return c; e = e.parentElement; } return "0,0,0"; }));
-ok((await fond()) === "20,19,17", `sombre par défaut malgré un système en clair (fond ${await fond()})`);
+ok((await fond()) === "13,17,23", `sombre par défaut malgré un système en clair (fond ${await fond()})`);
 const bascule = page.getByRole("button", { name: "Passer en mode clair" });
 ok(await bascule.count() === 1, "la bascule « Passer en mode clair » est dans l'en-tête");
 if (CAP) await page.screenshot({ path: CAP + "/web-sombre.png" });
 await bascule.click(); await page.waitForTimeout(600);
-ok((await fond()) !== "20,19,17", "la bascule passe en clair");
+ok((await fond()) !== "13,17,23", "la bascule passe en clair");
 ok(await page.getByRole("button", { name: "Passer en mode sombre" }).count() === 1, "le bouton propose alors le mode sombre");
 await page.getByRole("button", { name: "Passer en mode sombre" }).click(); await page.waitForTimeout(600);
-ok((await fond()) === "20,19,17", "et revient en sombre");
+ok((await fond()) === "13,17,23", "et revient en sombre");
 
 const champ = page.getByPlaceholder(/Votre ville ou code postal/);
 await champ.click(); await page.waitForTimeout(300);
