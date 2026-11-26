@@ -9,6 +9,68 @@
  * ne nomme une personne ni un camp — la neutralite du produit et l'interdiction
  * de ranger des territoires ou des personnes s'appliquent aussi au glossaire. */
 export const GLOSSAIRE = {
+  /* 26/11/2026 (porteur : « les termes essentiels manquants », niveau 15 ans). Quinze mots de base de la vie
+     publique. Chaque définition évite de citer son propre mot : sinon le quiz « quel mot ? » ne peut pas la poser. */
+  "navette parlementaire": {
+    titre: "Navette parlementaire",
+    corps: "Aller-retour d'un texte de loi entre l'Assemblée nationale et le Sénat, jusqu'à ce que les deux votent exactement la même version. Pour la plupart des lois, si le désaccord dure, le gouvernement peut demander à l'Assemblée nationale de trancher.",
+  },
+  "scrutin uninominal": {
+    titre: "Scrutin uninominal",
+    corps: "Mode d'élection où l'on vote pour une seule personne, et non pour une liste. Les législatives et la présidentielle se votent ainsi, en deux tours.",
+  },
+  "scrutin proportionnel": {
+    titre: "Scrutin proportionnel",
+    corps: "Mode d'élection où chaque liste obtient un nombre de sièges en rapport avec sa part des voix. Les élections européennes se votent ainsi en France.",
+  },
+  constitution: {
+    titre: "Constitution",
+    corps: "Texte qui fixe les règles de base de l'État : qui fait la loi, qui gouverne, qui juge, et les droits de chacun. Celle de la France date du 4 octobre 1958.",
+  },
+  promulgation: {
+    titre: "Promulgation",
+    corps: "Signature d'une loi votée par le président de la République, pour qu'elle puisse s'appliquer. Il a quinze jours pour le faire, et peut demander au Parlement de voter le texte une nouvelle fois.",
+  },
+  "journal officiel": {
+    titre: "Journal officiel (JO)",
+    corps: "Publication de l'État où paraissent les lois et les décrets. Un texte s'applique à la date qu'il prévoit, ou sinon le lendemain de sa parution.",
+  },
+  "suffrage universel": {
+    titre: "Suffrage universel",
+    corps: "Droit de vote de tous les citoyens majeurs, sans condition de fortune ni de diplôme. En France, les femmes ont obtenu ce droit en 1944 et ont voté pour la première fois en 1945.",
+  },
+  "vote blanc": {
+    titre: "Vote blanc",
+    corps: "Bulletin vide, ou enveloppe vide, mis dans l'urne pour dire qu'on ne choisit aucun candidat. Depuis 2014, il est compté à part, mais pas dans les suffrages exprimés : il ne change pas le résultat.",
+  },
+  procuration: {
+    titre: "Procuration",
+    corps: "Démarche qui permet à un électeur absent le jour de l'élection de confier son choix à un autre électeur, qui votera à sa place. Elle se demande en ligne, au commissariat, à la gendarmerie ou au consulat.",
+  },
+  dissolution: {
+    titre: "Dissolution",
+    corps: "Décision du président de la République de mettre fin avant terme au mandat des députés, ce qui entraîne de nouvelles élections législatives. Il ne peut pas recommencer dans l'année qui suit ces élections.",
+  },
+  gouvernement: {
+    titre: "Gouvernement",
+    corps: "Le Premier ministre et les ministres. Il conduit la politique de la nation, et l'Assemblée nationale peut le renverser par une motion de censure.",
+  },
+  "premier ministre": {
+    titre: "Premier ministre",
+    corps: "Chef du gouvernement, nommé par le président de la République. Il dirige l'action du gouvernement et propose les noms de ceux qui en feront partie.",
+  },
+  "president de la republique": {
+    titre: "Président de la République",
+    corps: "Chef de l'État, élu au suffrage universel direct pour cinq ans. Il nomme le Premier ministre, peut dissoudre l'Assemblée nationale et est le chef des armées.",
+  },
+  abstention: {
+    titre: "Abstention",
+    corps: "Fait de ne pas prendre parti dans un vote. Pour un député, c'est voter ni pour ni contre ; pour un électeur, c'est ne pas aller voter.",
+  },
+  "conseil des ministres": {
+    titre: "Conseil des ministres",
+    corps: "Réunion du gouvernement chaque semaine, présidée par le président de la République. On y adopte les projets de loi et certains décrets.",
+  },
   circonscription: {
     titre: "Circonscription",
     corps: "Territoire dans lequel les électeurs élisent un député à l'Assemblée nationale. La France en compte 577 ; le découpage actuel date de 2010. Une commune peut être partagée entre plusieurs circonscriptions.",

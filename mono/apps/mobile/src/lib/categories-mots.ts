@@ -5,6 +5,8 @@ export const CATEGORIE_DE: Record<string, Categorie> = {
   exercice: "Budget", "encours de dette": "Budget", subvention: "Budget", investissement: "Budget", fonctionnement: "Budget",
   plf: "Budget", plfr: "Budget", plfss: "Budget", lolf: "Budget", bp: "Budget", ca: "Budget", dgf: "Budget", crc: "Budget",
   ofgl: "Budget", tva: "Budget", csg: "Budget", crds: "Budget", detr: "Budget", fctva: "Budget",
+  "scrutin uninominal": "Élections", "scrutin proportionnel": "Élections", "suffrage universel": "Élections", "vote blanc": "Élections",
+  procuration: "Élections", abstention: "Élections", dissolution: "Élections",
   circonscription: "Élections", referendum: "Élections", scrutin: "Élections", "scrutin solennel": "Élections",
   mandat: "Élus", "adjoint au maire": "Élus", maire: "Élus", "conseiller municipal": "Élus", "conseiller départemental": "Élus",
   "groupe parlementaire": "Élus", rapporteur: "Élus", ps: "Élus", lr: "Élus", rn: "Élus", lfi: "Élus", eelv: "Élus", epr: "Élus",

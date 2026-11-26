@@ -16,7 +16,7 @@ type Resume = { valide?: boolean; resume?: string; source?: { producteur?: strin
 export function ResumeClair({ resume, lienOfficiel }: { resume: Resume; lienOfficiel?: string }) {
   const r = resumeAffichable(resume) as { texte: string; producteur: string; url: string; releveLe: string } | null;
   if (!r) {
-    return <Vide titre={PAS_DE_RESUME} lien={lienOfficiel ? { texte: "Lire le texte officiel", url: lienOfficiel } : undefined} />;
+    return <Vide icone="document-text-outline" titre={PAS_DE_RESUME} lien={lienOfficiel ? { texte: "Lire le texte officiel", url: lienOfficiel } : undefined} />;
   }
   return (
     <View testID="resume-clair" style={{ gap: PAS * 2, padding: PAS * 4, borderRadius: RAYON.carte, backgroundColor: couleurs.carte, borderWidth: 1, borderColor: couleurs.trait }}>

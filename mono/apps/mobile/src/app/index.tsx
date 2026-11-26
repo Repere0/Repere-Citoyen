@@ -698,7 +698,7 @@ export default function Accueil() {
             )}
             {etat === ETATS.EN_COURS ? <SquelettesListe n={3} hauteur={72} /> : null}
             {etat !== ETATS.SERVI && etat !== ETATS.EN_COURS && phrase ? (
-              <Vide titre={phrase.titre} corps={phrase.corps}
+              <Vide icone="location-outline" titre={phrase.titre} corps={phrase.corps}
                 action="Réessayer" onAction={() => setEssai(n => n + 1)} />
             ) : null}
             {!bureau && !recherchant && !cherches.length && !tout && recentes.length ? (
@@ -751,7 +751,7 @@ export default function Accueil() {
             ) : null}
             {/* V13 bloc D : sous le pitch et la recherche, au-dessus des cartes. Masquee sans fait de moins de 7 jours. */}
             {manquante ? (
-              <Vide titre={`${manquante[1]} existe bien en Île-de-France : c'est nous qui n'avons pas encore sa fiche.`}
+              <Vide icone="location-outline" titre={`${manquante[1]} existe bien en Île-de-France : c'est nous qui n'avons pas encore sa fiche.`}
                 corps="Les données publiées que Repère lit ne contiennent pas de fiche pour cette commune. Ce n'est pas une erreur de votre part, et ce n'est pas la preuve que la commune n'existe pas."
                 action="Chercher une autre commune" onAction={() => setFiltre("")} />
             ) : null}
@@ -764,10 +764,10 @@ export default function Accueil() {
             ) : null}
             {recherche.codePostal && trouvees.length === 0 && !manquante ? (
               recherche.codePostal.disponible
-                ? <Vide titre={`Aucune commune d'Île-de-France pour le code postal ${recherche.codePostal.saisi}.`}
+                ? <Vide icone="location-outline" titre={`Aucune commune d'Île-de-France pour le code postal ${recherche.codePostal.saisi}.`}
                     corps="Pendant la bêta, l'application ne couvre que l'Île-de-France. Vous pouvez aussi taper le nom de la commune."
                     action="Effacer la recherche" onAction={() => setFiltre("")} />
-                : <Vide titre="La recherche par code postal n'est pas encore disponible."
+                : <Vide icone="location-outline" titre="La recherche par code postal n'est pas encore disponible."
                     corps="Tapez le nom de la commune : Repère la retrouve même avec une faute de frappe."
                     action="Effacer la recherche" onAction={() => setFiltre("")} />
             ) : null}
@@ -775,7 +775,7 @@ export default function Accueil() {
               /* 08/10/2026 : « Rien ne correspond » laissait croire que la commune
                  n'existe pas. L'application ne couvre que l'Ile-de-France pendant la
                  beta : c'est une limite de couverture, pas une absence de donnees. */
-              <Vide titre={`Aucune commune d'Île-de-France ne correspond à « ${filtre.trim()} ».`}
+              <Vide icone="location-outline" titre={`Aucune commune d'Île-de-France ne correspond à « ${filtre.trim()} ».`}
                 corps="Pendant la bêta, l'application ne couvre que l'Île-de-France : pour une commune d'ailleurs, les données ne sont pas encore disponibles ici. Sinon, vérifiez l'orthographe du début du nom."
                 action="Effacer la recherche" onAction={() => setFiltre("")} />
             ) : null}

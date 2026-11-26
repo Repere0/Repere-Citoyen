@@ -30,6 +30,7 @@ import { useDecoupage } from "../../lib/decoupage";
 import { SignalerErreur } from "../../ui/contact";
 import { ChoixCirconscription } from "../../ui/choix-circonscription";
 import { enfonce } from "../../ui/mouvement";
+import { useMeta } from "../../lib/meta";
 
 /* L'AIGUILLEUR EN UN GESTE (maquette Stitch, 09/11/2026) : un sujet de la vie courante ouvre le
    niveau qui en décide. Les phrases reprennent celles de la chaîne (COMPETENCES, @repere/core) et
@@ -53,6 +54,7 @@ const SUJETS: Sujet[] = [
 
 export default function QuiDecide() {
   const { choix } = useSelection();
+  useMeta(choix && `Qui décide quoi pour ${choix.nom} : maire, conseil municipal, intercommunalité, département, région et député, avec leurs sources.`);
   const groupes = useGroupes();
   /* Accordéon : seul l'échelon le plus proche est ouvert au départ (maquette Stitch). */
   const [ouverts, setOuverts] = useState<Set<Echelon>>(() => new Set<Echelon>(["ville"]));

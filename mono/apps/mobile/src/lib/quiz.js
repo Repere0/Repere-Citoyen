@@ -126,11 +126,22 @@ export function construireQuestionMot(entrees, cle, hasard = Math.random) {
   return { cle: cible.cle, titre: cible.titre, enonce: definition, propositions, explication: cible.corps };
 }
 
-/* Une manche : TAILLE_MANCHE questions, tirées au hasard, sans répétition. */
-export function mancheDuQuiz(entrees, taille = TAILLE_MANCHE, hasard = Math.random) {
+/* Le mot `cle` peut-il être posé au quiz ? (Le dictionnaire ne propose « Me tester sur ce mot » qu'à cette
+   condition : jamais un lien qui mène à une autre question que celle promise.) */
+export function quizPossible(entrees, cle) {
+  const pool = entreesDuQuizMots(entrees);
+  return pool.some(e => e.cle === cle) && !!construireQuestionMot(pool, cle, () => 0.5);
+}
+
+/* Une manche : TAILLE_MANCHE questions, tirées au hasard, sans répétition. `premier` (26/11/2026, lien depuis le
+   dictionnaire) : ce mot est posé en premier s'il peut l'être, la suite au hasard. */
+export function mancheDuQuiz(entrees, taille = TAILLE_MANCHE, hasard = Math.random, premier = null) {
   const pool = entreesDuQuizMots(entrees);
   const questions = [];
-  for (const e of melanger(pool, hasard)) {
+  const ordre = melanger(pool, hasard);
+  const tete = premier ? ordre.findIndex(e => e.cle === premier) : -1;
+  if (tete > 0) ordre.unshift(...ordre.splice(tete, 1));
+  for (const e of ordre) {
     const q = construireQuestionMot(pool, e.cle, hasard);
     if (q) questions.push(q);
     if (questions.length === taille) break;

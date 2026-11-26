@@ -95,7 +95,7 @@ export default function Partager() {
           <Page>
             <Stack.Screen options={{ title: "Partager" }} />
             <Question etiquette="Partager" question="Rien à partager pour l'instant" />
-            <Vide {...copie} />
+            <Vide icone="share-social-outline" {...copie} />
           </Page>
         );
       }

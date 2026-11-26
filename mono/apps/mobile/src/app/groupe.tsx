@@ -87,7 +87,7 @@ export default function Groupe() {
       <Page sansDate>
         <Stack.Screen options={{ title: titre }} />
         <Question etiquette="Groupe à l'Assemblée nationale" question={titre} />
-        <Vide titre="La liste des députés par groupe n'est pas encore sur cet appareil." corps="Elle vient de la table des groupes de l'Assemblée nationale, publiée chaque matin par Repère." />
+        <Vide icone="people-outline" titre="La liste des députés par groupe n'est pas encore sur cet appareil." corps="Elle vient de la table des groupes de l'Assemblée nationale, publiée chaque matin par Repère." />
       </Page>
     );
   }
@@ -112,7 +112,7 @@ export default function Groupe() {
       <Page sansDate>
         <Stack.Screen options={{ title: titre }} />
         <Question etiquette="Groupe à l'Assemblée nationale" question={titre} />
-        <Vide titre="Aucun député de ce groupe dans la table publiée." corps="La table des groupes de l'Assemblée ne rattache aucun député à ce groupe à cette date." />
+        <Vide icone="people-outline" titre="Aucun député de ce groupe dans la table publiée." corps="La table des groupes de l'Assemblée ne rattache aucun député à ce groupe à cette date." />
         {source}
       </Page>
     );

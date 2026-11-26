@@ -130,7 +130,7 @@ export default function Elus() {
                 );
               })}
             </ScrollView>
-            {ABSENTS[fonction] ? <Vide titre={ABSENTS[fonction] as string} corps="Repère n'affiche que ce qu'il publie, avec sa source." /> : null}
+            {ABSENTS[fonction] ? <Vide icone="people-outline" titre={ABSENTS[fonction] as string} corps="Repère n'affiche que ce qu'il publie, avec sa source." /> : null}
             {etat === ETATS.SERVI && !ABSENTS[fonction] ? (
               <View style={{ flexDirection: "row" }}>
                 {/* Variante A : le compteur n'est pas la réponse de l'écran ; une ligne discrète suffit. */}
@@ -139,11 +139,11 @@ export default function Elus() {
             ) : null}
             {etat === ETATS.EN_COURS ? <SquelettesListe n={5} hauteur={68} /> : null}
             {etat !== ETATS.SERVI && etat !== ETATS.EN_COURS && phrase ? (
-              <Vide titre={phrase.titre} corps={phrase.corps}
+              <Vide icone="people-outline" titre={phrase.titre} corps={phrase.corps}
                 action="Réessayer" onAction={() => setEssai(n => n + 1)} />
             ) : null}
             {etat === ETATS.SERVI && cherches.length && !trouves.length ? (
-              <Vide titre={`Aucun élu publié ne correspond à « ${filtre.trim()} ».`}
+              <Vide icone="people-outline" titre={`Aucun élu publié ne correspond à « ${filtre.trim()} ».`}
                 corps="Essayez le nom de famille, le département ou la fonction."
                 action="Effacer la recherche" onAction={() => setFiltre("")} />
             ) : null}

@@ -91,6 +91,9 @@ export function SemaineParlement({ sp, lu, nom, style }: { sp: Semaine | null | 
         ? "Aucune séance publique n'est annoncée cette semaine."
         : "L'agenda de cette semaine n'est pas encore publié.";
   const notes = [
+    /* État vide engageant (porteur, 26/11/2026) mais vrai : on ne dit pas « en pause » ni « revenez lundi », ce que
+       l'agenda ne dit pas ; on dit où le travail continue. */
+    !sp.total && sp.jours.some(j => j.annonce) ? "Sans séance publique, le travail continue : en commission, où les textes sont examinés avant la séance, et dans les circonscriptions. Les derniers votes restent consultables." : null,
     `Cela concerne tout le pays, pas seulement ${nom}.`,
     votes.length ? "Lors d'un vote solennel, chaque député vote à son nom." : null,
     manquantes.length ? `Le calendrier ${manquantes[0] === "Sénat" ? "du Sénat" : "de l'Assemblée nationale"} n'est pas arrivé : seules les séances ${lues[0] === "Sénat" ? "du Sénat" : "de l'Assemblée nationale"} sont comptées.` : null,

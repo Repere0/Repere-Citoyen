@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { appliquer } from "./pwa.mjs";
 import { allegerPolices } from "./polices-web.mjs";
 import { miroir, verdictMiroir, FICHIERS, BASE_PUBLIQUE } from "./miroir-donnees.mjs";
+import { ecrireSeo } from "./seo.mjs";
 
 const app = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(app, "dist");
@@ -45,4 +46,8 @@ console.log(`Donnees publiques completees : ${m.copies.length} fichier(s) copie(
 const pol = await allegerPolices(dist);
 console.log(`Polices web : ${Math.round(pol.avant / 1024)} Ko de TTF -> ${Math.round(pol.apres / 1024)} Ko de woff2 (${pol.pictogrammes} pictogrammes Ionicons)`);
 appliquer(app, dist);
+{
+  const r = ecrireSeo(dist);
+  console.log(`Référencement : ${r.pages} pages d'écran, ${r.indexable ? "robots.txt et sitemap.xml (production)" : "robots.txt fermé (aperçu ou local)"}`);
+}
 console.log("PWA prete dans apps/mobile/dist");

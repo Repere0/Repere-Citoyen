@@ -102,6 +102,15 @@ for (const [larg, large] of [[1440, true], [1100, false]]) {
   await contexte.close();
 }
 
+/* 2 ter. Pages en deux colonnes : deux paragraphes qui se suivent ne se collent pas (26/11/2026, Soutenir). */
+{
+  const { contexte, page } = await ouvrir(1440, 900, { prenom: "Test", animationsReduites: true, mode: "clair", alertes: [] }, { d: "77", c: "77284" });
+  await page.goto(BASE + "/soutenir", { waitUntil: "networkidle" }); await page.waitForTimeout(1500);
+  const [a, b] = await Promise.all([page.getByText(/^Bientôt disponible/).first().boundingBox(), page.getByText(/^Repère ne collecte aujourd/).first().boundingBox()]);
+  verifier(a && b && b.y >= a.y + a.height - 1, `Soutenir à 1440 px : « Repère ne collecte… » commence sous « Bientôt disponible… » (${a && Math.round(a.y + a.height)}, ${b && Math.round(b.y)})`);
+  await contexte.close();
+}
+
 /* 3. Mobile : rien ne change. */
 {
   const { contexte, page } = await ouvrir(390, 844, { prenom: "Test", animationsReduites: true, mode: "clair", alertes: [] });
