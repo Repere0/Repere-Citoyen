@@ -32,7 +32,7 @@ export const URL_MISTRAL = "https://api.mistral.ai/v1/chat/completions";
 /* La consigne du porteur (26/11/2026), mot pour mot dans sa partie centrale, et les règles de Repère autour. */
 export const CONSIGNE = [
   "Explique ce texte à un jeune de 15 ans, en 3 phrases maximum, sans aucun jugement de valeur, en te basant UNIQUEMENT sur les faits présents dans ce texte.",
-  "Règles : n'ajoute aucun nombre, aucune date ni aucun nom qui ne figure pas dans le texte ; n'utilise ni « important », ni « mieux », ni « pire », ni aucun mot qui donne un avis ;",
+  "Règles : n'ajoute aucun nombre, aucune date ni aucun nom qui ne figure pas dans le texte ; n'utilise aucun mot qui donne un avis, qui compare ou qui classe ;",
   "ne dis pas si le texte est bon ou mauvais ; écris en français courant, au présent ; réponds par le résumé seul, sans titre ni introduction.",
 ].join(" ");
 
