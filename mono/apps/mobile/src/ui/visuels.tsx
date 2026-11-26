@@ -63,17 +63,27 @@ export function BarreSegments({ segments, hauteur = 32, etiquette }: { segments:
    sur lui. Les trois postes sont ceux que la source publie : ni école ni route, que les comptes ne
    détaillent pas. Couleurs de la jauge du budget (invariant 7), jamais politiques. */
 export function BarreBudget({ parts }: { parts: { sal: number; inv: number; aut: number } }) {
+  /* 26/11/2026 (porteur) : plus d'icône ni de montant DANS la barre (illisibles) ; une barre fine, puis trois colonnes
+     de même largeur, chacune : la pastille, le mot, le montant. Les libellés s'alignent d'une ligne à l'autre. */
   const lignes: (SegmentBarre & { mot: string })[] = [
-    { cle: "sal", mot: "Salaires", valeur: parts.sal, couleur: JAUGE.salaires, icone: "people", dedans: `${parts.sal}\u00a0€` },
-    { cle: "inv", mot: "Investir", valeur: parts.inv, couleur: JAUGE.investissement, icone: "construct", dedans: `${parts.inv}\u00a0€` },
-    { cle: "aut", mot: "Autres", valeur: parts.aut, couleur: JAUGE.autres, icone: "ellipsis-horizontal", dedans: `${parts.aut}\u00a0€` },
+    { cle: "sal", mot: "Salaires", valeur: parts.sal, couleur: JAUGE.salaires },
+    { cle: "inv", mot: "Investir", valeur: parts.inv, couleur: JAUGE.investissement },
+    { cle: "aut", mot: "Autres", valeur: parts.aut, couleur: JAUGE.autres },
   ];
   return (
-    <View style={{ gap: PAS * 2 }}>
-      <BarreSegments hauteur={48} segments={lignes}
+    <View style={{ gap: PAS * 4 }}>
+      <BarreSegments hauteur={12} segments={lignes}
         etiquette={`Sur 100 euros dépensés : ${parts.sal} de salaires, ${parts.inv} d'investissements, ${parts.aut} d'autres dépenses.`} />
-      <View style={{ flexDirection: "row", gap: 2 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-        {lignes.filter(x => x.valeur > 0).map(x => <Text key={x.cle} numberOfLines={1} style={[TYPO.note, { flex: x.valeur, textAlign: "center" }]}>{x.mot}</Text>)}
+      <View style={{ flexDirection: "row", gap: PAS * 3 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        {lignes.map(x => (
+          <View key={x.cle} style={{ flex: 1, gap: PAS }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 2 }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: x.couleur }} />
+              <Text numberOfLines={1} style={TYPO.note}>{x.mot}</Text>
+            </View>
+            <Text style={[TYPO.section, { fontFamily: POLICE.donneeForte, fontVariant: ["tabular-nums"] }]}>{x.valeur}{"\u00a0"}€</Text>
+          </View>
+        ))}
       </View>
     </View>
   );
@@ -304,7 +314,7 @@ export function Frise({ jalons, etiquette }: { jalons: Jalon[]; etiquette?: stri
               j.actif && { backgroundColor: couleurs[j.echelon || "france"] }]} />
             {i < jalons.length - 1 ? <View style={s.jalonTrait} /> : null}
           </View>
-          <View style={{ flex: 1, paddingBottom: PAS * 5, gap: 2 }}>
+          <View style={{ flex: 1, paddingBottom: PAS * 6, gap: 2 }}>
             {j.date ? <Text style={TYPO.micro}>{j.date}</Text> : null}
             <Text style={[TYPO.corps, { fontWeight: j.actif ? "800" : "600" }]}>{j.titre}</Text>
             {j.texte ? <Text style={TYPO.note}>{j.texte}</Text> : null}
@@ -418,7 +428,7 @@ export function Chaine({ niveaux, compact, surNom, ouverts, basculer }: {
             )}
             {i < niveaux.length - 1 ? <View style={[compact ? s.jalonTrait : s.timelineTrait, { backgroundColor: couleurs.trait }, compact ? null : { width: Math.max(1, 5 - i) }]} /> : null}
           </View>
-          <View style={{ flex: 1, paddingBottom: compact ? PAS * 3 : PAS * 7, gap: compact ? 2 : PAS }}>
+          <View style={{ flex: 1, paddingBottom: compact ? PAS * 3 : PAS * 8, gap: compact ? 2 : PAS }}>
             {/* La couleur d'echelon est portee par le maillon, pas par le texte :
                 en 13 px, l'intercommunalite (ancien cyan) faisait 3,21:1 sur le fond
                 et le departement 4,38:1 — sous le seuil AA de 4,5:1 (mesure du
@@ -483,7 +493,7 @@ const s = feuille(() => StyleSheet.create({
   pisteBarre: { flex: 1.2, height: 6, borderRadius: 3, backgroundColor: couleurs.voile, overflow: "hidden" },
   remplissageBarre: { height: 6, borderRadius: 3, backgroundColor: couleurs.encre },
   tendance: { alignSelf: "flex-start", flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: PAS * 2, backgroundColor: couleurs.voile, borderRadius: RAYON.pastille, paddingHorizontal: PAS * 2, paddingVertical: PAS },
-  variation: { flexDirection: "row", alignItems: "center", gap: PAS * 4, padding: PAS * 5, borderRadius: RAYON.carte, backgroundColor: couleurs.carte },
+  variation: { flexDirection: "row", alignItems: "center", gap: PAS * 4, padding: PAS * 6, borderRadius: RAYON.carte, backgroundColor: couleurs.carte },
   variationFleche: { width: 56, height: 56, borderRadius: 28, backgroundColor: couleurs.voile, alignItems: "center", justifyContent: "center" },
   mois: { flexDirection: "row", flexWrap: "wrap", gap: 4 },
   moisCase: { width: 22, height: 22, borderRadius: 6, backgroundColor: couleurs.voile, overflow: "hidden" },

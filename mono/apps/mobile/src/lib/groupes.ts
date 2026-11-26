@@ -99,6 +99,8 @@ const SIGLE_DU_NOM: Record<string, string> = {
   "Libertés, Indépendants, Outre-mer et Territoires": "LIOT",
   "Gauche Démocrate et Républicaine": "GDR",
   "Députés non inscrits": "NI",
+  /* 26/11/2026 : « Union des droi… » était tronqué faute de sigle ; le sigle officiel du groupe est UDR. */
+  "Union des droites pour la République": "UDR",
 };
 export const sigleDuNom = (nom: string): string => SIGLE_DU_NOM[nom] || GROUPE_INCONNU;
 

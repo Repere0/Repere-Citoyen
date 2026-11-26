@@ -1,0 +1,118 @@
+# =============================================================================
+# Résumés « en clair » des lois votées — brouillons par IA (Mistral), 26/11/2026.
+#
+# LANCEMENT MANUEL SEULEMENT (Actions > Résumés en clair > Run workflow). Chaque
+# lancement réel coûte des jetons Mistral : aucun déclenchement planifié tant que le
+# porteur ne l'a pas décidé. Par défaut, --essai : le modèle répond, les contrôles
+# tournent, RIEN n'est écrit.
+#
+# Chaîne (docs/resumes-ia.md) :
+#   1. catalogue des scrutins publiés (extract-html.js) → dossiers législatifs concernés ;
+#   2. archive « Dossiers législatifs » de l'Assemblée (la même que la collecte) ;
+#   3. textes-officiels.mjs : PDF officiel du texte déposé, exposé des motifs ;
+#   4. generer_resumes.mjs : brouillon par Mistral, contrôles, valide: false ;
+#   5. hors essai : une branche et une pull request de brouillons. Le porteur relit,
+#      pose valide: true à la main, puis publie (resumes-clairs.mjs --publier).
+# Jamais rien sur main sans relecture : rien ne s'affiche avant valide: true.
+#
+# Secret requis : MISTRAL_API_KEY (Settings > Secrets and variables > Actions).
+# =============================================================================
+
+name: Résumés en clair
+
+on:
+  workflow_dispatch:
+    inputs:
+      essai:
+        description: "Essai : appeler Mistral et contrôler, sans rien écrire"
+        type: boolean
+        default: true
+      limite:
+        description: "Nombre maximal de dossiers par lancement"
+        type: number
+        default: 5
+      simulation:
+        description: "Modèle simulé (aucun appel Mistral, aucun coût) pour éprouver la chaîne"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: generer-resumes
+  cancel-in-progress: false
+
+jobs:
+  resumes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Outils (pdftotext)
+        run: |
+          node --version
+          sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+          pdftotext -v 2>&1 | head -1
+
+      - name: Catalogue des scrutins publiés
+        working-directory: mono
+        run: node scripts/extract-html.js ../app_repere_v18_20.html ./data > /dev/null
+
+      - name: Archive des dossiers législatifs de l'Assemblée
+        run: |
+          mkdir -p "$RUNNER_TEMP/an"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/an/dossiers.zip" \
+            "https://data.assemblee-nationale.fr/static/openData/repository/17/loi/dossiers_legislatifs/Dossiers_Legislatifs.json.zip"
+          unzip -oq "$RUNNER_TEMP/an/dossiers.zip" -d "$RUNNER_TEMP/an/brut"
+
+      - name: Textes officiels (exposés des motifs)
+        working-directory: mono
+        run: |
+          node scripts/textes-officiels.mjs --archive "$RUNNER_TEMP/an/brut" --scrutins data/scrutins.json \
+            --sortie "$RUNNER_TEMP/officiels" --deja ../data/resumes --limite "${{ inputs.limite }}"
+
+      - name: Brouillons de résumés
+        working-directory: mono
+        env:
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+        run: |
+          OPTIONS=""
+          if [ "${{ inputs.simulation }}" = "true" ]; then OPTIONS="--mock"
+          elif [ -z "$MISTRAL_API_KEY" ]; then echo "::error::Secret MISTRAL_API_KEY absent : rien n'est appelé."; exit 1; fi
+          if [ "${{ inputs.essai }}" = "true" ]; then OPTIONS="$OPTIONS --essai"; fi
+          node scripts/generer_resumes.mjs --liste "$RUNNER_TEMP/officiels/lots.json" $OPTIONS | tee "$RUNNER_TEMP/compte-rendu.txt"
+          { echo '```'; cat "$RUNNER_TEMP/compte-rendu.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Garder les textes et le compte rendu (7 jours)
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: resumes-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/officiels
+            ${{ runner.temp }}/compte-rendu.txt
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Pull request de brouillons (hors essai, hors simulation)
+        if: inputs.essai == false && inputs.simulation == false
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -z "$(git status --porcelain data/resumes)" ]; then echo "Aucun brouillon nouveau."; exit 0; fi
+          # Garde : un brouillon ne porte jamais valide: true (seul le porteur le pose).
+          if grep -l '"valide": *true' $(git status --porcelain data/resumes | awk '{print $2}' | grep '\.json$') 2>/dev/null; then
+            echo "::error::Un brouillon porte valide: true : refusé."; exit 1; fi
+          BRANCHE="data/resumes-$(date -u +%Y%m%d-%H%M)"
+          git config user.name "Collecte Repere"
+          git config user.email "repere0@protonmail.com"
+          git switch -c "$BRANCHE"
+          git add data/resumes
+          git commit -q -m "Brouillons de résumés en clair (Mistral, valide: false)"
+          git push -q origin "$BRANCHE"
+          gh pr create --base main --head "$BRANCHE" --title "Brouillons de résumés en clair à relire" \
+            --body "Brouillons écrits par Mistral à partir des exposés des motifs officiels, tous en valide: false. À relire un par un ; rien ne s'affiche avant valide: true puis resumes-clairs.mjs --publier. Compte rendu : run ${{ github.run_id }}." \
+            || echo "::warning::Pull request non créée (réglage du dépôt ?). La branche $BRANCHE est poussée : ouvrir la PR à la main."

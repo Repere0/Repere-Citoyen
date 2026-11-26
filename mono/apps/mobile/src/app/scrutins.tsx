@@ -23,7 +23,6 @@ import {
   chargerScrutinLot,
   ETATS,
 } from "../lib/donnees";
-import { BoutonCopierLien } from "../ui/partage/partager-texte";
 import { Page } from "../ui/page";
 import { ResumeClairDuVote } from "../ui/resume-clair";
 import { Hemicycle } from "../ui/hemicycle";
@@ -121,7 +120,7 @@ function CompteurQuestions({ questions, releve }: { questions: { d: string }[]; 
   const enCours = releve ? releve.slice(0, 7) === mois : false;
   return (
     <View accessible accessibilityLabel={`${n} question${n > 1 ? "s" : ""} posée${n > 1 ? "s" : ""} au Gouvernement en ${libelle}${enCours ? ", mois en cours" : ""}. Calcul Repère sur le relevé de l'Assemblée nationale.`}
-      style={{ flexDirection: "row", alignItems: "center", gap: PAS * 4, padding: PAS * 5, borderRadius: RAYON.carte, backgroundColor: couleurs.carte }}>
+      style={{ flexDirection: "row", alignItems: "center", gap: PAS * 4, padding: PAS * 6, borderRadius: RAYON.carte, backgroundColor: couleurs.carte }}>
       <Ionicons name="chatbubbles-outline" size={28} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
       <View style={{ flex: 1 }}>
         <Text style={[TYPO.chiffre, { fontVariant: ["tabular-nums"] }]}>{affiche.toLocaleString("fr-FR")}</Text>
@@ -219,9 +218,23 @@ function GroupeCellule({ groupe, ouvert, onPress }: { groupe: Groupe; ouvert: bo
     >
       <View style={s.celluleTete}>
         <View style={[s.groupePoint, { backgroundColor: couleurGroupe(sigle) }]} />
-        <Text style={[s.celluleNom, ouvert && { fontFamily: POLICE.titre }]} numberOfLines={1}>{etiquette}</Text>
+        {/* 26/11/2026 : un nom sans sigle connu passe sur deux lignes au lieu d'être coupé. */}
+        <Text style={[s.celluleNom, ouvert && { fontFamily: POLICE.titre }]} numberOfLines={2}>{etiquette}</Text>
       </View>
-      <Text style={s.celluleStats} numberOfLines={2}>{decompteDuGroupe(groupe, true)}</Text>
+      {/* 26/11/2026 (porteur) : les trois nombres sur une ligne, chacun au-dessus de son mot, alignés d'une cellule à
+          l'autre ; la position reste écrite en toutes lettres (invariant 7). */}
+      {groupe.pour == null && groupe.contre == null && groupe.abstentions == null
+        ? <Text style={s.celluleStats}>décompte non publié</Text>
+        : (
+          <View style={{ flexDirection: "row" }} accessible={false}>
+            {([["pour", groupe.pour], ["contre", groupe.contre], ["abst.", groupe.abstentions]] as const).map(([mot, n]) => (
+              <View key={mot} style={{ flex: 1 }}>
+                <Text style={[s.celluleStats, { color: couleurs.encre, fontFamily: POLICE.donneeForte }]}>{n == null ? "–" : n}</Text>
+                <Text style={[s.celluleStats, { fontSize: 12, lineHeight: 16 }]}>{mot}</Text>
+              </View>
+            ))}
+          </View>
+        )}
     </Pressable>
   );
 }
@@ -359,7 +372,7 @@ export default function Scrutins() {
 
   return (
     <Page>
-      <Stack.Screen options={{ title: "Le Parlement", headerRight: () => <View style={{ flexDirection: "row" }}><BoutonPartageTexte titre="Le Parlement : les derniers votes" chemin="scrutins" source="Source : Assemblée nationale et Sénat, données ouvertes." /><BoutonCopierLien icone /></View> }} />
+      <Stack.Screen options={{ title: "Le Parlement", headerRight: () => <BoutonPartageTexte titre="Le Parlement : les derniers votes" chemin="scrutins" source="Source : Assemblée nationale et Sénat, données ouvertes." /> }} />
 
       {/* 13/11/2026 (porteur) : une chambre à la fois. Les deux assemblées votent la loi ; l'écran les met
           côte à côte sans les comparer (invariant 3 : aucun rang, aucune note). */}
@@ -554,7 +567,7 @@ const s = feuille(() => StyleSheet.create({
   ongletTexte: { fontFamily: POLICE.texteMoyen, fontSize: 14, lineHeight: 18, color: couleurs.sourd, textAlign: "center" },
   ongletTexteActif: { color: couleurs.sol },
   resumeEntete: {
-    backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 5, gap: 2, ...OMBRE,
+    backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 6, gap: 2, ...OMBRE,
   },
   resumeNombre: { ...TYPO.stat, marginTop: PAS },
   resumePhrase: { fontSize: 16, lineHeight: 22, color: couleurs.sourd },
@@ -572,7 +585,7 @@ const s = feuille(() => StyleSheet.create({
   detail: { gap: PAS * 4 },
   detailTitre: { fontFamily: POLICE.affiche, fontSize: 28, lineHeight: 32, color: couleurs.encre, letterSpacing: -0.4 },
   blocLecture: {
-    backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 5, gap: PAS * 3, ...OMBRE,
+    backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 6, gap: PAS * 3, ...OMBRE,
   },
   phraseResultat: { fontFamily: POLICE.titre, fontSize: 20, lineHeight: 26, color: couleurs.encre },
   /* 13/11/2026 : deux colonnes. « 48,5 % » laisse 3 % de gouttiere ; sous 340 px de large, une cellule
@@ -599,6 +612,6 @@ const s = feuille(() => StyleSheet.create({
   positionNom: { flex: 1, fontSize: 16, lineHeight: 20, color: couleurs.encre },
   positionValeur: { fontSize: 14, lineHeight: 19, fontWeight: "700", color: couleurs.sourd },
   absence: { backgroundColor: couleurs.voile, borderRadius: RAYON.bloc, padding: PAS * 4, gap: PAS, },
-  boutonSecondaire: { minHeight: 48, borderRadius: RAYON.pastille, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 5, backgroundColor: couleurs.voile },
-  reponseBloc: { backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 5, gap: PAS * 3, ...OMBRE },
+  boutonSecondaire: { minHeight: 48, borderRadius: RAYON.pastille, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 6, backgroundColor: couleurs.voile },
+  reponseBloc: { backgroundColor: couleurs.carte, borderRadius: RAYON.carte, padding: PAS * 6, gap: PAS * 3, ...OMBRE },
 }));

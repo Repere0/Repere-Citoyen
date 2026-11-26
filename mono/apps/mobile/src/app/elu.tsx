@@ -103,11 +103,11 @@ function CarteVote({ f, onComprendre }: { f: FaitElu; onComprendre: () => void }
 
 function FeuilleVote({ f, nom, resume, base, onFermer }: { f: FaitElu | null; nom: string; resume: Resume | null; base: string | null; onFermer: () => void }) {
   const lien = f && base ? lienScrutin(base, f.sc) : null;
-  const bas = useBasSur(PAS * 5);
+  const bas = useBasSur(PAS * 6);
   return (
     <Modal visible={!!f} animationType="slide" presentationStyle="pageSheet" onRequestClose={onFermer}>
       {f ? (
-        <ScrollView {...MARQUE_DEFILEMENT} style={{ backgroundColor: couleurs.sol }} contentContainerStyle={{ padding: PAS * 5, paddingBottom: bas, gap: PAS * 3, maxWidth: 640, width: "100%", alignSelf: "center" }}>
+        <ScrollView {...MARQUE_DEFILEMENT} style={{ backgroundColor: couleurs.sol }} contentContainerStyle={{ padding: PAS * 6, paddingBottom: bas, gap: PAS * 3, maxWidth: 640, width: "100%", alignSelf: "center" }}>
           <Text style={TYPO.question} {...niveauTitre(2)}>Comprendre ce vote</Text>
           <Text style={TYPO.micro}>Scrutin n° {f.sc.n}, {dateFr(f.sc.d)}</Text>
           <Text style={[TYPO.corps, { fontWeight: "600" }]}>{titreLisible(f.sc.t)}</Text>
@@ -286,7 +286,7 @@ export default function Elu() {
                     <Pressable onPress={() => Linking.openURL(demandeVotesElu(nom).url)} accessibilityRole="button"
                       accessibilityLabel={`Demander à ${nom} de publier ses votes : ouvre un message pré-rempli dans votre messagerie`}
                       style={({ pressed }) => ({ minHeight: CIBLE + 4, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: PAS * 2,
-                        borderRadius: 999, paddingHorizontal: PAS * 5, backgroundColor: couleurs.voile, opacity: pressed ? 0.7 : 1 })}>
+                        borderRadius: 999, paddingHorizontal: PAS * 6, backgroundColor: couleurs.voile, opacity: pressed ? 0.7 : 1 })}>
                       <Ionicons name="mail-outline" size={18} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
                       <Text style={[TYPO.corps, { fontFamily: POLICE.texteGras }]}>Demander à cet élu de publier ses votes</Text>
                     </Pressable>

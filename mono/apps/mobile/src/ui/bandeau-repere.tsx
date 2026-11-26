@@ -62,7 +62,7 @@ export function BandeauRepere({ faits, sources, onOuvrir }: {
       style={({ pressed }) => [s.zone, pressed && enfonce(true)]}>
       {/* Refonte (porteur, 09/11/2026) : un bloc discret, sans icône ni fond ; un filet fin dessous. */}
       <Animated.View testID={fraiche ? "repere-frais" : undefined}
-        style={[s.visible, fraiche && { ...s.frais, borderColor: lueur.interpolate({ inputRange: [0, 1], outputRange: [couleurs.trait, couleurs.encre] }) }]}>
+        style={[s.visible, fraiche && { ...s.frais, borderColor: lueur.interpolate({ inputRange: [0, 1], outputRange: [couleurs.trait, couleurs.sourd] }) }]}>
         {fraiche ? <View style={s.point} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" /> : null}
         {/* 13/11/2026 (porteur) : la bulle coupait le fait à 28 caractères sur une ligne (« Sur 100 € encaissés à… ») :
             avec un nom de commune long, il ne restait rien à lire. L'étiquette passe au-dessus, le fait entier

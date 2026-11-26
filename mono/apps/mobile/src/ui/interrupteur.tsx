@@ -19,7 +19,7 @@ export function Interrupteur({ texte, actif, onPress, icone, aide, desactive = f
         <Text style={TYPO.corps}>{texte}</Text>
         {aide ? <Text style={TYPO.note}>{aide}</Text> : null}
       </View>
-      <View style={{ width: 48, height: 28, borderRadius: 14, padding: 4, justifyContent: "center",
+      <View style={{ width: 48, height: 28, borderRadius: 12, padding: 4, justifyContent: "center",
         backgroundColor: actif ? couleurs.encre : couleurs.trait, alignItems: actif ? "flex-end" : "flex-start" }}>
         <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: actif ? couleurs.sol : couleurs.carte }} />
       </View>

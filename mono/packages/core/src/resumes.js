@@ -10,13 +10,14 @@ export const mentionResume = producteur => (producteur === "Assemblée nationale
 export const PAS_DE_RESUME = "Pas encore de résumé pour ce texte.";
 /* Le resume publie d'un vote (12/11/2026) : cherche par la reference du dossier, sinon par le numero du scrutin.
    `index` est le contenu de resumes-clairs.json ({ resumes: { "DLR5L17N…": …, "scrutin:9759": … } }) ou null. */
-/** @param {unknown} index @param {{ dossier?: string | null, scrutin?: string | number | null }} [cles] */
+/* 26/11/2026 : `budget` (code INSEE) cherche le résumé du budget d'une commune, clé « budget:<insee> ». */
+/** @param {unknown} index @param {{ dossier?: string | null, scrutin?: string | number | null, budget?: string | null }} [cles] */
 export function resumePour(index, cles = {}) {
-  const { dossier = null, scrutin = null } = cles;
+  const { dossier = null, scrutin = null, budget = null } = cles;
   const t = index && /** @type {{ resumes?: Record<string, unknown> }} */ (index).resumes;
   if (!t || typeof t !== "object") return null;
   const lire = k => (k && Object.prototype.hasOwnProperty.call(t, k) ? t[k] : null);
-  return lire(dossier) || lire(scrutin != null ? "scrutin:" + scrutin : null);
+  return lire(dossier) || lire(scrutin != null ? "scrutin:" + scrutin : null) || lire(budget ? "budget:" + budget : null);
 }
 export function resumeAffichable(r) {
   if (!r || r.valide !== true) return null;

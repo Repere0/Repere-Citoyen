@@ -53,7 +53,7 @@ export function BandeauFraicheur() {
 /* « flottant » : la ligne se pose dans la marge haute de Page (16 px), sans repousser
    le contenu. Les réponses d'abord doivent tenir dans le premier écran à 390 x 844 :
    une ligne en flux les faisait passer de 839 à 877 px (parcours navigateur). */
-export function DatePublication({ flottant = false }: { flottant?: boolean }) {
+export function DatePublication({ flottant = false, compact = false }: { flottant?: boolean; compact?: boolean }) {
   const [e, setE] = useState(etatFraicheur());
   useEffect(() => {
     const desabonner = surFraicheur(setE);
@@ -63,8 +63,9 @@ export function DatePublication({ flottant = false }: { flottant?: boolean }) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(jour)) return null;
   const style = flottant
     ? { position: "absolute" as const, top: 0, left: PAS * 4, right: PAS * 4, fontSize: 12, lineHeight: 16, color: couleurs.sourd }
-    : [TYPO.micro, { marginBottom: PAS * 2 }];
-  return <Text testID="date-publication" style={style}>Données Repère publiées le {dateFr(jour)}.</Text>;
+    : compact ? TYPO.micro : [TYPO.micro, { marginBottom: PAS * 2 }];
+  /* Polish (25/11/2026) : à côté du logo de l'accueil, la phrase courte tient sur deux lignes. */
+  return <Text testID="date-publication" style={style}>{compact ? `Données du ${dateFr(jour)}` : `Données Repère publiées le ${dateFr(jour)}.`}</Text>;
 }
 
 /* LA DATE D'UNE DONNEE ET SON ANCIENNETE, D'UN COUP D'OEIL (V13, bloc A, 30/10/2026).

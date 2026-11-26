@@ -55,7 +55,7 @@ export function Regles2027() {
     <View style={{ gap: PAS * 3 }}>
       <Onglets etiquette="Fiches des règles" valeurs={FICHES} actif={fiche} choisir={setFiche} />
 
-      <View style={{ gap: PAS * 3, padding: PAS * 5, borderRadius: RAYON.carte, backgroundColor: couleurs.carte }}>
+      <View style={{ gap: PAS * 3, padding: PAS * 6, borderRadius: RAYON.carte, backgroundColor: couleurs.carte }}>
         {fiche === "parrainages" ? (
           <>
             <Grand valeur="500" legende="élus doivent présenter un candidat" />

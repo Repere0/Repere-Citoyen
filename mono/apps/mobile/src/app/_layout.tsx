@@ -11,7 +11,7 @@
  * l'application : aucune requete vers un hote tiers. */
 import { AdresseCommune } from "../lib/adresse-web";
 import "../lib/donnees";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Platform, View } from "react-native";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -34,7 +34,7 @@ import { FournisseurTheme } from "../lib/themeChoix";
 import { NEUTRES_PAR_MODE, type Mode } from "../lib/palette";
 import { LIBELLES } from "@repere/core";
 import { Retour } from "../ui/retour";
-import { useBureau } from "../lib/bureau";
+import { poserStylesWeb, useBureau } from "../lib/bureau";
 import { BarreLaterale } from "../ui/bureau/barre-laterale";
 
 /* Le theme de navigation reprend les neutres de la palette (aucune couleur ici). */
@@ -89,6 +89,7 @@ export default function Coquille() {
   /* Dashboard desktop (porteur, 25/11/2026) : sur grand écran, l'accueil EST l'onboarding (recherche au centre, tour
      guidé en 3 étapes, ui/bureau/) ; la bienvenue au prénom ne se pose que si on la demande (Réglages). */
   const { bureau } = useBureau();
+  useEffect(() => { poserStylesWeb(); }, []);
   const dressee = bienvenueDressee(barriere, chemin, demandee) && (!bureau || demandee);
   const bienvenue = useMemo(() => ({ ouvrir: () => setDemandee(true) }), []);
   const [polices, erreur] = useFonts({ Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold });

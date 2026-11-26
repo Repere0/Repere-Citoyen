@@ -209,7 +209,7 @@ function Ligne({ e }: { e: Entree }) {
   const contenu = (
     <View style={{ gap: PAS * 2 }}>
       <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 2 }}>
-        <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: couleurs.voile, alignItems: "center", justifyContent: "center" }}>
+        <View style={{ width: 28, height: 28, borderRadius: 12, backgroundColor: couleurs.voile, alignItems: "center", justifyContent: "center" }}>
           <Ionicons name={e.icone} size={14} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
         </View>
         <Text style={[TYPO.micro, { flex: 1 }]}>{e.quoi} · {quand}</Text>

@@ -70,13 +70,13 @@ export default function Procedure() {
       <View style={{ flexDirection: "row", gap: PAS * 3 }}>
         <Pressable onPress={() => aller(etape - 1)} disabled={etape === 0} accessibilityRole="button"
           accessibilityLabel="Étape précédente" accessibilityState={{ disabled: etape === 0 }}
-          style={({ pressed }) => ({ flex: 1, minHeight: CIBLE, borderRadius: 14, borderWidth: 1, borderColor: couleurs.trait,
+          style={({ pressed }) => ({ flex: 1, minHeight: CIBLE, borderRadius: 12, borderWidth: 1, borderColor: couleurs.trait,
             backgroundColor: couleurs.carte, alignItems: "center", justifyContent: "center", opacity: etape === 0 ? 0.4 : pressed ? 0.6 : 1 })}>
           <Text style={{ fontWeight: "700", color: couleurs.encre }}>Précédente</Text>
         </Pressable>
         <Pressable onPress={() => aller(etape + 1)} disabled={etape === dernier} accessibilityRole="button"
           accessibilityLabel="Étape suivante" accessibilityState={{ disabled: etape === dernier }}
-          style={({ pressed }) => ({ flex: 1, minHeight: CIBLE, borderRadius: 14, backgroundColor: couleurs.encre,
+          style={({ pressed }) => ({ flex: 1, minHeight: CIBLE, borderRadius: 12, backgroundColor: couleurs.encre,
             alignItems: "center", justifyContent: "center", opacity: etape === dernier ? 0.4 : pressed ? 0.7 : 1 })}>
           <Text style={{ fontWeight: "700", color: couleurs.sol }}>Suivante</Text>
         </Pressable>

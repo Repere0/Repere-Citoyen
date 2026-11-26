@@ -43,7 +43,7 @@ export function ArrondissementParis() {
   const circos = n && paris?.circonscriptions ? paris.circonscriptions.par_arrondissement[String(n)] ?? null : null;
   const noms = (circos ?? []).map(c => ({ c, d: deputes[c] })).filter(x => x.d);
   return (
-    <View testID="arrondissement-paris" style={{ gap: PAS * 3, padding: PAS * 5, borderRadius: RAYON.carte, backgroundColor: couleurs.carte }}>
+    <View testID="arrondissement-paris" style={{ gap: PAS * 3, padding: PAS * 6, borderRadius: RAYON.carte, backgroundColor: couleurs.carte }}>
       <Text style={TYPO.etiquette} {...niveauTitre(2)}>Votre arrondissement</Text>
       <Text style={TYPO.note}>Cette page montre Paris en entier : une seule commune, un seul budget. Choisissez votre arrondissement pour voir ce qui en dépend.</Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: PAS * 2, paddingVertical: PAS }}

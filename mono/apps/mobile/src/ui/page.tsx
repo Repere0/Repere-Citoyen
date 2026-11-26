@@ -2,6 +2,7 @@
  * et l'etat d'une commune qui n'est pas prete (chargement, panne, absence).
  * Chaque ecran de detail commence par UNE question, en grand. */
 import { poserStylesBureau, useBureau } from "../lib/bureau";
+import { useHauteurOnglets } from "../lib/onglets-flottants";
 import { MARQUE_DEFILEMENT } from "../lib/defilement-ios";
 import { useEffect } from "react";
 import type { ReactNode } from "react";
@@ -26,13 +27,16 @@ import { niveauTitre } from "./titre";
    (barre d'accueil, env(safe-area-inset-bottom)). Mesuré avec une marge de 34 px émulée : sans cela, le dernier
    bouton de « Élus » et de « Bienvenue » passait sous la barre d'accueil. Sans zone protégée : la marge d'avant. */
 export function useBasSur(base: number = PAS * 4): number {
-  return useSafeAreaInsets().bottom + base;
+  /* Polish (25/11/2026) : sous une barre d'onglets flottante (web), on garde sa hauteur en marge. */
+  const onglets = useHauteurOnglets();
+  return useSafeAreaInsets().bottom + base + onglets;
 }
 
 /* « sansDate » : l'écran affiche déjà la date de publication dans son propre contenu
    (Aujourd'hui : « Publication Repère du … »). Sans ce drapeau, deux dates se suivraient. */
 export function Page({ children, sansDate = false }: { children: ReactNode; sansDate?: boolean }) {
   const marges = useSafeAreaInsets();
+  const onglets = useHauteurOnglets();
   /* S'abonne au choix d'affichage : quand il change, cet ecran se redessine et
      couleurs.sol (lu ci-dessous) donne la couleur du mode courant. */
   useTheme();
@@ -40,7 +44,7 @@ export function Page({ children, sansDate = false }: { children: ReactNode; sans
   const { bureau } = useBureau();
   useEffect(() => { if (bureau) poserStylesBureau(); }, [bureau]);
   return (
-    <ScrollView {...MARQUE_DEFILEMENT} style={{ backgroundColor: couleurs.sol }} contentContainerStyle={[s.page, bureau && { maxWidth: 1280, paddingHorizontal: PAS * 12 }, { paddingTop: sansDate ? PAS * 4 : PAS * 6, paddingBottom: marges.bottom + PAS * 10 }]}>
+    <ScrollView {...MARQUE_DEFILEMENT} style={{ backgroundColor: couleurs.sol }} contentContainerStyle={[s.page, bureau && { maxWidth: 1280, paddingHorizontal: PAS * 12 }, { paddingTop: sansDate ? PAS * 4 : PAS * 6, paddingBottom: marges.bottom + PAS * 10 + onglets }]}>
       {sansDate ? null : <DatePublication flottant />}
       <BandeauFraicheur />
       {/* 23/11/2026 (ADR 0012) : arrivé par un lien, sans prénom, le lecteur lit d'abord ; le bandeau propose la suite. */}

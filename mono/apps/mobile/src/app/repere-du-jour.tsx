@@ -36,7 +36,7 @@ import { niveauTitre } from "../ui/titre";
  * Invariant 6 : ni score, ni série, ni récompense. On lit, on comprend, on partage si on veut. */
 function Bloc({ etiquette, children }: { etiquette: string; children: ReactNode }) {
   return (
-    <View style={{ gap: PAS * 3, padding: PAS * 5, borderRadius: RAYON.carte, backgroundColor: couleurs.carte }}>
+    <View style={{ gap: PAS * 3, padding: PAS * 6, borderRadius: RAYON.carte, backgroundColor: couleurs.carte }}>
       <Text style={TYPO.etiquette} {...niveauTitre(2)}>{etiquette}</Text>
       {children}
     </View>
@@ -120,7 +120,7 @@ export default function RepereDuJourEcran() {
               <View style={{ flexDirection: "row", gap: PAS * 3 }}>
                 {(liensDePartage(textePartage, lien) as { reseau: string; url: string }[]).map(x => (
                   <Pressable key={x.reseau} onPress={() => Linking.openURL(x.url)} accessibilityRole="link" accessibilityLabel={`Partager sur ${x.reseau}, ouvre ${x.reseau}`}
-                    style={({ pressed }) => ({ flex: 1, minHeight: CIBLE, borderRadius: 14, backgroundColor: couleurs.voile, alignItems: "center", justifyContent: "center", ...enfonce(pressed) })}>
+                    style={({ pressed }) => ({ flex: 1, minHeight: CIBLE, borderRadius: 12, backgroundColor: couleurs.voile, alignItems: "center", justifyContent: "center", ...enfonce(pressed) })}>
                     <Text style={{ color: couleurs.encre, fontFamily: POLICE.section }}>{x.reseau}</Text>
                   </Pressable>
                 ))}

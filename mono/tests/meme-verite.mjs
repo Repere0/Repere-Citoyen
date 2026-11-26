@@ -78,8 +78,15 @@ function attendus({ dep, insee, attendu }) {
     /* 07/11/2026 : l'application écrit le décompte en grands nombres (StatCard) sous la ligne
        métadonnées ; même fait, autre forme. Décompte incomplet : la phrase, identique au site. */
     const rep = repartitionVote(v.sc);
+    /* 26/11/2026 : les grands nombres sont passés sous la jauge, en trois colonnes « Pour / 464 / 85 % » ; même
+       fait, même arrondi que l'écran (la somme des parts ramenée à 100 sur l'abstention). */
+    const parts = rep ? (() => {
+      const t = rep.segments.reduce((n, x) => n + x.nombre, 0);
+      const pp = Math.round(rep.segments[0].nombre / t * 100), pc = Math.round(rep.segments[1].nombre / t * 100);
+      return [pp, pc, 100 - pp - pc];
+    })() : null;
     f("vote (résultat, date, décompte)", ligneScrutin(v.sc), rep
-      ? metaScrutin(v.sc) + " " + rep.segments.map(x => x.nombre.toLocaleString("fr-FR") + " " + x.libelle.toUpperCase()).join(" ")
+      ? metaScrutin(v.sc) + " " + rep.segments.map((x, i) => `${x.libelle} ${x.nombre.toLocaleString("fr-FR")} ${parts[i]} %`).join(" ")
       : undefined);
     f("vote (lien officiel)", lienScrutin(d.base, v.sc).texte);
     f("source des scrutins (date de relevé)", ligneSource({ ...d.srcScrutins, maj: undefined, mention: "relevé le " + dateFr(d.srcScrutins.releve_le) }));

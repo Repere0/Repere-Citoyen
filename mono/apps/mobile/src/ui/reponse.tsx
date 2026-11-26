@@ -89,7 +89,7 @@ const s = feuille(() => StyleSheet.create({
   /* La question suivante : une pilule PLEINE, la même sur toutes les cartes (13/11/2026, porteur). Avant, seule la
      première carte avait un bouton plein : « Où va cet argent ? » clair, « Comprendre ce vote » et « Le projet »
      sombres, lus comme un défaut d'affichage. */
-  suite: { flex: 1, minHeight: CIBLE + 4, borderRadius: RAYON.pastille, paddingHorizontal: PAS * 5, alignItems: "center", justifyContent: "center", backgroundColor: ACCENTS.autorite },
+  suite: { flex: 1, minHeight: CIBLE + 4, borderRadius: RAYON.pastille, paddingHorizontal: PAS * 6, alignItems: "center", justifyContent: "center", backgroundColor: ACCENTS.autorite },
   suiteTexte: { fontSize: 16, fontFamily: POLICE.section, color: ACCENTS.surAutorite },
   rond: { width: CIBLE, height: CIBLE, borderRadius: CIBLE / 2, backgroundColor: couleurs.voile, alignItems: "center", justifyContent: "center" },
   plus: { minHeight: CIBLE + 4, flexDirection: "row", alignItems: "center", paddingHorizontal: PAS * 4, backgroundColor: couleurs.carte,

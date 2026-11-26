@@ -31,7 +31,7 @@ import { ResumeClairDuVote } from "../ui/resume-clair";
 import { Frise, Repartition } from "../ui/visuels";
 import { SignalerErreur } from "../ui/contact";
 import { Timeline } from "../ui/timeline";
-import { DataBadge, StatCard } from "../ui/donnees";
+import { DataBadge } from "../ui/donnees";
 import { VoteBarTricolor } from "../ui/stitch";
 import { AvatarElu, CreditPhotoElu } from "../ui/avatar";
 import { libelleGroupe } from "../ui/badge-groupe";
@@ -113,8 +113,14 @@ export default function Vote() {
               sinon celui du scrutin : Repère ne réécrit aucun titre. L'encart « Ce qu'il faut
               retenir » a été retiré le 07/11/2026 : il répétait les grands nombres. */}
           <Carte echelon="france" titre="Le vote">
-            <DataBadge texte={mot || "Position non portée"} couleur={mot ? COULEUR[vote.position as keyof typeof COULEUR] : undefined} />
-            <Text style={TYPO.question}><Segments s={phrasePosition(vote.position, vote.qui)} /></Text>
+            {/* 26/11/2026 (porteur) : le résultat du scrutin en tête, écrit en toutes lettres ; la phrase de position
+                en 20 px (elle était en 28). */}
+            <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 2, flexWrap: "wrap" }}>
+              {statut ? <DataBadge texte={statut === "p" ? "ADOPTÉ" : "REJETÉ"} couleur={COULEUR[statut]} teinte /> : null}
+              {/* La position est dite par la phrase ci-dessous (et rappelée sous la jauge) : plus de seconde pastille. */}
+              {!mot ? <DataBadge texte="Position non portée" /> : null}
+            </View>
+            <Text style={TYPO.section}><Segments s={phrasePosition(vote.position, vote.qui)} /></Text>
             <View style={{ gap: PAS }}>
               {/* Deux lignes au plus ; le titre officiel entier reste lisible d'un geste (jamais réécrit). */}
               <Pressable onPress={() => setTitreEntier(v => !v)} style={({ pressed }) => [{ minHeight: CIBLE, justifyContent: "center" }, pressed && enfonce(true)]} accessibilityRole="button" accessibilityState={{ expanded: titreEntier }}
@@ -127,10 +133,7 @@ export default function Vote() {
               <Text style={TYPO.note}>{metaScrutin(vote.sc)}</Text>
             </View>
             {rep ? (
-              <View style={{ gap: PAS * 3 }}>
-                <View style={{ flexDirection: "row", gap: PAS * 3 }}>
-                  {rep.segments.map(x => <StatCard key={x.cle} valeur={x.nombre.toLocaleString("fr-FR")} libelle={x.libelle} couleur={COULEUR[x.cle as keyof typeof COULEUR]} />)}
-                </View>
+              <View style={{ gap: PAS * 4 }}>
                 {/* Maquette Stitch (09/11/2026) : la jauge tricolore, nombres et pourcentages écrits,
                     et la position du député dans une pastille. */}
                 <VoteBarTricolor pour={vote.sc.dec?.pour} contre={vote.sc.dec?.contre} abstention={vote.sc.dec?.abstentions}
@@ -142,7 +145,7 @@ export default function Vote() {
             {/* Le statut du scrutin, écrit en toutes lettres : la couleur du « pour » quand le pour l'a
                 emporté (adopté), celle du « contre » quand il a été rejeté (D24 : un fait). */}
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: PAS * 3 }}>
-              {statut ? <DataBadge texte={statut === "p" ? "ADOPTÉ" : "REJETÉ"} couleur={COULEUR[statut]} teinte /> : <View />}
+              <View />
               <PastilleSource source={srcVote(d, vote.sc)} />
             </View>
           </Carte>

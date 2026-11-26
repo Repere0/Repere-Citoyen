@@ -32,3 +32,14 @@ export function poserStylesBureau() {
   ].join("\n");
   document.head.appendChild(el);
 }
+
+/* MICRO-INTERACTIONS (polish, porteur, 25/11/2026) : sur le web, tout ce qui se touche (bouton, lien, onglet, case,
+   interrupteur) change de fond, de filet ou d'opacité en 200 ms, au lieu de sauter. Rien si le lecteur a demandé
+   moins de mouvement (préférence du système). */
+export function poserStylesWeb() {
+  if (Platform.OS !== "web" || typeof document === "undefined" || document.getElementById("repere-transitions")) return;
+  const el = document.createElement("style");
+  el.id = "repere-transitions";
+  el.textContent = '@media (prefers-reduced-motion: no-preference){[role="button"],[role="link"],[role="tab"],[role="switch"],[role="radio"],[role="checkbox"]{transition:background-color 200ms ease-out,border-color 200ms ease-out,opacity 200ms ease-out,transform 200ms ease-out,box-shadow 200ms ease-out}}';
+  document.head.appendChild(el);
+}

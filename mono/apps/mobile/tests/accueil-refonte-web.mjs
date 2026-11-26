@@ -19,7 +19,13 @@ await page.getByTestId("bonjour").waitFor({ timeout: 15000 });
 const y = async loc => (await loc.first().boundingBox()).y;
 const bonjour = page.getByTestId("bonjour");
 verifier((await bonjour.innerText()).trim() === "Bonjour Zoé", "« Bonjour Zoé »");
-verifier(await bonjour.evaluate(e => getComputedStyle(e).fontSize) === "28px", "« Bonjour » fait 28 px (Step Up, échelle du 25/11/2026)");
+/* Polish (porteur, 25/11/2026) : un bonjour discret, 20 px, aligné à gauche ; la date des données collée au logo. */
+verifier(await bonjour.evaluate(e => getComputedStyle(e).fontSize) === "20px", "« Bonjour » fait 20 px (polish du 25/11/2026)");
+verifier(await bonjour.evaluate(e => getComputedStyle(e).textAlign) !== "center", "« Bonjour » est aligné à gauche");
+{
+  const d = await page.getByTestId("date-publication").first().boundingBox();
+  verifier(!!d && d.y < 140, `la date des données est en haut, à côté du logo (y = ${d && Math.round(d.y)})`);
+}
 const sous = page.getByText("Ce qui se passe chez vous, expliqué simplement.");
 verifier(await sous.evaluate(e => getComputedStyle(e).fontSize) === "16px", "le sous-titre fait 16 px (Step Up)");
 const champ = page.getByLabel(/Où habitez-vous/);

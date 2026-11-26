@@ -95,8 +95,9 @@ function SiteMairie({ insee }: { insee: string }) {
 /* Une étape de la décision du budget : son numéro, ce qui se passe, et qui (ou comment). */
 function EtapeBudget({ n, titre, detail }: { n: number; titre: string; detail?: string | null }) {
   return (
-    <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3 }} accessible accessibilityLabel={`Étape ${n} : ${titre}${detail ? `. ${detail}` : ""}`}>
-      <View style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: couleurs.voile, alignItems: "center", justifyContent: "center" }}>
+    /* 26/11/2026 (porteur) : le rond (24 px, la hauteur d'une ligne de titre) s'aligne sur le titre, pas sur le bloc. */
+    <View style={{ flexDirection: "row", alignItems: "flex-start", gap: PAS * 3 }} accessible accessibilityLabel={`Étape ${n} : ${titre}${detail ? `. ${detail}` : ""}`}>
+      <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: couleurs.voile, alignItems: "center", justifyContent: "center" }}>
         <Text style={[TYPO.note, { fontFamily: POLICE.section, color: couleurs.encre }]}>{n}</Text>
       </View>
       <View style={{ flex: 1 }}>

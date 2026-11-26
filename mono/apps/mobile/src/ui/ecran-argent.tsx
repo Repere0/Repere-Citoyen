@@ -34,6 +34,8 @@ import { phrasesMoyenne, useMoyenneDepenses } from "../lib/moyenne";
 import { PastilleSource } from "../ui/source";
 import { BoutonPartageTexte, ligneSource } from "../ui/partage/partager-texte";
 import { Resume } from "../ui/resume";
+import { ResumeClairDuBudget } from "./resume-clair";
+import { useSelection } from "../lib/selection";
 import { BarreBudget, BarrePart, Compteur, DeuxAnnees, Depli, Financement, Mois, RepartitionCent, Tendance, VariationAnnuelle } from "../ui/visuels";
 import { SignalerErreur } from "../ui/contact";
 import { enfonce } from "../ui/mouvement";
@@ -61,7 +63,7 @@ function ToutesLesAides({ ouvert, fermer, liste, nom, nomDe }: {
   return (
     <Modal visible={ouvert} animationType="slide" onRequestClose={fermer} transparent={false}>
       <View style={{ flex: 1, backgroundColor: couleurs.sol, paddingTop: marges.top + PAS * 3, paddingBottom: marges.bottom }}>
-        <View style={{ paddingHorizontal: PAS * 5, gap: PAS * 3 }}>
+        <View style={{ paddingHorizontal: PAS * 6, gap: PAS * 3 }}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3 }}>
             <Text style={[TYPO.question, { flex: 1 }]} {...niveauTitre(2)}>Les {liste.length} projets aidés</Text>
             <Pressable onPress={fermer} accessibilityRole="button" accessibilityLabel="Fermer la liste des projets"
@@ -100,7 +102,7 @@ function ToutesLesAides({ ouvert, fermer, liste, nom, nomDe }: {
              site exige que chaque phrase de projet soit lisible ici (tests/meme-verite.mjs). */
           initialNumToRender={200}
           windowSize={21}
-          contentContainerStyle={{ padding: PAS * 5, gap: PAS * 3 }}
+          contentContainerStyle={{ padding: PAS * 6, gap: PAS * 3 }}
           /* Vague 3 (17/11/2026) : l'état vide commun, avec le geste qui en sort. */
           ListEmptyComponent={<Vide icone="search-outline" titre={`Aucun projet publié pour ${nom} ne correspond à cette recherche.`}
             corps="La recherche porte sur l'intitulé des projets aidés, dans le dispositif choisi. Effacez-la pour revoir toute la liste."
@@ -173,12 +175,14 @@ const variation = (m1: number, m2: number) => {
 };
 
 export default function Argent() {
+  const selection = useSelection();
   const { reessayer } = useCommuneChoisie();
   const [vue, setVue] = useState<Vue>("cent");
   const [tousProjets, setTousProjets] = useState(false);
   return (
     <AvecDonnees rendu={r => {
       const { d } = r;
+      const choix = selection.choix;
       const nom = d.nomCommune;
       const ex = d.exercice;
       const rr: Rapport[] = ex ? rapports(ex.ex) : [];
@@ -280,6 +284,8 @@ export default function Argent() {
                       ? <BarreBudget parts={{ sal: ch.partSalaires, inv: ch.partInvestissement, aut: 100 - ch.partSalaires - ch.partInvestissement }} />
                       : <RepartitionCent salaires={ch.partSalaires} investissement={ch.partInvestissement} />}
                   </Resume>
+                  {/* 26/11/2026 : le résumé « En clair » du budget, seulement s'il a été validé par le porteur. */}
+                  <ResumeClairDuBudget insee={choix ? choix.insee : null} />
                   <PasCeQueCaDit r={rap(/salaires/)} sujet="salaires" />
                   <PasCeQueCaDit r={rap(/investir/)} sujet="investissements" />
                   <PastilleSource source={srcComptes(d)} />

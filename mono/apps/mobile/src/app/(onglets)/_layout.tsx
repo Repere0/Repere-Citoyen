@@ -14,6 +14,8 @@ import { Platform, StyleSheet, Text, type ColorValue } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { useBureau } from "../../lib/bureau";
+import { BARRE_FLOTTANTE, HauteurOnglets } from "../../lib/onglets-flottants";
+import { translucide } from "../../lib/palette";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { LIBELLES } from "@repere/core";
 import { ACCENTS, couleurs } from "../../lib/theme";
@@ -60,7 +62,9 @@ export default function Onglets() {
      qui descendaient de 6 px sous la barre d'accueil (mesuré avec une marge de 34 px, tests/marges-ios-web.mjs). */
   const marges = useSafeAreaInsets();
   const { bureau } = useBureau();
+  const hauteurBarre = 72 + marges.bottom;
   return (
+    <HauteurOnglets.Provider value={BARRE_FLOTTANTE && !bureau ? hauteurBarre + 16 : 0}>
     <Tabs
       /* Dashboard desktop (25/11/2026) : sur grand écran, la barre latérale remplace la barre du bas. */
       tabBar={bureau ? () => null : undefined}
@@ -73,7 +77,10 @@ export default function Onglets() {
         tabBarActiveTintColor: ACCENTS.texteAccent,
         tabBarInactiveTintColor: couleurs.sourd,
         /* Filet de séparation d'un demi-pixel, pas d'ombre (refonte « légère »). */
-        tabBarStyle: { backgroundColor: couleurs.carte, borderTopColor: couleurs.trait, borderTopWidth: StyleSheet.hairlineWidth, elevation: 0, shadowOpacity: 0, minHeight: 72 + marges.bottom, paddingTop: 4 },
+        tabBarStyle: [{ backgroundColor: couleurs.carte, borderTopColor: couleurs.trait, borderTopWidth: StyleSheet.hairlineWidth, elevation: 0, shadowOpacity: 0, minHeight: 72 + marges.bottom, paddingTop: 4 },
+          /* Polish (25/11/2026) : sur le web, translucide et floutée, collée en bas ; le contenu défile dessous. */
+          BARRE_FLOTTANTE && ({ position: "absolute", left: 0, right: 0, bottom: 0, backgroundColor: translucide(couleurs.carte, 0.82),
+            backdropFilter: "saturate(180%) blur(16px)", WebkitBackdropFilter: "saturate(180%) blur(16px)" } as object)] as never,
         headerLeft: () => <ChangerCommune />,
         headerRight: () => <BoutonReglages />,
         /* Audit UI, vague 2 : le titre de l'en-tête n'est pas un titre de niveau 1 (celui de l'écran l'est). */
@@ -95,5 +102,6 @@ export default function Onglets() {
       <Tabs.Screen name="finances" options={{ title: LIBELLES.argent, tabBarLabel: etiquette(LIBELLES.finances), tabBarIcon: icone("wallet") }} />
       <Tabs.Screen name="a-venir" options={{ title: LIBELLES.calendrier, tabBarLabel: etiquette(LIBELLES.calendrier), tabBarIcon: icone("calendar") }} />
     </Tabs>
+    </HauteurOnglets.Provider>
   );
 }

@@ -2,7 +2,7 @@
 import { Linking, Platform, Pressable, Text, View } from "react-native";
 import Constants from "expo-constants";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { CIBLE, couleurs, PAS, TYPO } from "../lib/theme";
+import { CIBLE, couleurs, PAS, RAYON, TYPO } from "../lib/theme";
 import { COURRIEL_AVIS, lienAvis, MODE_DEMO } from "../lib/avis";
 import { enfonce } from "./mouvement";
 import { router } from "expo-router";
@@ -33,10 +33,14 @@ export function BoutonAvis({ style }: { style?: object }) {
 export function BandeauDemo() {
   if (!MODE_DEMO) return null;
   return (
+    /* Polish (porteur, 25/11/2026) : un encart doux (fond voile, filet fin, arrondi des cartes), l'icône, le texte et
+       le bouton sur une même ligne, centrés verticalement. */
     <View testID="bandeau-demo" accessibilityRole="summary"
-      style={{ flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "center", columnGap: PAS * 3, paddingHorizontal: PAS * 4, backgroundColor: couleurs.carte, borderBottomWidth: 1, borderBottomColor: couleurs.trait }}>
-      <Text style={[TYPO.note, { color: couleurs.encre }]}>Version démo · vos retours sont précieux</Text>
-      <BoutonAvis />
+      style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3, padding: PAS * 4,
+        borderRadius: RAYON.carte, backgroundColor: couleurs.voile, borderWidth: 1, borderColor: couleurs.trait }}>
+      <Ionicons name="flask-outline" size={20} color={couleurs.sourd} accessible={false} importantForAccessibility="no" />
+      <Text style={[TYPO.note, { flex: 1, color: couleurs.encre }]}>Version démo : vos retours nous aident.</Text>
+      <BoutonAvis style={{ paddingHorizontal: PAS * 3, borderRadius: RAYON.bloc, backgroundColor: couleurs.carte, borderWidth: 1, borderColor: couleurs.trait }} />
     </View>
   );
 }
