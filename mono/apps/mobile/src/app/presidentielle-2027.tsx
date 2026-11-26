@@ -115,7 +115,7 @@ function CarteCandidat({ c, photo }: { c: PresidentialCandidate; photo?: PhotoEl
         {c.sources && c.sources.length ? (
           <Pressable onPress={() => setSources(o => !o)} accessibilityRole="button" accessibilityState={{ expanded: sources }}
             accessibilityLabel={`Sources de la candidature de ${nom} : ${sources ? "replier" : "déplier"}`}
-            style={({ pressed }) => ({ minHeight: CIBLE, flexDirection: "row", alignItems: "center", gap: PAS, paddingHorizontal: PAS * 2, opacity: pressed ? 0.7 : 1 })}>
+            style={({ pressed }) => ({ minHeight: CIBLE, flexDirection: "row", alignItems: "center", gap: PAS, paddingHorizontal: PAS * 2, ...enfonce(pressed) })}>
             <Ionicons name="link-outline" size={14} color={couleurs.sourd} accessible={false} importantForAccessibility="no" />
             <Text style={TYPO.note}>{c.sources.length} sources</Text>
             <Ionicons name={sources ? "chevron-up" : "chevron-down"} size={14} color={couleurs.sourd} accessible={false} importantForAccessibility="no" />
@@ -124,7 +124,7 @@ function CarteCandidat({ c, photo }: { c: PresidentialCandidate; photo?: PhotoEl
         {c.programmeUrl ? (
           <Pressable onPress={() => Linking.openURL(c.programmeUrl as string)} accessibilityRole="link"
             accessibilityLabel={`Voir le programme de ${nom}, ouvre un site externe`}
-            style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", paddingHorizontal: PAS * 3, borderRadius: RAYON.pastille, borderWidth: 1, borderColor: couleurs.trait, opacity: pressed ? 0.7 : 1 })}>
+            style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", paddingHorizontal: PAS * 3, borderRadius: RAYON.pastille, borderWidth: 1, borderColor: couleurs.trait, ...enfonce(pressed) })}>
             <Text style={[TYPO.note, { color: couleurs.encre }]}>Programme ↗</Text>
           </Pressable>
         ) : null}
@@ -132,7 +132,7 @@ function CarteCandidat({ c, photo }: { c: PresidentialCandidate; photo?: PhotoEl
         {c.siteCampagne ? (
           <Pressable onPress={() => Linking.openURL(c.siteCampagne as string)} accessibilityRole="link"
             accessibilityLabel={`Site de campagne de ${nom}, ouvre un site externe`}
-            style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", paddingHorizontal: PAS * 3, borderRadius: RAYON.pastille, borderWidth: 1, borderColor: couleurs.trait, opacity: pressed ? 0.7 : 1 })}>
+            style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", paddingHorizontal: PAS * 3, borderRadius: RAYON.pastille, borderWidth: 1, borderColor: couleurs.trait, ...enfonce(pressed) })}>
             <Text style={[TYPO.note, { color: couleurs.encre }]}>Site de campagne ↗</Text>
           </Pressable>
         ) : null}
@@ -140,7 +140,7 @@ function CarteCandidat({ c, photo }: { c: PresidentialCandidate; photo?: PhotoEl
       {sources && c.sources ? c.sources.map(x => (
         <Pressable key={x.url} onPress={() => Linking.openURL(x.url)} accessibilityRole="link"
           accessibilityLabel={`Source : ${x.producteur}, ${dateFr(x.date)}, ouvre un site externe`}
-          style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", opacity: pressed ? 0.7 : 1 })}>
+          style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", ...enfonce(pressed) })}>
           <Text style={[TYPO.note, { color: couleurs.lien }]}>{x.producteur} · {dateFr(x.date)} ↗</Text>
         </Pressable>
       )) : null}
@@ -312,7 +312,7 @@ export default function Presidentielle2027() {
       {d.meta ? (
         <Pressable onPress={() => Linking.openURL(d.meta!.source.url)} accessibilityRole="link"
           accessibilityLabel={`Source de la liste des candidats : ${d.meta.source.producteur}, relevé le ${dateFr(d.meta.lastUpdate)}, ouvre un site externe`}
-          style={({ pressed }) => ({ minHeight: CIBLE, flexDirection: "row", alignItems: "center", gap: PAS * 2, opacity: pressed ? 0.7 : 1 })}>
+          style={({ pressed }) => ({ minHeight: CIBLE, flexDirection: "row", alignItems: "center", gap: PAS * 2, ...enfonce(pressed) })}>
           <Ionicons name="link-outline" size={14} color={couleurs.sourd} accessible={false} importantForAccessibility="no" />
           <Text style={[TYPO.micro, { flex: 1 }]}>Liste des candidats : {d.meta.source.producteur} · relevé le {dateFr(d.meta.lastUpdate)}</Text>
         </Pressable>

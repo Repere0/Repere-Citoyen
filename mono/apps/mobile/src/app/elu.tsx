@@ -286,7 +286,7 @@ export default function Elu() {
                     <Pressable onPress={() => Linking.openURL(demandeVotesElu(nom).url)} accessibilityRole="button"
                       accessibilityLabel={`Demander à ${nom} de publier ses votes : ouvre un message pré-rempli dans votre messagerie`}
                       style={({ pressed }) => ({ minHeight: CIBLE + 4, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: PAS * 2,
-                        borderRadius: 999, paddingHorizontal: PAS * 6, backgroundColor: couleurs.voile, opacity: pressed ? 0.7 : 1 })}>
+                        borderRadius: 999, paddingHorizontal: PAS * 6, backgroundColor: couleurs.voile, ...enfonce(pressed) })}>
                       <Ionicons name="mail-outline" size={18} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
                       <Text style={[TYPO.corps, { fontFamily: POLICE.texteGras }]}>Demander à cet élu de publier ses votes</Text>
                     </Pressable>

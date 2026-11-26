@@ -210,7 +210,7 @@ export default function QuiDecide() {
                   <Text style={TYPO.note}>{prefet.titre}. Source : page de la préfecture de région. Dernier contrôle réussi du titre de la page : {prefet.titreControleLe}. La date de nomination n'est pas contrôlée.</Text>
                   <Pressable onPress={() => Linking.openURL(prefet.url)} accessibilityRole="link"
                     accessibilityLabel="Voir la page de la préfecture de région (site officiel)"
-                    style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", opacity: pressed ? 0.6 : 1 })}>
+                    style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", ...enfonce(pressed) })}>
                     <Text style={[TYPO.corps, { color: couleurs.lien, fontWeight: "600" }]}>Page de la préfecture de région ↗</Text>
                   </Pressable>
                 </View>

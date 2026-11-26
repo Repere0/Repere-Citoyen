@@ -28,6 +28,7 @@ import { srcScrutins, srcVote } from "../lib/sources";
 import { Vide } from "../lib/composants";
 import { AvecDonnees, Page, Question } from "../ui/page";
 import { useApparition } from "../ui/mouvement";
+import { enfonce } from "../ui/mouvement";
 
 const VERBE: Record<string, string> = {
   p: "a voté pour.",
@@ -204,19 +205,19 @@ export default function Partager() {
               <Pressable onPress={() => partagerImage(carte1, "Carte 1 : l'annonce", message)} accessibilityRole="button"
                 accessibilityLabel="Partager la carte 1 en image"
                 style={({ pressed }) => ({ minHeight: CIBLE, borderRadius: 14, backgroundColor: couleurs.encre,
-                  alignItems: "center", justifyContent: "center", padding: 16, opacity: pressed ? 0.7 : 1 })}>
+                  alignItems: "center", justifyContent: "center", padding: 16, ...enfonce(pressed) })}>
                 <Text style={{ color: couleurs.sol, fontWeight: "700" }}>Partager la carte 1 (image)</Text>
               </Pressable>
               <Pressable onPress={() => partagerImage(carte2, "Carte 2 : pour comprendre", message)} accessibilityRole="button"
                 accessibilityLabel="Partager la carte 2 en image"
                 style={({ pressed }) => ({ minHeight: CIBLE, borderRadius: 14, backgroundColor: couleurs.encre,
-                  alignItems: "center", justifyContent: "center", padding: 16, opacity: pressed ? 0.7 : 1 })}>
+                  alignItems: "center", justifyContent: "center", padding: 16, ...enfonce(pressed) })}>
                 <Text style={{ color: couleurs.sol, fontWeight: "700" }}>Partager la carte 2 (image)</Text>
               </Pressable>
               <Pressable onPress={() => Share.share({ message })} accessibilityRole="button"
                 accessibilityLabel="Partager le texte et le lien par la feuille de partage de l'appareil"
                 style={({ pressed }) => ({ minHeight: CIBLE, borderRadius: 14, borderWidth: 1, borderColor: couleurs.trait,
-                  backgroundColor: couleurs.carte, alignItems: "center", justifyContent: "center", padding: 16, opacity: pressed ? 0.6 : 1 })}>
+                  backgroundColor: couleurs.carte, alignItems: "center", justifyContent: "center", padding: 16, ...enfonce(pressed) })}>
                 <Text style={{ color: couleurs.encre, fontWeight: "700" }}>Partager le texte et le lien</Text>
               </Pressable>
             </View>

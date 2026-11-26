@@ -43,3 +43,20 @@ export function poserStylesWeb() {
   el.textContent = '@media (prefers-reduced-motion: no-preference){[role="button"],[role="link"],[role="tab"],[role="switch"],[role="radio"],[role="checkbox"]{transition:background-color 200ms ease-out,border-color 200ms ease-out,opacity 200ms ease-out,transform 200ms ease-out,box-shadow 200ms ease-out}}';
   document.head.appendChild(el);
 }
+
+/* FONDU ENTRE ÉCRANS SUR LE WEB (porteur, 26/11/2026 : « transitions douces sur les changements d'écran »).
+   Sur téléphone, la pile native glisse déjà (iOS, Android) et les onglets ont leur fondu (animation: "fade").
+   Sur le web, la pile ne s'anime pas : un écran remplaçait l'autre d'un coup. On fond le contenu en 200 ms
+   quand on entre dans un écran de la pile ou qu'on en sort ; pas entre deux onglets (ils ont déjà le leur).
+   Jamais si le lecteur a demandé moins de mouvement (système ou Confort de lecture). */
+export const ONGLETS = new Set(["/", "/qui-decide", "/chez-vous", "/finances", "/a-venir"]);
+export function doitFondre(avant: string | null, apres: string): boolean {
+  if (!avant || avant === apres) return false;
+  return !(ONGLETS.has(avant) && ONGLETS.has(apres));
+}
+export function fondreEcran(avant: string | null, apres: string, reduit: boolean) {
+  if (Platform.OS !== "web" || typeof document === "undefined" || reduit || !doitFondre(avant, apres)) return;
+  if (typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const pile = document.querySelector('[data-testid="pile"]') as (HTMLElement & { animate?: (k: object[], o: object) => unknown }) | null;
+  pile?.animate?.([{ opacity: 0.35 }, { opacity: 1 }], { duration: 200, easing: "ease-out" });
+}

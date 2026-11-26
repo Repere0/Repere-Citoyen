@@ -13,6 +13,11 @@ await contexte.addInitScript(() => {
   window.__liens = []; const o = window.open; window.open = (u, ...r) => { window.__liens.push(String(u)); return null; };
 });
 const page = await contexte.newPage();
+/* 26/11/2026 : sur le web, la messagerie s'ouvre par la page elle-même (location), plus par window.open(…, "_blank")
+   qui laissait un onglet vide. Chromium annonce cette navigation vers mailto: au protocole de débogage. */
+const cdp = await contexte.newCDPSession(page);
+await cdp.send("Page.enable");
+const navigations = []; cdp.on("Page.frameRequestedNavigation", e => navigations.push(String(e.url)));
 const erreurs = []; page.on("pageerror", e => erreurs.push(String(e.message || e).slice(0, 160)));
 await page.goto(BASE + "/avis", { waitUntil: "networkidle" });
 await page.getByTestId("avis-etape").waitFor({ timeout: 15000 });
@@ -27,9 +32,11 @@ await page.getByTestId("avis-texte").fill("Très clair & utile.");
 const avant = await page.evaluate(() => window.__liens.length);
 await page.getByTestId("avis-envoyer").click(); await page.waitForTimeout(500);
 const liens = await page.evaluate(() => window.__liens);
-const mail = liens.find(l => l.startsWith("mailto:")) || "";
+const mail = navigations.find(l => l.startsWith("mailto:")) || "";
 const corps = decodeURIComponent((mail.split("&body=")[1] || ""));
-verifier(liens.length > avant && !!mail, "« Ouvrir ma messagerie » ouvre un lien mailto");
+verifier(!!mail, "« Ouvrir ma messagerie » ouvre un lien mailto");
+verifier(liens.length === avant, "sans nouvel onglet (pas de window.open)");
+verifier(/Écrivez à \S+@\S+/.test(await page.getByTestId("avis-adresse").innerText()), "l'adresse reste écrite, pour qui n'a pas de messagerie réglée");
 verifier(corps.includes("Ma note : 4 sur 5") && corps.includes("Le design") && corps.includes("Très clair & utile."), "le message porte la note, le point coché et le texte");
 verifier(erreurs.length === 0, "avis : aucune erreur JavaScript" + (erreurs.length ? " (" + erreurs[0] + ")" : ""));
 await navigateur.close();

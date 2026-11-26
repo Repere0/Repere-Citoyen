@@ -391,7 +391,7 @@ export function CarteElu({ nom, role, echelon, groupe, dep, cle, surPress, libel
 }) {
   return (
     <Pressable onPress={surPress} accessibilityRole="link" accessibilityLabel={libelle ?? `Voir la fiche de ${nom}, ${role}`}
-      style={({ pressed }) => [s.carteElu, pressed && { opacity: 0.7 }]}>
+      style={({ pressed }) => [s.carteElu, enfonce(pressed)]}>
       <AvatarElu nom={nom} taille={40} echelon={echelon} groupe={groupe} dep={dep} cle={cle} />
       <View style={{ flex: 1 }}>
         <Text style={TYPO.reponse}>{nom}</Text>

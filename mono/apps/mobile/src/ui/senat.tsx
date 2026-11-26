@@ -28,6 +28,7 @@ import { PastilleSource } from "./source";
 import { useApparition } from "./mouvement";
 import { Animated } from "react-native";
 import { niveauTitre } from "./titre";
+import { enfonce } from "./mouvement";
 
 export const SANS_GROUPE = "Non inscrit ou sans groupe publié";
 
@@ -144,7 +145,7 @@ export function PanneauSenat() {
           {x.fiche ? (
             <Pressable onPress={() => { if (typeof window !== "undefined") window.open(x.fiche, "_blank", "noopener"); }}
               accessibilityRole="link" accessibilityLabel={`Fiche officielle de ${x.prenom} ${x.nom} sur senat.fr (nouvel onglet)`}
-              style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.6 : 1 })}>
+              style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, alignItems: "center", justifyContent: "center", ...enfonce(pressed) })}>
               <Ionicons name="open-outline" size={18} color={couleurs.sourd} accessible={false} importantForAccessibility="no" />
             </Pressable>
           ) : null}

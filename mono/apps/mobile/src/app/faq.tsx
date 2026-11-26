@@ -14,6 +14,7 @@ import { couleurs, CIBLE, PAS, POLICE, RAYON, TYPO } from "../lib/theme";
 import { Bouton } from "../lib/composants";
 import { ResumeClair } from "../ui/resume-clair";
 import { niveauTitre } from "../ui/titre";
+import { enfonce } from "../ui/mouvement";
 
 /* Exemple fourni par le porteur (12/11/2026), limité à ce que dit sa source : « Projet de loi de finances pour 2027. Première
    partie. Adopté par l'Assemblée nationale le 4 novembre 2026. 503 pour, 0 contre, 67 abstentions. » Il illustre la forme ; il
@@ -101,7 +102,7 @@ function Question({ q, ouvert, basculer, children }: { q: string; ouvert: boolea
   return (
     <View style={{ borderBottomWidth: 1, borderBottomColor: couleurs.trait }}>
       <Pressable onPress={basculer} accessibilityRole="button" accessibilityState={{ expanded: ouvert }} aria-expanded={ouvert} accessibilityLabel={q}
-        style={({ pressed }) => ({ minHeight: CIBLE + 8, flexDirection: "row", alignItems: "center", gap: PAS * 3, paddingVertical: PAS * 3, opacity: pressed ? 0.7 : 1 })}>
+        style={({ pressed }) => ({ minHeight: CIBLE + 8, flexDirection: "row", alignItems: "center", gap: PAS * 3, paddingVertical: PAS * 3, ...enfonce(pressed) })}>
         <Text style={[TYPO.corps, { flex: 1, fontFamily: POLICE.titre }]}>{q}</Text>
         <Ionicons name={ouvert ? "remove" : "add"} size={22} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
       </Pressable>

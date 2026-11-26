@@ -40,10 +40,15 @@ export default function Avis() {
   );
   const envoyer = () => {
     const navigateur = Platform.OS === "web" && typeof navigator !== "undefined" ? navigator.userAgent : null;
-    Linking.openURL(lienAvis(COURRIEL_AVIS as string, {
+    const lien = lienAvis(COURRIEL_AVIS as string, {
       version: Constants.expoConfig?.version || "inconnue", date: new Date(),
       plateforme: `${Platform.OS} ${String(Platform.Version ?? "")}`.trim(), navigateur,
-    }, { note, points, texte })).catch(() => {});
+    }, { note, points, texte });
+    /* Sur le web (26/11/2026) : react-native-web ouvrait mailto: par window.open(…, "_blank"), qui laisse un onglet
+       vide sur ordinateur et peut ne rien ouvrir dans l'application installée sur l'écran d'accueil d'un iPhone.
+       Une adresse mailto: posée sur la page ouvre la messagerie sans quitter Repère. */
+    if (Platform.OS === "web" && typeof window !== "undefined") { window.location.href = lien; return; }
+    Linking.openURL(lien).catch(() => {});
   };
   return (
     <ScrollView {...MARQUE_DEFILEMENT} style={{ flex: 1, backgroundColor: couleurs.sol }} keyboardShouldPersistTaps="handled"
@@ -96,6 +101,9 @@ export default function Avis() {
               placeholderTextColor={couleurs.sourd} accessibilityLabel="Votre avis, en quelques mots" testID="avis-texte"
               style={[TYPO.corps, { color: couleurs.encre, minHeight: 140, textAlignVertical: "top", padding: PAS * 3, borderRadius: RAYON.bloc, borderWidth: 1, borderColor: couleurs.trait, backgroundColor: couleurs.sol }]} />
             <Text style={TYPO.micro}>Le bouton ouvre votre messagerie avec un message prêt. Vous le relisez, vous effacez ce que vous voulez, vous l'envoyez. Repère n'envoie et ne garde rien.</Text>
+            {/* Aucune messagerie réglée sur l'appareil : le bouton ne peut rien ouvrir, et aucun navigateur ne le dit.
+                L'adresse reste lisible et sélectionnable pour écrire autrement. */}
+            <Text style={TYPO.micro} selectable testID="avis-adresse">Rien ne s'ouvre ? Écrivez à {COURRIEL_AVIS}.</Text>
           </>
         )}
       </View>
