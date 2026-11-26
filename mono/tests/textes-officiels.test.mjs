@@ -18,15 +18,21 @@ test("dossiers des scrutins : sans doublon, refs invalides écartées", () => {
 });
 
 test("document initial : texte déposé le plus ancien, jamais un rapport", () => {
-  const d = documentInitial([doc("B", "Texte Déposé", "2026-03-01"), doc("A", "Texte Déposé", "2026-01-01"),
-    doc("R", "Texte Déposé", "2025-01-01", "RAPP"), doc("C", "Commission", "2025-06-01")]);
-  assert.equal(d.uid, "A");
-  assert.equal(documentInitial([doc("C", "Commission", "2025-06-01")]), null);
+  const d = documentInitial([doc("ANR5LB", "Texte Déposé", "2026-03-01"), doc("ANR5LA", "Texte Déposé", "2026-01-01"),
+    doc("ANR5LR", "Texte Déposé", "2025-01-01", "RAPP"), doc("ANR5LC", "Commission", "2025-06-01")]);
+  assert.equal(d.uid, "ANR5LA");
+  /* Simulation du 26/11 : un avis du Conseil d'État porte la classe PRJLOI, un texte du Sénat n'a pas de PDF à l'AN. */
+  const avis = { ...doc("AVCEANR5L17B1", "Texte Déposé", "2024-01-01", "AVCE"), classification: { type: { code: "AVCE" }, famille: { classe: { code: "PRJLOI" } } } };
+  assert.equal(documentInitial([avis, doc("PRJLSNR5S479B1", "Texte Déposé", "2024-02-01"), doc("PRJLANR5L17B9", "Texte Déposé", "2024-03-01")]).uid, "PRJLANR5L17B9");
+  assert.equal(documentInitial([doc("ANR5LC", "Commission", "2025-06-01")]), null);
 });
 
 test("exposé des motifs : du titre au dispositif, numéros de page ôtés", () => {
   const e = exposeDesMotifs(PDF);
-  assert.ok(e.startsWith("Mesdames, Messieurs,"));
+  assert.ok(e.startsWith("Le présent projet"), "la formule d'adresse n'est pas un fait à résumer");
+  const SOMMAIRE = "SOMMAIRE\nEXPOSÉ GÉNÉRAL DES MOTIFS 9\nARTICLE 1 : Impôts 32\nARTICLE 2 : Barème 33\nARTICLE 3 : Abattement 38\n\n";
+  assert.ok(exposeDesMotifs(SOMMAIRE + PDF).startsWith("Le présent projet"), "le sommaire n'est pas l'exposé");
+  assert.equal(exposeDesMotifs(SOMMAIRE), null);
   assert.ok(!/Article 1er|– 3 –/.test(e));
   assert.equal(exposeDesMotifs("PROJET DE LOI\nArticle 1er\nTexte sans exposé."), null);
   assert.ok(exposeDesMotifs(PDF, 300).length <= 300);

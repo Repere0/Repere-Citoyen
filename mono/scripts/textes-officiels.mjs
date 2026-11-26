@@ -27,7 +27,6 @@ export const URL_DOSSIER = ref => `https://www.assemblee-nationale.fr/dyn/17/dos
 export const LONGUEUR_MAX = 12000; /* caractères envoyés au modèle : borne le coût et reste dans un seul appel */
 const REF = /^DLR5L\d+N\d+$/;
 const TYPES_INITIAUX = new Set(["PRJL", "PION"]); /* projet de loi, proposition de loi (docs/schema_dossiers.md) */
-const CLASSES_INITIALES = new Set(["PRJLOI", "PIONLOI"]); /* famille.classe.code, même sens (docs/schema_dossiers.md) */
 
 /* Les dossiers à résumer : ceux des scrutins publiés, sans doublon, dans l'ordre du catalogue. */
 export function dossiersDesScrutins(catalogue) {
@@ -64,8 +63,9 @@ export function documentInitial(documents) {
   const candidats = (documents || []).filter(d => {
     const c = d.classification || {};
     const type = c.type && c.type.code;
-    const classe = c.famille && c.famille.classe && c.famille.classe.code;
-    return (TYPES_INITIAUX.has(type) || CLASSES_INITIALES.has(classe)) && d.provenance === "Texte Déposé";
+    /* Simulation du 26/11 : un avis du Conseil d'État (AVCE) ou une étude d'impact (ETDI) portent AUSSI la classe
+       PRJLOI ; seul le type dit « le texte ». Et un document du Sénat (uid …SNR5S…) n'a pas de PDF à l'Assemblée (404). */
+    return TYPES_INITIAUX.has(type) && /ANR5L/.test(d.uid) && d.provenance === "Texte Déposé";
   });
   candidats.sort((a, b) => (date(a) < date(b) ? -1 : date(a) > date(b) ? 1 : 0));
   return candidats[0] || null;
@@ -76,9 +76,18 @@ export function documentInitial(documents) {
    caractères, coupé à la fin d'une phrase. Pas d'exposé reconnu : null (on n'envoie pas le dispositif seul). */
 export function exposeDesMotifs(brut, max = LONGUEUR_MAX) {
   const t = String(brut || "").replace(/\r/g, "").replace(/[ \t ]+/g, " ").replace(/-\n(?=\p{Ll})/gu, "");
-  const debut = t.search(/EXPOS[ÉE] DES MOTIFS/i);
-  if (debut < 0) return null;
-  let corps = t.slice(debut).replace(/^EXPOS[ÉE] DES MOTIFS\s*/i, "");
+  /* Simulation du 26/11 : dans un projet de loi de finances, le premier « EXPOSÉ DES MOTIFS » est celui du SOMMAIRE
+     (suite de « ARTICLE 12 : … 47 »). On prend la première occurrence suivie de prose, pas d'une table. */
+  const titre = /EXPOS[ÉE] (?:G[ÉE]N[ÉE]RAL )?DES MOTIFS/gi;
+  let corps = null;
+  for (let m; (m = titre.exec(t));) {
+    const suite = t.slice(m.index + m[0].length);
+    if ((suite.slice(0, 2000).match(/ARTICLE [\dIVXL]+\w* ?:/gi) || []).length >= 3) continue;
+    corps = suite;
+    break;
+  }
+  if (corps === null) return null;
+  corps = corps.replace(/^\s*(Mesdames,? Messieurs,?|MESDAMES,? MESSIEURS,?)\s*/, "");
   const fin = corps.search(/\n\s*(PROJET DE LOI|PROPOSITION DE LOI(?: ORGANIQUE)?)\s*\n|\n\s*Article (1er|premier|unique)\b/i);
   if (fin > 0) corps = corps.slice(0, fin);
   /* Lignes recollées : les retours à la ligne du PDF ne sont pas des paragraphes. */

@@ -78,6 +78,14 @@ quel dans les PDF des textes déposés de la 17e législature, et que tous les s
 dans l'archive (une proposition venue du Sénat peut n'avoir à l'Assemblée qu'un texte « transmis »). Le premier
 lancement en simulation le dira.
 
+**Première simulation sur le runner (26/11/2026, run 45829490647, modèle simulé)** : 12 dossiers, 6 textes prêts,
+6 écartés. Trois écarts venaient du tri (un avis du Conseil d'État ou une étude d'impact pris pour le texte, car ils
+portent aussi la classe `PRJLOI`) ; trois de textes nés au Sénat (`PRJLSN…`, PDF absent à l'AN : 404). Deux projets
+de loi de finances donnaient leur sommaire au lieu de l'exposé. Corrigé : seul `type.code` compte, seuls les
+documents de l'Assemblée (`…ANR5L…`), une occurrence suivie d'une table (« ARTICLE 12 : … ») est sautée, la formule
+« Mesdames, Messieurs » est ôtée. **La simulation ne dit rien de la qualité d'un résumé** : son « modèle » recopie
+les premières phrases du texte. Seul un essai avec la clé le dira.
+
 **Limite de fond** : l'exposé des motifs est écrit par les **auteurs** du texte. Il dit ce qu'ils veulent faire,
 pas ce que le texte voté contient après amendements. La consigne interdit le jugement, mais un résumé de l'exposé
 reste « ce que le texte propose », et l'écran doit le dire ainsi ; la relecture du porteur vérifie qu'il ne reprend
