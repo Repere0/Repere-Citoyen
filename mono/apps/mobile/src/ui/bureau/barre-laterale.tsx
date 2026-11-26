@@ -12,20 +12,21 @@ import { MARQUE_DEFILEMENT } from "../../lib/defilement-ios";
 import { enfonce } from "../mouvement";
 
 type Icone = keyof typeof Ionicons.glyphMap;
+/* Porteur, 26/11/2026 : dix entrées, dans cet ordre. La présidentielle n'a plus d'entrée : elle a sa carte sur le
+   tableau de bord (le compte des jours), qui mène à sa page. */
 export const ENTREES: { chemin: string; texte: string; icone: Icone; actif?: (c: string) => boolean }[] = [
-  { chemin: "/", texte: "Tableau de bord", icone: "grid-outline", actif: c => c === "/" },
-  { chemin: "/chez-vous", texte: "Ma commune", icone: "location-outline" },
+  { chemin: "/", texte: "Accueil", icone: "home-outline", actif: c => c === "/" },
+  { chemin: "/chez-vous", texte: "Commune", icone: "location-outline" },
   { chemin: "/qui-decide", texte: "Qui décide", icone: "business-outline" },
   { chemin: "/finances", texte: "Finances", icone: "wallet-outline" },
-  { chemin: "/scrutins", texte: "Le Parlement", icone: "megaphone-outline" },
-  { chemin: "/a-venir", texte: "Le calendrier", icone: "calendar-outline" },
-  { chemin: "/presidentielle-2027", texte: "Présidentielle 2027", icone: "flag-outline" },
-  { chemin: "/quiz", texte: "Quiz civique", icone: "school-outline" },
+  { chemin: "/scrutins", texte: "Parlement", icone: "megaphone-outline" },
+  { chemin: "/a-venir", texte: "Calendrier", icone: "calendar-outline" },
+  { chemin: "/quiz", texte: "Quiz", icone: "school-outline" },
   { chemin: "/dictionnaire", texte: "Dictionnaire", icone: "book-outline" },
 ];
 const BAS: typeof ENTREES = [
   { chemin: "/reglages", texte: "Réglages", icone: "settings-outline" },
-  { chemin: "/soutenir", texte: "Soutenir Repère", icone: "heart-outline" },
+  { chemin: "/soutenir", texte: "Soutenir", icone: "heart-outline" },
 ];
 
 function Entree({ e, chemin }: { e: (typeof ENTREES)[number]; chemin: string }) {
@@ -51,7 +52,7 @@ export function BarreLaterale() {
          un cadre ; l'entrée active prend le fond des cartes. */
       style={{ width: LARGEUR_BARRE, borderRightWidth: 1, borderRightColor: couleurs.trait, backgroundColor: couleurs.carte }}>
       <ScrollView {...MARQUE_DEFILEMENT} contentContainerStyle={{ paddingHorizontal: PAS * 4, paddingTop: PAS * 8, paddingBottom: PAS * 6, gap: PAS, flexGrow: 1 }}>
-        <Pressable onPress={() => router.navigate("/")} accessibilityRole="link" accessibilityLabel="Repère, tableau de bord"
+        <Pressable onPress={() => router.navigate("/")} accessibilityRole="link" accessibilityLabel="Repère, accueil"
           style={({ pressed }) => [{ flexDirection: "row", alignItems: "center", gap: PAS * 3, minHeight: CIBLE, paddingHorizontal: PAS * 2, marginBottom: PAS * 8 }, pressed && enfonce(true)]}>
           {/* Seconde passe : le logo en grand, encre pleine dans les deux thèmes (contraste du thème, pas un gris). */}
           <Logo size={36} variant={mode} />

@@ -605,7 +605,7 @@ export default function Accueil() {
             </View>
             <Text style={s.titreCache} nativeID="question">Où habitez-vous ?</Text>
             {/* Bureau : la recherche vit dans le bloc d'accueil (ui/bureau/hero.tsx), la même logique. */}
-            <HeroBureau actif={bureau}>
+            <HeroBureau actif={bureau} logo={!retenue}>
             <View style={[s.champLigne, Platform.OS === "web" && ({ boxShadow: champActif ? `0 0 0 4px ${D.voile}` : OMBRE_INTERIEURE_CHAMP } as object),
               champActif && Platform.OS === "web" && { borderColor: D.encre }, bureau && { minHeight: 64, borderRadius: RAYON.bloc }]}>
               <Ionicons name="search" size={22} color={D.sourd} accessible={false} importantForAccessibility="no" style={{ marginRight: PAS * 2 }} />
@@ -630,7 +630,7 @@ export default function Accueil() {
               /* Dashboard desktop (porteur, 25/11/2026) : sur grand écran, les widgets remplacent les tuiles mobiles. */
               <>
                 <BandeauAlertes insee={retenue ? retenue.c : null} />
-                <TableauDeBord communes={communes} ouvrir={ouvrir} />
+                <TableauDeBord communes={communes} ouvrir={ouvrir} aCommune={!!retenue} />
               </>
             ) : (
               <>
