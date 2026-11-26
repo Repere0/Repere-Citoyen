@@ -86,6 +86,16 @@ documents de l'Assemblée (`…ANR5L…`), une occurrence suivie d'une table («
 « Mesdames, Messieurs » est ôtée. **La simulation ne dit rien de la qualité d'un résumé** : son « modèle » recopie
 les premières phrases du texte. Seul un essai avec la clé le dira.
 
+Après correctif (run 45829816955) : **9 textes sur 12**.
+
+**Limite assumée : les textes nés au Sénat** (décision du porteur, 26/11/2026 : on laisse tomber pour l'instant).
+Le texte que le Sénat transmet à l'Assemblée n'a pas d'exposé des motifs ; celui-ci n'existe que sur senat.fr.
+Ces dossiers sont écartés (« pas d'exposé des motifs lisible ») et n'ont pas de résumé « En clair » : l'écran du vote
+reste ce qu'il est sans lui.
+
+**Exception factuelle** (porteur, 26/11/2026) : « jeunes majeurs » (âge légal) n'est pas un mot de jugement.
+`FAITS_RESUME` (invariants.js) ôte l'expression avant le contrôle ; « un enjeu majeur » reste refusé.
+
 **Limite de fond** : l'exposé des motifs est écrit par les **auteurs** du texte. Il dit ce qu'ils veulent faire,
 pas ce que le texte voté contient après amendements. La consigne interdit le jugement, mais un résumé de l'exposé
 reste « ce que le texte propose », et l'écran doit le dire ainsi ; la relecture du porteur vérifie qu'il ne reprend
@@ -94,14 +104,16 @@ pas un argument des auteurs comme un fait.
 ## Le workflow `.github/workflows/generer-resumes.yml`
 
 Lancement **manuel seulement** (Actions > « Résumés en clair » > Run workflow), parce que chaque lancement réel coûte
-des jetons. Trois réglages : `simulation` (modèle simulé, aucun appel, aucun coût), `essai` (vrai appel, rien
-d'écrit ; **coché par défaut**), `limite` (5 dossiers par défaut). Secret à créer : `MISTRAL_API_KEY`.
+des jetons. Un menu `mode` (26/11/2026, pour lancer depuis un téléphone) :
+- `simulation` : modèle simulé, aucun appel, aucun coût ;
+- `essai` (**par défaut**) : Mistral répond, les contrôles tournent, **rien n'est écrit** ; chaque résumé se lit dans
+  le résumé du run, avec le titre du texte et l'adresse du PDF lu ;
+- `brouillons` : Mistral répond ; le workflow pousse une branche `data/resumes-…` et ouvre une pull request de
+  brouillons, tous `valide: false` (il refuse s'il en voit un à `true`). Si le réglage du dépôt interdit au jeton
+  du workflow d'ouvrir une PR (**non vérifié**), la branche est poussée et le run le dit.
 
-Ordre conseillé : 1. simulation, pour voir combien de textes sont trouvés et lesquels sont écartés ; 2. essai sur
-5 dossiers, pour lire les résumés et les jetons dans le résumé du run ; 3. lancement réel : le workflow pousse une
-branche `data/resumes-…` et ouvre une pull request de brouillons, tous `valide: false` (il refuse s'il en voit un à
-`true`). Si le réglage du dépôt interdit au jeton du workflow d'ouvrir une PR (**non vérifié**), la branche est
-poussée et le run le dit. Les textes extraits et le compte rendu restent 7 jours en artefact du run.
+Et `limite` (5 dossiers par défaut). Secret : `MISTRAL_API_KEY`. Les textes extraits et le compte rendu restent
+7 jours en artefact du run.
 
 Le brancher sur la collecte quotidienne : possible (même archive, même runner), **pas fait**, et à ne faire qu'après
 une semaine de lancements manuels relus : une erreur qui part chaque matin coûte chaque matin.

@@ -71,7 +71,7 @@ export async function appelerMistral(texteOfficiel, { cle, modele = MODELE_DEFAU
 export async function genererLot(lots, { mock = false, essai = false, cle, modele, fetchImpl, jour, sortie } = {}) {
   const compte = [];
   for (const l of lots) {
-    const ligne = { dossier: l.dossier, ok: false, erreurs: [], jetons: null };
+    const ligne = { dossier: l.dossier, titre: l.titre || null, pdf: l.pdf || l.url || null, ok: false, erreurs: [], jetons: null };
     try {
       const officiel = fs.readFileSync(l.texte, "utf8");
       const { texte, jetons } = mock ? modeleSimule(officiel) : await appelerMistral(officiel, { cle, modele, fetchImpl });
@@ -104,6 +104,9 @@ async function main() {
   for (const l of compte) {
     if (l.jetons && l.jetons.total_tokens) jetons += l.jetons.total_tokens;
     console.log(`${l.ok ? "brouillon" : "REFUSÉ  "} ${l.dossier}${l.erreurs.length ? " : " + l.erreurs.join(" ; ") : ""}`);
+    /* Pour juger le résumé depuis un téléphone (26/11/2026) : le titre et le texte officiel lu, à côté. */
+    if (l.titre) console.log(`          ${l.titre}`);
+    if (l.pdf) console.log(`          texte lu : ${l.pdf}`);
     if (l.resume) console.log(`          « ${l.resume} »`);
   }
   console.log(`${compte.filter(l => l.ok).length}/${compte.length} brouillons ${essai ? "contrôlés (rien d'écrit, --essai)" : "écrits, valide: false"}${mock ? " (modèle simulé)" : ""}.`);

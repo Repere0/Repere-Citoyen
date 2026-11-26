@@ -76,3 +76,8 @@ test("les fichiers versionnés (data/resumes) : aucun résumé validé en défau
   const rouges = inventaire().filter(x => x.valide && x.defauts.length);
   assert.deepEqual(rouges.map(x => `${x.fichier} : ${x.defauts.join(" ; ")}`), []);
 });
+
+test("« jeunes majeurs » est un âge légal, pas un jugement ; « un enjeu majeur » reste refusé (porteur, 26/11/2026)", () => {
+  assert.ok(controlerResume("Le texte prolonge l'aide aux jeunes majeurs sortant de l'aide sociale à l'enfance.", "aide aux jeunes majeurs sortant de l'aide sociale à l'enfance").ok);
+  assert.match(controlerResume("Le texte répond à un enjeu majeur pour les jeunes majeurs du pays.", "enjeu jeunes majeurs pays").erreurs.join("|"), /mot de jugement : majeur$/);
+});

@@ -26,7 +26,7 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { resumeAffichable } from "../packages/core/src/resumes.js";
-import { JUGEMENT_RESUME } from "../packages/data-utils/src/invariants.js";
+import { FAITS_RESUME, JUGEMENT_RESUME } from "../packages/data-utils/src/invariants.js";
 
 const ICI = path.dirname(fileURLToPath(import.meta.url));
 export const DOSSIER = path.join(ICI, "..", "..", "data", "resumes");
@@ -52,7 +52,7 @@ export function controlerResume(resume, texteOfficiel) {
     mots.slice(1).forEach(m => { const mot = m.replace(/^[«"'(\[]+|[»"'),.;:!?\]]+$/g, "").replace(/^[ldLD]'/, ""); if (/^\p{Lu}[\p{L}-]+$/u.test(mot)) noms.add(mot); });
   }
   const nomsAbsents = [...noms].filter(n => !new RegExp(`(?<![a-z0-9])${plat(n).replace(/[-]/g, "[- ]")}(?![a-z0-9])`).test(source));
-  const jugements = [...new Set((r.match(JUGEMENT_RESUME) || []).map(m => m.toLowerCase()))];
+  const jugements = [...new Set((r.replace(FAITS_RESUME, " ").match(JUGEMENT_RESUME) || []).map(m => m.toLowerCase()))];
   const longueur = r.trim().length;
   const erreurs = [
     ...nombresAbsents.map(n => `nombre absent du texte officiel : ${n}`),

@@ -3,8 +3,8 @@
 #
 # LANCEMENT MANUEL SEULEMENT (Actions > Résumés en clair > Run workflow). Chaque
 # lancement réel coûte des jetons Mistral : aucun déclenchement planifié tant que le
-# porteur ne l'a pas décidé. Par défaut, --essai : le modèle répond, les contrôles
-# tournent, RIEN n'est écrit.
+# porteur ne l'a pas décidé. Par défaut, mode « essai » : le modèle répond, les
+# contrôles tournent, RIEN n'est écrit ; les résumés se lisent dans le résumé du run.
 #
 # Chaîne (docs/resumes-ia.md) :
 #   1. catalogue des scrutins publiés (extract-html.js) → dossiers législatifs concernés ;
@@ -23,18 +23,16 @@ name: Résumés en clair
 on:
   workflow_dispatch:
     inputs:
-      essai:
-        description: "Essai : appeler Mistral et contrôler, sans rien écrire"
-        type: boolean
-        default: true
+      # Un seul menu (26/11/2026, porteur : lancer depuis le téléphone, sans PC).
+      mode:
+        description: "simulation : aucun appel, gratuit · essai : Mistral répond, rien n'est écrit · brouillons : Mistral répond, PR de brouillons valide: false"
+        type: choice
+        options: [essai, simulation, brouillons]
+        default: essai
       limite:
         description: "Nombre maximal de dossiers par lancement"
         type: number
         default: 5
-      simulation:
-        description: "Modèle simulé (aucun appel Mistral, aucun coût) pour éprouver la chaîne"
-        type: boolean
-        default: false
 
 permissions:
   contents: write
@@ -80,9 +78,14 @@ jobs:
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
         run: |
           OPTIONS=""
-          if [ "${{ inputs.simulation }}" = "true" ]; then OPTIONS="--mock"
-          elif [ -z "$MISTRAL_API_KEY" ]; then echo "::error::Secret MISTRAL_API_KEY absent : rien n'est appelé."; exit 1; fi
-          if [ "${{ inputs.essai }}" = "true" ]; then OPTIONS="$OPTIONS --essai"; fi
+          case "${{ inputs.mode }}" in
+            simulation) OPTIONS="--mock --essai" ;;
+            essai) OPTIONS="--essai" ;;
+            brouillons) OPTIONS="" ;;
+            *) echo "::error::Mode inconnu : ${{ inputs.mode }}"; exit 1 ;;
+          esac
+          if [ "${{ inputs.mode }}" != "simulation" ] && [ -z "$MISTRAL_API_KEY" ]; then
+            echo "::error::Secret MISTRAL_API_KEY absent : rien n'est appelé."; exit 1; fi
           node scripts/generer_resumes.mjs --liste "$RUNNER_TEMP/officiels/lots.json" $OPTIONS | tee "$RUNNER_TEMP/compte-rendu.txt"
           { echo '```'; cat "$RUNNER_TEMP/compte-rendu.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
 
@@ -97,8 +100,8 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
-      - name: Pull request de brouillons (hors essai, hors simulation)
-        if: inputs.essai == false && inputs.simulation == false
+      - name: Pull request de brouillons (mode brouillons seulement)
+        if: inputs.mode == 'brouillons'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
