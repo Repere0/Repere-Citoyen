@@ -37,7 +37,11 @@ export function poserStylesBureau() {
   el.id = "repere-bureau";
   el.textContent = [
     '[data-bureau-colonnes="1"]{display:block!important;column-count:2;column-gap:56px}',
+    /* Textes en bloc (26/11/2026) : sans flex autour, react-native-web rend un texte (dir="auto") « en ligne » ; deux
+       paragraphes qui se suivaient se collaient (« …l'association.Repère ne collecte… », Soutenir à 1440 px). Seuls
+       les textes : un display:block sur une rangée en flex la casserait. */
     '[data-bureau-colonnes="1"]>*{break-inside:avoid;margin-bottom:24px}',
+    '[data-bureau-colonnes="1"]>[dir="auto"]{display:block}',
   ].join("\n");
   document.head.appendChild(el);
 }
