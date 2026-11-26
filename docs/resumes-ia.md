@@ -34,7 +34,9 @@ texte officiel (fichier .txt)  ──►  scripts/generer_resumes.mjs  ──►
 Depuis `mono/` :
 
 ```bash
-# 1. Préparer lots.json : [{ "dossier": "DLR5L17N51670", "texte": "officiels/DLR5L17N51670.txt",
+# 1. Préparer lots.json, automatiquement (voir plus bas) :
+#    node scripts/textes-officiels.mjs --archive ../data/brut_Dossiers_Legislatifs --scrutins data/scrutins.json --sortie officiels --deja ../data/resumes
+#    ou à la main, au format : [{ "dossier": "DLR5L17N51670", "texte": "officiels/DLR5L17N51670.txt",
 #                            "url": "https://www.assemblee-nationale.fr/dyn/17/dossiers/DLR5L17N51670",
 #                            "titre": "…", "scrutins": ["9759"] }]
 # 2. Éprouver la chaîne sans clé ni dépense :
@@ -47,15 +49,59 @@ MISTRAL_API_KEY=… node scripts/generer_resumes.mjs --liste lots.json
 node scripts/resumes-clairs.mjs --verifier && node scripts/resumes-clairs.mjs --publier ./data
 ```
 
+## Récupérer les textes officiels sans intervention (26/11/2026)
+
+**Méthode retenue : l'open data de l'Assemblée, puis le PDF officiel du texte déposé.** Ni flux RSS ni lecture de
+page HTML : l'Assemblée publie déjà tout ce qu'il faut sous licence ouverte.
+
+1. **Quels dossiers.** Chaque scrutin publié porte `dr`, la référence du dossier législatif (`DLR5L17N…`).
+2. **Quel document.** L'archive `Dossiers_Legislatifs.json.zip` (data.assemblee-nationale.fr, déjà téléchargée
+   chaque matin par `outils/collecte.py`) contient un fichier JSON par document, racine `document`. Pour un dossier,
+   on garde le document dont `dossierRef` est la référence, `provenance` vaut « Texte Déposé » et le type est un
+   projet ou une proposition de loi (`classification.type.code` `PRJL`/`PION`, ou `famille.classe.code`
+   `PRJLOI`/`PIONLOI`), le plus ancien dépôt. Champs décrits sur l'archive réelle : `docs/schema_dossiers.md`.
+3. **Le texte.** `https://www.assemblee-nationale.fr/dyn/opendata/<uid>.pdf` : version PDF officielle du document
+   (adresse **vérifiée le 26/11/2026** sur `PRJLANR5L17BTC2357.pdf`, texte de CMP de la loi de simplification).
+   `pdftotext` (poppler-utils) en tire le texte brut.
+4. **La partie à résumer : l'exposé des motifs**, de l'intitulé « EXPOSÉ DES MOTIFS » jusqu'au dispositif
+   (« PROPOSITION DE LOI » / « Article 1er »), borné à 12 000 caractères (un appel, coût borné). C'est la partie
+   écrite en langue courante qui dit ce que le texte veut faire ; le dispositif seul (« l'article L. 123 est
+   modifié… ») ne se résume pas honnêtement.
+5. Un dossier sans document reconnu, sans PDF ou sans exposé lisible est **écarté, et le compte rendu dit
+   pourquoi**. Un dossier qui a déjà un fichier dans `data/resumes/` est sauté (on ne repaie pas).
+
+Script : `mono/scripts/textes-officiels.mjs` (contrôles : `mono/tests/textes-officiels.test.mjs`, réseau et
+pdftotext simulés). Il écrit `<sortie>/<dossier>.txt` et `<sortie>/lots.json`, que lit `generer_resumes.mjs`.
+
+**Non vérifié** (le conteneur de développement ne joint pas l'Assemblée) : que l'exposé des motifs soit lisible tel
+quel dans les PDF des textes déposés de la 17e législature, et que tous les scrutins publiés aient leur texte déposé
+dans l'archive (une proposition venue du Sénat peut n'avoir à l'Assemblée qu'un texte « transmis »). Le premier
+lancement en simulation le dira.
+
+**Limite de fond** : l'exposé des motifs est écrit par les **auteurs** du texte. Il dit ce qu'ils veulent faire,
+pas ce que le texte voté contient après amendements. La consigne interdit le jugement, mais un résumé de l'exposé
+reste « ce que le texte propose », et l'écran doit le dire ainsi ; la relecture du porteur vérifie qu'il ne reprend
+pas un argument des auteurs comme un fait.
+
+## Le workflow `.github/workflows/generer-resumes.yml`
+
+Lancement **manuel seulement** (Actions > « Résumés en clair » > Run workflow), parce que chaque lancement réel coûte
+des jetons. Trois réglages : `simulation` (modèle simulé, aucun appel, aucun coût), `essai` (vrai appel, rien
+d'écrit ; **coché par défaut**), `limite` (5 dossiers par défaut). Secret à créer : `MISTRAL_API_KEY`.
+
+Ordre conseillé : 1. simulation, pour voir combien de textes sont trouvés et lesquels sont écartés ; 2. essai sur
+5 dossiers, pour lire les résumés et les jetons dans le résumé du run ; 3. lancement réel : le workflow pousse une
+branche `data/resumes-…` et ouvre une pull request de brouillons, tous `valide: false` (il refuse s'il en voit un à
+`true`). Si le réglage du dépôt interdit au jeton du workflow d'ouvrir une PR (**non vérifié**), la branche est
+poussée et le run le dit. Les textes extraits et le compte rendu restent 7 jours en artefact du run.
+
+Le brancher sur la collecte quotidienne : possible (même archive, même runner), **pas fait**, et à ne faire qu'après
+une semaine de lancements manuels relus : une erreur qui part chaque matin coûte chaque matin.
+
 ## Ce qui n'est pas fait (et pourquoi)
 
-- **La récupération automatique des textes officiels** : le conteneur de développement ne joint pas
-  assemblee-nationale.fr. Le champ exploitable (exposé des motifs ou résumé du dossier) reste à repérer sur le
-  runner. Les textes sont aujourd'hui fournis en fichiers.
 - **Le coût** : le script affiche les jetons que renvoie l'API, pas d'euros (le tarif change). Mesurer sur 20 textes
   avant tout lot complet ; **aucune dépense sans l'accord du porteur**.
-- **Finances** : l'écran a déjà ses phrases claires, calculées sans IA. La bulle n'y apparaît que si un résumé
-  `budget:<insee>` validé existe. Le générateur, lui, n'accepte aujourd'hui que des dossiers législatifs
-  (référence `DLR5L…`) : l'étendre aux budgets demande d'abord de choisir le texte source (il n'y a pas de « texte
-  officiel » d'un budget communal dans les données de Repère, seulement des chiffres OFGL) et d'accepter 1 264
-  relectures. À décider avant d'écrire le code.
+- **Finances** : **décision du porteur le 26/11/2026 : non**, pas de résumé IA des budgets pour l'instant. L'écran
+  garde ses phrases claires calculées sans IA ; le code qui afficherait un résumé `budget:<insee>` validé reste
+  inerte (aucun fichier ne le nourrit).
