@@ -40,6 +40,7 @@ import { BarreBudget, BarrePart, Compteur, DeuxAnnees, Depli, Financement, Mois,
 import { SignalerErreur } from "../ui/contact";
 import { enfonce } from "../ui/mouvement";
 import { niveauTitre } from "../ui/titre";
+import { useMeta } from "../lib/meta";
 
 type Rapport = { l: string; v: string; d: string };
 /* Le sigle seul ne dit rien au lecteur : nom complet d'abord, sigle entre parenthèses (nom publié par la source). */
@@ -176,6 +177,8 @@ const variation = (m1: number, m2: number) => {
 
 export default function Argent() {
   const selection = useSelection();
+  const nomMeta = selection.choix?.nom || null;
+  useMeta(nomMeta && `Le budget de ${nomMeta}`, nomMeta && `Où va l'argent de ${nomMeta} : dépenses, recettes, dette et projets, d'après les comptes officiels publiés par l'OFGL.`);
   const { reessayer } = useCommuneChoisie();
   const [vue, setVue] = useState<Vue>("cent");
   const [tousProjets, setTousProjets] = useState(false);
@@ -232,9 +235,9 @@ export default function Argent() {
           {ex && rr.length >= 2 && ch ? <Onglets etiquette="Vue du budget" valeurs={VUES} actif={vue} choisir={setVue} /> : null}
 
           {!ex ? (
-            <Vide {...(phraseEc ? comptesIncoherents(nom, phraseEc) : comptesAbsents(nom))} />
+            <Vide icone="wallet-outline" {...(phraseEc ? comptesIncoherents(nom, phraseEc) : comptesAbsents(nom))} />
           ) : rr.length < 2 || !ch ? (
-            <Vide {...comptesInsuffisants(ex.an)} />
+            <Vide icone="wallet-outline" {...comptesInsuffisants(ex.an)} />
           ) : (
             <>
               {/* COMBIEN (maquette Stitch : le chiffre par habitant, et son équivalent par mois,
@@ -386,7 +389,7 @@ export default function Argent() {
 
           {/* CE QUI A CHANGE EN UN AN : jamais deux territoires, jamais un jugement */}
           {ex && vue === "evolution" && !evo ? (
-            <Vide titre={`Pas d'évolution calculable pour ${nom}.`} corps="Il faut deux exercices publiés qui se suivent, sur le même périmètre. Les comptes publiés ne le permettent pas ici." />
+            <Vide icone="wallet-outline" titre={`Pas d'évolution calculable pour ${nom}.`} corps="Il faut deux exercices publiés qui se suivent, sur le même périmètre. Les comptes publiés ne le permettent pas ici." />
           ) : null}
           {ex && vue === "evolution" && evo && !evo.perimetreChange ? (
             <View style={{ gap: PAS * 3 }}>
@@ -402,7 +405,7 @@ export default function Argent() {
           ) : null}
           {(!ex || vue === "evolution") && evo ? (
             evo.perimetreChange ? (
-              <Vide {...perimetreChange(evo, nom)} />
+              <Vide icone="wallet-outline" {...perimetreChange(evo, nom)} />
             ) : (
               <Carte echelon="ville" titre={`Ce qui a changé entre ${evo.an1} et ${evo.an2}`}>
                 <Text style={TYPO.note}>{INTRO_EVOLUTION}</Text>
@@ -434,10 +437,10 @@ export default function Argent() {
               <Text style={[TYPO.question, { flex: 1 }]} {...niveauTitre(2)}>Les projets aidés par l'État</Text>
             </View>
             {!r.projetsLus ? (
-              <Vide {...PROJETS_PAS_ARRIVES} action="Réessayer" onAction={reessayer} />
+              <Vide icone="construct-outline" {...PROJETS_PAS_ARRIVES} action="Réessayer" onAction={reessayer} />
             ) : !listeProjets.length ? (
               <>
-                <Vide {...projetsAucun(nom, d.srcProjets && d.srcProjets.exercices, d.srcProjets && d.srcProjets.mis_a_jour_le)} />
+                <Vide icone="construct-outline" {...projetsAucun(nom, d.srcProjets && d.srcProjets.exercices, d.srcProjets && d.srcProjets.mis_a_jour_le)} />
                 <PastilleSource source={srcProjets(d)} />
               </>
             ) : (

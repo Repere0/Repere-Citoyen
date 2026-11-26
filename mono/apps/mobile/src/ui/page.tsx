@@ -85,7 +85,7 @@ export function AvecDonnees({ rendu }: { rendu: (r: Extract<EtatCommune, { pret:
   if (!choix && restauration === "echec") {
     return (
       <View style={[s.page, { paddingTop: PAS * 6 }]}>
-        <Vide titre="Repère n'a pas pu retrouver votre commune." corps="La liste des communes n'a pas pu être chargée. Vérifiez votre connexion, puis réessayez."
+        <Vide icone="location-outline" titre="Repère n'a pas pu retrouver votre commune." corps="La liste des communes n'a pas pu être chargée. Vérifiez votre connexion, puis réessayez."
           action="Réessayer" onAction={relancer} />
         <Bouton texte="Choisir une autre commune" onPress={() => router.replace("/")} discret />
       </View>
@@ -94,7 +94,7 @@ export function AvecDonnees({ rendu }: { rendu: (r: Extract<EtatCommune, { pret:
   if (!choix) {
     return (
       <View style={[s.page, { paddingTop: PAS * 6 }]}>
-        <Vide titre="Aucune commune n'est choisie." corps="Revenez à l'accueil et tapez le nom de votre commune." />
+        <Vide icone="location-outline" titre="Aucune commune n'est choisie." corps="Revenez à l'accueil et tapez le nom de votre commune." />
         <Bouton texte="Revenir à l'accueil" onPress={() => router.replace("/")} />
       </View>
     );
@@ -107,7 +107,7 @@ export function AvecDonnees({ rendu }: { rendu: (r: Extract<EtatCommune, { pret:
     }
     return (
       <View style={[s.page, { paddingTop: PAS * 6 }]}>
-        <Vide titre={p.titre} corps={p.corps}
+        <Vide icone="location-outline" titre={p.titre} corps={p.corps}
           action="Réessayer" onAction={reessayer} />
         {/* Un échec ne laisse jamais seul : on peut aller voir d'où viennent les données. */}
         <Bouton texte="Voir les sources" onPress={() => router.push("/sources")} discret />

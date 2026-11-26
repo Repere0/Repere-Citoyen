@@ -10,5 +10,6 @@ export const TITRE_MAX_QUIZ: number;
 export const TAILLE_MANCHE: number;
 export function entreesDuQuizMots(entrees: EntreeQuiz[]): EntreeQuiz[];
 export function construireQuestionMot(entrees: EntreeQuiz[], cle: string, hasard?: () => number): QuestionQuiz | null;
-export function mancheDuQuiz(entrees: EntreeQuiz[], taille?: number, hasard?: () => number): QuestionQuiz[];
+export function mancheDuQuiz(entrees: EntreeQuiz[], taille?: number, hasard?: () => number, premier?: string | null): QuestionQuiz[];
+export function quizPossible(entrees: EntreeQuiz[], cle: string): boolean;
 export function donneLaReponse(texte: string, titre: string): boolean;

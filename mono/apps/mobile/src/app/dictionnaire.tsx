@@ -16,7 +16,7 @@
  * avec le mot deja cherche (?mot=cle). Une cle inconnue ou heritee est ignoree. */
 import { useMemo, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, router, useLocalSearchParams } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { GLOSSAIRE, titreDuMot } from "@repere/core";
 import { couleurs, PAS, POLICE, RAYON, TYPO } from "../lib/theme";
@@ -25,7 +25,8 @@ import { enfonce } from "../ui/mouvement";
 
 /* LES CATÉGORIES (porteur, 09/11/2026) : les MOTS regroupés par thème, pour filtrer la liste.
    Rien n'y concerne une personne ni un parti. Un mot sans catégorie listée ici va dans « Institutions ». */
-import { CATEGORIES, CATEGORIE_DE, type Categorie } from "../lib/categories-mots";
+import { CATEGORIES, CATEGORIE_DE, categorieDuMot, type Categorie } from "../lib/categories-mots";
+import { quizPossible } from "../lib/quiz";
 import { Repliable } from "../ui/repliable";
 import { BoutonPartageTexte } from "../ui/partage/partager-texte";
 const normaliser = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -45,6 +46,10 @@ export default function Dictionnaire() {
       .sort((a, b) => normaliser(a.titre).localeCompare(normaliser(b.titre), "fr")),
     [],
   );
+  const jouables = useMemo(() => {
+    const e = toutes.map(x => ({ cle: x.cle, titre: x.titre, corps: x.corps, categorie: categorieDuMot(x.cle) }));
+    return new Set(e.filter(x => quizPossible(e, x.cle)).map(x => x.cle));
+  }, [toutes]);
   /* Seules les lettres qui ont au moins un mot : aucune case vide. */
   const lettres = useMemo(() => [...new Set(toutes.map(e => e.lettre))], [toutes]);
   const q = normaliser(recherche.trim());
@@ -122,6 +127,15 @@ export default function Dictionnaire() {
             <Text style={TYPO.etiquette}>{CATEGORIE_DE[e.cle] || "Institutions"}</Text>
           </View>
           <Repliable texte={e.corps} />
+          {/* Du mot au quiz (porteur, 26/11/2026) : seulement si ce mot peut être posé, sinon le lien mentirait. */}
+          {jouables.has(e.cle) ? (
+            <Pressable onPress={() => router.push({ pathname: "/quiz", params: { mot: e.cle } })} accessibilityRole="link"
+              accessibilityLabel={`Me tester sur le mot ${e.titre}, au quiz civique`} testID="dico-quiz"
+              style={({ pressed }) => ({ alignSelf: "flex-start", minHeight: 44, flexDirection: "row", alignItems: "center", gap: PAS * 2, ...enfonce(pressed) })}>
+              <Ionicons name="school-outline" size={18} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
+              <Text style={[TYPO.corps, { fontFamily: POLICE.section }]}>Me tester sur ce mot</Text>
+            </Pressable>
+          ) : null}
         </View>
       )) : (
         <Text style={TYPO.note}>{`Aucun mot ne correspond à « ${recherche.trim()} ». Essayez une partie du mot, ou parcourez les lettres.`}</Text>

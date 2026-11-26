@@ -35,7 +35,7 @@ export default function Avis() {
   if (!COURRIEL_AVIS) return (
     <View style={{ flex: 1, backgroundColor: couleurs.sol, padding: PAS * 4 }}>
       <Stack.Screen options={{ title: "Donner mon avis" }} />
-      <Vide titre="Aucune adresse n'est réglée pour recevoir les avis" corps="Cette version de Repère n'a pas d'adresse de contact. Rien ne peut être envoyé d'ici." />
+      <Vide icone="mail-outline" titre="Aucune adresse n'est réglée pour recevoir les avis" corps="Cette version de Repère n'a pas d'adresse de contact. Rien ne peut être envoyé d'ici." />
     </View>
   );
   const envoyer = () => {

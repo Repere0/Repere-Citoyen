@@ -115,13 +115,14 @@ function LesRangs({ ouvert, fermer, points }: { ouvert: boolean; fermer: () => v
   );
 }
 
-export function Quiz({ categorieDe }: { categorieDe: (cle: string) => string }) {
+export function Quiz({ categorieDe, premier = null }: { categorieDe: (cle: string) => string; premier?: string | null }) {
   const entrees = useMemo<EntreeQuiz[]>(() => Object.entries(GLOSSAIRE as Record<string, { titre: string; corps: string }>)
     .map(([cle, m]) => ({ cle, titre: m.titre, corps: m.corps, categorie: categorieDe(cle) })), [categorieDe]);
   /* Un tirage au hasard à chaque manche. */
   const [manche, setManche] = useState(0);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const questions = useMemo<QuestionQuiz[]>(() => mancheDuQuiz(entrees), [entrees, manche]);
+  /* Le mot venu du dictionnaire n'est posé en premier qu'à la première manche ; « Rejouer » repart au hasard. */
+  const questions = useMemo<QuestionQuiz[]>(() => mancheDuQuiz(entrees, undefined, undefined, manche === 0 ? premier : null), [entrees, manche, premier]);
   const [rang, setRang] = useState(0);
   const [choix, setChoix] = useState<number | null>(null);
   const [serie, setSerie] = useState(0);

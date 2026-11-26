@@ -56,10 +56,10 @@ export default function Actus() {
       {etat === ETATS.SERVI && liste.length ? <DateDonnee quoi="Fil de la rédaction" date={maj} /> : null}
       {etat === ETATS.EN_COURS ? <SquelettesListe n={3} hauteur={120} /> : null}
       {etat !== ETATS.SERVI && etat !== ETATS.EN_COURS && phrase ? (
-        <Vide titre={phrase.titre} corps={phrase.corps} action="Réessayer" onAction={() => setEssai(n => n + 1)} />
+        <Vide icone="newspaper-outline" titre={phrase.titre} corps={phrase.corps} action="Réessayer" onAction={() => setEssai(n => n + 1)} />
       ) : null}
       {etat === ETATS.SERVI && !liste.length ? (
-        <Vide titre="Pas encore d'actualité nationale dans nos données."
+        <Vide icone="newspaper-outline" titre="Pas encore d'actualité nationale dans nos données."
           corps="Repère n'a pas relevé d'événement national dans ses données. Le calendrier montre les séances annoncées."
           action="Voir le calendrier" onAction={() => router.push("/a-venir")} />
       ) : null}

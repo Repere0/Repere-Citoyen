@@ -103,3 +103,15 @@ test("quiz mots : une définition qui donne sa réponse n'est jamais posée (vu 
     assert.ok(!donneLaReponse(definitionCourte(e.corps), t), `« ${t} » : sa définition donne la réponse`);
   }
 });
+
+test("du dictionnaire au quiz (26/11/2026) : le mot demandé est posé en premier, et seulement s'il peut l'être", async () => {
+  const { GLOSSAIRE } = await import("../../../packages/core/src/mots.js");
+  const { mancheDuQuiz, quizPossible } = await import("../src/lib/quiz.js");
+  const entrees = Object.entries(GLOSSAIRE).map(([cle, m]) => ({ cle, titre: m.titre, corps: m.corps, categorie: "x" }));
+  for (const cle of ["navette parlementaire", "vote blanc", "constitution"]) {
+    assert.ok(quizPossible(entrees, cle), cle);
+    for (let g = 1; g <= 5; g++) assert.equal(mancheDuQuiz(entrees, 5, graine(g), cle)[0].cle, cle);
+  }
+  assert.equal(quizPossible(entrees, "rn"), false, "un sigle de groupe n'est jamais posé");
+  assert.ok(entrees.filter(e => quizPossible(entrees, e.cle)).length >= 46, "au moins 46 mots jouables");
+});

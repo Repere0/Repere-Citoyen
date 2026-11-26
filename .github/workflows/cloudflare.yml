@@ -81,6 +81,9 @@ jobs:
         if: steps.secrets.outputs.pret == 'oui'
         env:
           EXPO_PUBLIC_APP_MODE: ${{ vars.APP_MODE || 'demo' }}
+          # Référencement (26/11/2026) : robots.txt et sitemap.xml ouverts en PRODUCTION seulement ; un aperçu de branche
+          # garde « Disallow: / » (scripts/seo.mjs). À changer le jour où le domaine est acheté et branché.
+          ADRESSE_SITE: ${{ github.ref_name == 'main' && 'https://repere-enq.pages.dev' || '' }}
           EXPO_PUBLIC_CONTACT_EMAIL: ${{ vars.CONTACT_EMAIL || 'repere0@protonmail.com' }}
           EXPO_PUBLIC_FEEDBACK_EMAIL: ${{ vars.FEEDBACK_EMAIL || vars.CONTACT_EMAIL || 'repere0@protonmail.com' }}
         run: npm run build:cloudflare

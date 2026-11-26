@@ -40,6 +40,7 @@ import {
 import { Vide } from "../../lib/composants";
 import { CarteMemoire } from "../../cartes/CarteMemoire";
 import { useSelection } from "../../lib/selection";
+import { useMeta } from "../../lib/meta";
 import { useCommuneChoisie } from "../../lib/useCommune";
 import {
   PROJETS_PAS_ARRIVES, projetsAucun,
@@ -110,6 +111,7 @@ function EtapeBudget({ n, titre, detail }: { n: number; titre: string; detail?: 
 
 export default function ChezVous() {
   const { choix } = useSelection();
+  useMeta(choix && `${choix.nom}, ce qui se passe chez vous`, choix && `${choix.nom} : budget, élus, projets et votes, avec leurs sources officielles.`);
   const { reessayer } = useCommuneChoisie();
   const COULEUR = useCouleurVote();
   const groupes = useGroupes();
@@ -208,7 +210,7 @@ export default function ChezVous() {
              vrai, sinon en euros ; le cout est arrondi dans la phrase et exact
              dans la note. */}
           {!r.projetsLus ? (
-            <Vide {...PROJETS_PAS_ARRIVES} action="Réessayer" onAction={reessayer} />
+            <Vide icone="construct-outline" {...PROJETS_PAS_ARRIVES} action="Réessayer" onAction={reessayer} />
           ) : projet && f ? (
             /* Refonte (porteur, 09/11/2026) : la carte la plus visuelle possible. Le montant de l'aide en grand
                (IBM Plex Mono), la barre de la part de l'État, une ligne de description. Le montant est celui
@@ -263,9 +265,9 @@ export default function ChezVous() {
           {/* 3. A L'ASSEMBLEE NATIONALE — une position, jamais une presence ; une
              date, jamais « dernier » ; plusieurs circonscriptions, jamais UN depute. */}
           {!r.votesLus ? (
-            <Vide {...copieVoteVide(ETAT_VOTE.RELEVE_NON_LU)} action="Réessayer" onAction={reessayer} />
+            <Vide icone="stats-chart-outline" {...copieVoteVide(ETAT_VOTE.RELEVE_NON_LU)} action="Réessayer" onAction={reessayer} />
           ) : !r.votesFiables ? (
-            <Vide {...copieVoteVide(ETAT_VOTE.RELEVE_INCOHERENT)} />
+            <Vide icone="stats-chart-outline" {...copieVoteVide(ETAT_VOTE.RELEVE_INCOHERENT)} />
           ) : vote ? (
             <Reponse echelon="france"
               phrase={d.nbCircos > 1
@@ -291,7 +293,7 @@ export default function ChezVous() {
               }}
               suite={{ texte: "Comprendre ce vote", onPress: () => router.push("/vote") }} />
           ) : (
-            <Vide {...copieVoteVide(d.etatVote, { nom, releve: srcScrutins(d)?.releve, portee: d.srcScrutins && d.srcScrutins.portee })} />
+            <Vide icone="stats-chart-outline" {...copieVoteVide(d.etatVote, { nom, releve: srcScrutins(d)?.releve, portee: d.srcScrutins && d.srcScrutins.portee })} />
           )}
           {/* LA SEMAINE AU PARLEMENT : juste sous le vote du député, dans la même rubrique (13/11/2026). Elle reste
              sous les trois réponses (tests/parcours-web.mjs) et dit qu'elle est nationale (ui/semaine.tsx). */}

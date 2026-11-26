@@ -199,7 +199,7 @@ export default function Recherche() {
 
       {resultats !== null && rien && tousCharges ? (
         <View style={{ gap: PAS * 2 }}>
-          <Vide titre={filtre.trim() ? `Aucun résultat pour « ${filtre.trim()} »${theme ? ` dans le thème ${theme}` : ""}.` : `Aucun scrutin ni question pour le thème « ${theme} » dans les données publiées.`} action="Voir toutes les communes" onAction={voirToutes} />
+          <Vide icone="search-outline" titre={filtre.trim() ? `Aucun résultat pour « ${filtre.trim()} »${theme ? ` dans le thème ${theme}` : ""}.` : `Aucun scrutin ni question pour le thème « ${theme} » dans les données publiées.`} action="Voir toutes les communes" onAction={voirToutes} />
           {pannes ? <Text style={TYPO.note}>Une source n'a pas répondu (voir plus haut) : ce résultat peut être incomplet.</Text> : null}
         </View>
       ) : null}
