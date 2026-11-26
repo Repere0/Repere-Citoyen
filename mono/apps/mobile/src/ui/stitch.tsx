@@ -54,7 +54,7 @@ export function VoteBarTricolor({ pour, contre, abstention, position, qui }: {
   const parts = [
     { cle: "p", n: p, pct: pp, mot: "Pour" },
     { cle: "c", n: c, pct: pc, mot: "Contre" },
-    { cle: "a", n: a, pct: pa, mot: "Abst." },
+    { cle: "a", n: a, pct: pa, mot: "Abstention" },
   ] as const;
   const mot: Record<string, string> = { p: "Pour", c: "Contre", a: "Abstention" };
   /* 26/11/2026 (porteur) : une barre fine et aérée, puis trois colonnes de même largeur (le nombre au-dessus de son
