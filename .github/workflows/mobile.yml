@@ -54,7 +54,8 @@ concurrency:
 jobs:
   mobile:
     runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    # 26/11/2026 : 25 min ne suffisaient plus (tous les tests verts, coupé pendant le dépôt des captures).
+    timeout-minutes: 35
     defaults:
       run:
         working-directory: mono
