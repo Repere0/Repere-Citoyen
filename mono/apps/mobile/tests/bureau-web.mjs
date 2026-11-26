@@ -34,8 +34,17 @@ const ouvrir = async (largeur, hauteur, profil, commune = null) => {
   verifier(await page.getByTestId("hero").isVisible(), "le bloc d'accueil (hero) est là");
   const largeur = (await page.getByTestId("tableau-de-bord").boundingBox()).width;
   verifier(largeur >= 1000, `à 1440 px, la grille prend la largeur (${Math.round(largeur)} px, attendu 1000 au moins)`);
-  const scr = await page.getByTestId("widget-scrutin").boundingBox(), bud = await page.getByTestId("widget-budget").boundingBox();
-  verifier(Math.abs(scr.y - bud.y) < 2 && scr.width > bud.width * 1.2, "grille : le budget et le scrutin sont côte à côte, de tailles différentes");
+  /* Porteur, 26/11/2026 : barre de 240 px, dix entrées dans l'ordre donné ; sans commune, logo et carte d'IDF. */
+  verifier(Math.round((await page.getByTestId("barre-laterale").boundingBox()).width) === 240, "la barre latérale fait 240 px");
+  const entrees = await page.locator('[data-testid="barre-laterale"] [data-testid^="barre-"][role="link"]').evaluateAll(l => l.map(e => e.getAttribute("aria-label")));
+  verifier(JSON.stringify(entrees) === JSON.stringify(["Accueil", "Commune", "Qui décide", "Finances", "Parlement", "Calendrier", "Quiz", "Dictionnaire", "Réglages", "Soutenir"]), "les dix entrées, dans l'ordre : " + entrees.join(", "));
+  verifier(await page.getByTestId("hero-logo").isVisible(), "première visite : le logo en tête");
+  verifier(await page.getByTestId("widget-carte").isVisible() && await page.getByTestId("widget-budget").count() === 0, "sans commune : la carte d'IDF à la place du budget et de l'agenda");
+  const x = async id => (await page.getByTestId(id).boundingBox()).x;
+  verifier(Math.abs(await x("dep-92") - await x("dep-95")) < 2 && Math.abs(await x("dep-91") - await x("dep-92")) < 2, "carte : les cases d'une même colonne sont alignées");
+  const scr = await page.getByTestId("widget-scrutin").boundingBox(), cle = await page.getByTestId("widget-chiffre").boundingBox();
+  const r = (cle.width + 0.0) / scr.width;
+  verifier(Math.abs(scr.y - cle.y) < 2 && r > 0.45 && r < 0.55, `xl : scrutin (8 colonnes) et chiffre clé (4) côte à côte (rapport ${r.toFixed(2)})`);
   await page.getByTestId("tour-passer").click(); await page.waitForTimeout(400);
   verifier(await page.getByTestId("tour-guide").count() === 0, "« J'ai compris » ferme le tour guidé");
   await page.reload({ waitUntil: "networkidle" }); await page.getByTestId("tableau-de-bord").waitFor({ timeout: 15000 });
@@ -46,8 +55,7 @@ const ouvrir = async (largeur, hauteur, profil, commune = null) => {
   /* Doctrine du vide : chaque widget porte une phrase sous son titre. */
   const widgets = page.locator('[data-testid^="widget-"]:not([data-testid="widget-source"])');
   const n = await widgets.count();
-  verifier(n === 4, `refonte premium : quatre cartes, pas plus (${n})`);
-  verifier(await page.getByTestId("widget-hemicycle").count() === 0 && await page.getByTestId("widget-carte").count() === 0, "l'hémicycle et le plan schématique sont retirés du tableau de bord");
+  verifier(n === 5, `sans commune : scrutin, chiffre clé, carte, hémicycle, mot du jour (${n})`);
   for (let i = 0; i < n; i++) {
     const t = (await widgets.nth(i).innerText()).trim().split("\n").filter(Boolean);
     verifier(t.length >= 2, `widget ${await widgets.nth(i).getAttribute("data-testid")} : il dit quelque chose (« ${(t[1] || "").slice(0, 40)} »)`);
@@ -69,6 +77,20 @@ const ouvrir = async (largeur, hauteur, profil, commune = null) => {
   /* Pages de détail : deux colonnes de lecture sur ordinateur. */
   const colonnes = await page.evaluate(() => { const e = document.querySelector('[data-bureau-colonnes="1"]'); return e ? getComputedStyle(e).columnCount : null; });
   verifier(colonnes === "2", `page de détail : deux colonnes de lecture (column-count ${colonnes})`);
+  await contexte.close();
+}
+
+/* 2 bis. Avec une commune : la grille complète, 8 + 4, 6 + 6, 8 + 4 en xl ; en lg, 8 et 4 s'empilent, 6 + 6 reste. */
+for (const [larg, large] of [[1440, true], [1100, false]]) {
+  const { contexte, page } = await ouvrir(larg, 900, { prenom: "Test", animationsReduites: true, mode: "clair", alertes: [] }, { d: "77", c: "77284" });
+  await page.goto(BASE + "/", { waitUntil: "networkidle" }); await page.waitForTimeout(2000);
+  await page.getByTestId("barre-accueil").click();
+  const td = page.getByTestId("tableau-de-bord").last();
+  await td.waitFor({ timeout: 15000 }); await page.waitForTimeout(800);
+  const spans = await td.locator('[data-testid="rangee"]').evaluateAll(rs => rs.map(r => [...r.children].map(c => c.getAttribute("data-testid")).join("+")));
+  const attendu = large ? ["colonnes-8+colonnes-4", "colonnes-6+colonnes-6", "colonnes-8+colonnes-4"] : ["colonnes-8", "colonnes-4", "colonnes-6+colonnes-6", "colonnes-8", "colonnes-4"];
+  verifier(JSON.stringify(spans) === JSON.stringify(attendu), `${larg} px : rangées ${spans.join(" | ")}`);
+  verifier(await td.getByTestId("widget-budget").isVisible() && await td.getByTestId("widget-agenda").count() === 1, `${larg} px : budget et agenda avec la commune`);
   await contexte.close();
 }
 

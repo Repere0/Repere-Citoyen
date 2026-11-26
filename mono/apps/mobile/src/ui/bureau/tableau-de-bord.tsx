@@ -11,12 +11,15 @@ import type { ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { GLOSSAIRE, dateFr, definition, jourParis, parHabitant, titreLisible } from "@repere/core";
+import { GLOSSAIRE, dateFr, definition, departementDe, jourParis, parHabitant, titreLisible } from "@repere/core";
 import { chargerCatalogueScrutins } from "../../lib/donnees";
 import { useCommuneChoisie } from "../../lib/useCommune";
 import { useCouleurVote } from "../../lib/couleur-vote";
 import { CIBLE, JAUGE, PAS, POLICE, RAYON, TYPO, couleurs } from "../../lib/theme";
-import { TRANSITION } from "../../lib/bureau";
+import { TRANSITION, etendues, useBureau } from "../../lib/bureau";
+import { ELECTIONS, ELECTIONS_SOURCE, ELECTIONS_VERIFIEES_LE, joursAvant } from "../../lib/elections";
+import { useFichierGroupes } from "../../lib/groupes";
+import { Hemicycle } from "../hemicycle";
 import { SemaineParlement } from "../semaine";
 import { enfonce } from "../mouvement";
 import { niveauTitre } from "../titre";
@@ -237,24 +240,127 @@ function MotDuJour() {
   );
 }
 
+/* LE CHIFFRE CLÉ (porteur, 26/11/2026) : les jours avant le premier tour de la présidentielle. Un compte, pas un
+   score ; la date vient de service-public.gouv.fr, vérifiée à la date écrite dessous (lib/elections.ts). */
+function ChiffreCle() {
+  const tour1 = ELECTIONS.find(e => e.type === "presidentielle" && e.date);
+  const dans = tour1 && tour1.date ? joursAvant(tour1.date) : null;
+  return (
+    <Widget testID="widget-chiffre" titre="Présidentielle 2027" lien={{ texte: "Les étapes, les règles, les candidats", aller: () => router.push("/presidentielle-2027") }}
+      source={`Date : ${ELECTIONS_SOURCE.producteur}, vérifiée le ${dateFr(ELECTIONS_VERIFIEES_LE)}. Nombre de jours : calcul Repère.`}>
+      {dans === null || !tour1?.date ? <Text style={TYPO.corps}>La date du premier tour n'est pas encore publiée par le service public.</Text>
+        : dans > 0 ? (
+          <View style={{ gap: PAS }}>
+            <Text testID="chiffre-cle-jours" style={{ fontFamily: POLICE.donneeForte, fontSize: 48 /* hors échelle : chiffre clé du bureau, porteur 25/11/2026 */, lineHeight: 56, letterSpacing: -1.5, color: couleurs.encre, fontVariant: ["tabular-nums"] }}>
+              {dans.toLocaleString("fr-FR")}{" "}jours
+            </Text>
+            <Text style={[TYPO.corps, { color: couleurs.sourd }]}>avant le premier tour, le {dateFr(tour1.date)}.</Text>
+          </View>
+        ) : <Text style={TYPO.corps}>{dans === 0 ? "Le premier tour, c'est aujourd'hui." : "Le premier tour a eu lieu."}</Text>}
+    </Widget>
+  );
+}
+
+/* L'HÉMICYCLE EN GRAND : le composant de la page du Parlement (plan réel si publié, sinon arc dit indicatif,
+   ADR 0009). Sans la table des groupes, une phrase et un lien, jamais un cadre vide (invariant 5) : c'est ce cadre
+   vide que le porteur avait vu le 25/11. */
+function HemicycleGrand() {
+  const fichier = useFichierGroupes();
+  if (!fichier) return (
+    <Widget testID="widget-hemicycle" titre="La composition de l'Assemblée" lien={{ texte: "Les groupes et leurs députés", aller: () => router.push("/scrutins") }}>
+      <Text style={TYPO.corps}>{fichier === undefined ? "Chargement…" : "La composition de l'Assemblée n'a pas pu être lue sur cet appareil. La page du Parlement dit pourquoi."}</Text>
+    </Widget>
+  );
+  return (
+    <View testID="widget-hemicycle" style={{ flex: 1, borderWidth: 1, borderColor: couleurs.trait, borderRadius: RAYON.carte, overflow: "hidden", backgroundColor: couleurs.carte }}>
+      <Hemicycle />
+    </View>
+  );
+}
+
+/* LA CARTE DE L'ÎLE-DE-FRANCE, en PLAN SCHÉMATIQUE (onboarding, porteur 26/11/2026) : les 8 départements à leur place
+   relative, pas leur forme. Les vrais contours (IGN, Licence ouverte) demandent un fichier que la collecte ne publie
+   pas : on ne dessine pas une forme inventée en la présentant comme réelle, et la source le dit. Un département
+   ouvre la liste de ses communes, de A à Z (aucun tri par une valeur, invariant 3). */
+const PLAN: [string, number, number][] = [ // code, colonne, ligne (grille 4 x 3)
+  ["95", 1, 0], ["78", 0, 1], ["92", 1, 1], ["75", 2, 1], ["93", 3, 1], ["91", 1, 2], ["94", 2, 2], ["77", 3, 2],
+];
+const NOMS_DEP: Record<string, string> = { "75": "Paris", "77": "Seine-et-Marne", "78": "Yvelines", "91": "Essonne", "92": "Hauts-de-Seine", "93": "Seine-Saint-Denis", "94": "Val-de-Marne", "95": "Val-d'Oise" };
+
+export function CarteIdf({ communes, ouvrir }: { communes: [string, string, ...unknown[]][]; ouvrir: (insee: string, nom: string) => void }) {
+  const [dep, setDep] = useState<string | null>(null);
+  const liste = useMemo(() => (dep ? communes.filter(c => departementDe(c[0]) === dep).sort((a, b) => a[1].localeCompare(b[1], "fr")) : []), [dep, communes]);
+  return (
+    <Widget testID="widget-carte" titre="L'Île-de-France, département par département"
+      source="Plan schématique : chaque case est un département à sa place relative, pas sa forme réelle. Communes : découpage administratif Etalab.">
+      <View style={{ flexDirection: "row", gap: PAS * 6, flexWrap: "wrap" }}>
+        <View style={{ flexGrow: 3, flexBasis: 0, minWidth: 320, gap: PAS }} accessibilityRole="radiogroup" aria-label="Départements d'Île-de-France">
+          {[0, 1, 2].map(ligne => (
+            <View key={ligne} style={{ flexDirection: "row", gap: PAS }}>
+              {[0, 1, 2, 3].map(col => {
+                const x = PLAN.find(p => p[1] === col && p[2] === ligne);
+                /* Chaque case dans un emballage identique, pleine ou vide : sans lui, les rangées à case vide
+                   (95 ; 91, 94, 77) se décalaient de 14 px par rapport à la rangée pleine (mesuré le 26/11). */
+                if (!x) return <View key={col} style={{ flex: 1, flexBasis: 0, minWidth: 0 }} />;
+                const actif = dep === x[0];
+                return (
+                  <View key={col} style={{ flex: 1, flexBasis: 0, minWidth: 0 }}>
+                  <Pressable onPress={() => setDep(actif ? null : x[0])} accessibilityRole="radio" accessibilityState={{ checked: actif }} aria-checked={actif}
+                    accessibilityLabel={`${NOMS_DEP[x[0]]} (${x[0]})`} testID={`dep-${x[0]}`}
+                    style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [{ minHeight: 72, padding: PAS * 2, borderRadius: RAYON.bloc, justifyContent: "center",
+                      borderWidth: 1, borderColor: actif || hovered ? couleurs.encre : couleurs.trait, backgroundColor: actif ? couleurs.encre : couleurs.voile }, TRANSITION, pressed && enfonce(true)]}>
+                    <Text style={[TYPO.corps, { fontFamily: POLICE.section, color: actif ? couleurs.sol : couleurs.encre }]}>{x[0]}</Text>
+                    <Text numberOfLines={2} style={[TYPO.note, { color: actif ? couleurs.sol : couleurs.sourd }]}>{NOMS_DEP[x[0]]}</Text>
+                  </Pressable>
+                  </View>
+                );
+              })}
+            </View>
+          ))}
+        </View>
+        <View style={{ flexGrow: 2, flexBasis: 0, minWidth: 260, gap: PAS }}>
+          {dep ? (
+            liste.length ? (
+              <>
+                <Text style={TYPO.note}>{liste.length.toLocaleString("fr-FR")} communes en {NOMS_DEP[dep]}, de A à Z</Text>
+                <View style={{ maxHeight: 264, overflow: "scroll" as never, gap: 2 }}>
+                  {liste.map(c => (
+                    <Pressable key={c[0]} onPress={() => ouvrir(c[0], c[1])} accessibilityRole="button" accessibilityLabel={`Ouvrir ${c[1]}`}
+                      style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [{ minHeight: 44, justifyContent: "center", paddingHorizontal: PAS * 2, borderRadius: RAYON.bloc - 4, backgroundColor: hovered ? couleurs.voile : "transparent" }, TRANSITION, pressed && enfonce(true)]}>
+                      <Text style={TYPO.corps}>{c[1]}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </>
+            ) : <Text style={TYPO.corps}>La liste des communes n'est pas encore chargée sur cet appareil.</Text>
+          ) : <Text style={[TYPO.corps, { color: couleurs.sourd }]}>Choisissez un département pour voir ses communes, ou tapez le nom de la vôtre dans la recherche.</Text>}
+        </View>
+      </View>
+    </Widget>
+  );
+}
+
 /* ---------- la grille ---------- */
 
-/* Refonte premium (porteur, 25/11/2026) : quatre cartes, deux lignes. Le budget de la commune (ce qu'on vient
-   chercher) et le dernier vote ; puis la semaine au Parlement et le mot du jour. L'hémicycle et le plan de
-   l'Île-de-France sont retirés du tableau de bord tant que leurs données (plan réel, GeoJSON) ne sont pas publiées. */
-export function TableauDeBord(_: { communes: [string, string, ...unknown[]][]; ouvrir: (insee: string, nom: string) => void }) {
-  const ligne = { flexDirection: "row" as const, gap: PAS * 6, alignItems: "stretch" as const, flexWrap: "wrap" as const };
-  const col = (n: number, min = 320) => ({ flexGrow: n, flexShrink: 1, flexBasis: 0, minWidth: min, display: "flex" as const });
+/* Porteur, 26/11/2026 : une grille de 12 colonnes, trois rangées. Sans commune choisie (première visite), la rangée
+   du milieu (budget et agenda, qui demandent une commune) laisse la place à la carte de l'Île-de-France. */
+export function TableauDeBord({ communes, ouvrir, aCommune }: { communes: [string, string, ...unknown[]][]; ouvrir: (insee: string, nom: string) => void; aCommune: boolean }) {
+  const { large } = useBureau();
+  const rangees: [number, ReactNode][][] = [
+    [[8, <DernierScrutin key="s" />], [4, <ChiffreCle key="c" />]],
+    aCommune ? [[6, <Budget key="b" />], [6, <Agenda key="a" />]] : [[12, <CarteIdf key="idf" communes={communes} ouvrir={ouvrir} />]],
+    [[8, <HemicycleGrand key="h" />], [4, <MotDuJour key="m" />]],
+  ];
   return (
     <View testID="tableau-de-bord" style={{ gap: PAS * 6, marginTop: PAS * 8 }}>
-      <View style={ligne}>
-        <View style={col(5)}><Budget /></View>
-        <View style={col(7, 420)}><DernierScrutin /></View>
-      </View>
-      <View style={ligne}>
-        <View style={col(7, 420)}><Agenda /></View>
-        <View style={col(5)}><MotDuJour /></View>
-      </View>
+      {rangees.flatMap((r, i) => etendues(r.map(c => c[0]), large).map((groupe, j) => {
+        let k = 0; for (let x = 0; x < j; x++) k += etendues(r.map(c => c[0]), large)[x].length;
+        return (
+          <View key={`${i}-${j}`} testID="rangee" style={{ flexDirection: "row", gap: PAS * 6, alignItems: "stretch" }}>
+            {groupe.map((n, m) => <View key={m} testID={`colonnes-${n}`} style={{ flex: n, flexBasis: 0, minWidth: 0, display: "flex" }}>{r[k + m][1]}</View>)}
+          </View>
+        );
+      }))}
     </View>
   );
 }

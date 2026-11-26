@@ -5,7 +5,16 @@
 import { Platform, useWindowDimensions } from "react-native";
 
 export const LG = 1024, XL = 1280;
-export const LARGEUR_BARRE = 264;
+export const LARGEUR_BARRE = 240; /* porteur, 26/11/2026 (264 le 25/11) */
+/* LA GRILLE DU TABLEAU DE BORD (porteur, 26/11/2026) : 12 colonnes. Chaque rangée donne le nombre de colonnes de
+   chaque carte. En xl (1280 px et plus) : 8 + 4, 6 + 6, 8 + 4. En lg (1024 à 1279 px, barre latérale comprise, il
+   reste environ 720 px) : les cartes de 8 et de 4 colonnes prennent toute la largeur, l'une sous l'autre ; 6 + 6
+   reste côte à côte. Sous 1024 px, pas de tableau de bord : l'application mobile. */
+export const COLONNES = 12;
+export function etendues(rangee: number[], large: boolean): number[][] {
+  if (large || rangee.every(n => n === COLONNES / 2)) return [rangee];
+  return rangee.map(n => [n]);
+}
 
 export const estBureau = (largeur: number, os: string = Platform.OS) => os === "web" && largeur >= LG;
 

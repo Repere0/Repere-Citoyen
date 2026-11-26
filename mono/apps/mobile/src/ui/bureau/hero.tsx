@@ -13,6 +13,8 @@ import { TRANSITION } from "../../lib/bureau";
 import { DatePublication } from "../fraicheur";
 import { enfonce } from "../mouvement";
 import { niveauTitre } from "../titre";
+import { Logo } from "../logo";
+import { useTheme } from "../../lib/themeChoix";
 
 const ETAPES = [
   { icone: "business-outline", titre: "Qui décide chez vous", corps: "Votre maire, votre député, vos sénateurs : leurs noms et ce qu'ils votent, d'après les sources officielles." },
@@ -20,8 +22,9 @@ const ETAPES = [
   { icone: "document-text-outline", titre: "D'où viennent les chiffres", corps: "Chaque chiffre dit sa source et sa date. Repère ne donne pas d'avis : il montre, vous jugez." },
 ] as const;
 
-export function HeroBureau({ actif, children }: { actif: boolean; children: ReactNode }) {
+export function HeroBureau({ actif, logo = false, children }: { actif: boolean; logo?: boolean; children: ReactNode }) {
   const { profil, passer } = useProfil();
+  const { mode } = useTheme();
   const [tour, setTour] = useState<boolean | null>(null);
   if (!actif) return <>{children}</>;
   const ouvert = tour ?? !profil;
@@ -29,6 +32,8 @@ export function HeroBureau({ actif, children }: { actif: boolean; children: Reac
   return (
     <View testID="hero" style={{ gap: PAS * 8, paddingTop: PAS * 10, paddingBottom: PAS * 2 }}>
       <View style={{ gap: PAS * 3, maxWidth: 880 }}>
+        {/* Onboarding (porteur, 26/11/2026) : sans commune choisie, le logo en tête, puis la recherche et la carte. */}
+        {logo ? <View testID="hero-logo" style={{ marginBottom: PAS * 4 }}><Logo size={56} variant={mode} /></View> : null}
         {/* hors échelle : titre du bureau, 56 px (porteur : des titres plus grands sur ordinateur). */}
         {/* Refonte premium : grand mais fin (demi-gras), interlettrage serré. */}
         <Text style={{ fontFamily: POLICE.donneeForte, fontSize: 48 /* hors échelle : titre du bureau, porteur 25/11/2026 */, lineHeight: 56, letterSpacing: -1.4, color: couleurs.encre }} {...niveauTitre(1)}>
