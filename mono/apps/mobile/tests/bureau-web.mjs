@@ -94,7 +94,9 @@ for (const [larg, large] of [[1440, true], [1100, false]]) {
   if (large) {
     const h = async id => (await td.getByTestId(id).boundingBox()).height;
     const [sc, ch, he, mo, bu, ag] = [await h("widget-scrutin"), await h("widget-chiffre"), await h("widget-hemicycle"), await h("widget-mot"), await h("widget-budget"), await h("widget-agenda")];
-    verifier(ch < sc * 0.8 && mo < he * 0.8, `xl : chiffre clé (${Math.round(ch)} px) et mot du jour (${Math.round(mo)} px) à la hauteur de leur contenu, pas de leur voisine (${Math.round(sc)}, ${Math.round(he)})`);
+    /* Étirées, les deux cartes d'une rangée 8 + 4 ont la même hauteur. Indépendant des données : sans table des groupes
+       (CI), l'hémicycle n'est qu'une phrase, plus courte que le mot du jour. */
+    verifier(Math.abs(ch - sc) > 2 && Math.abs(mo - he) > 2, `xl : chiffre clé (${Math.round(ch)} px) et mot du jour (${Math.round(mo)} px) à la hauteur de leur contenu, pas de leur voisine (${Math.round(sc)}, ${Math.round(he)})`);
     verifier(Math.abs(bu - ag) < 2, `xl : budget et agenda (6 + 6) à la même hauteur (${Math.round(bu)}, ${Math.round(ag)})`);
   }
   await contexte.close();
