@@ -30,7 +30,7 @@ const echapper = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").r
 /* index.html -> la page d'un écran : titre, description, og:title, og:description remplacés. Échoue si une balise manque :
    on ne publie pas une page qui garderait la description de l'accueil en croyant l'avoir changée. */
 export function pageEcran(html, { titre, description }, nomSite = "Repère") {
-  const t = `${titre} · ${nomSite}`;
+  const t = `${titre} - ${nomSite}`; /* même forme que titreOnglet (« Finances - Repère ») */
   const remplacer = (motif, par, quoi) => { if (!motif.test(html)) throw new Error(`seo : ${quoi} introuvable dans index.html`); html = html.replace(motif, par); };
   remplacer(/<title>[^<]*<\/title>/, `<title>${echapper(t)}</title>`, "<title>");
   remplacer(/<meta name="description" content="[^"]*"\s*\/?>/, `<meta name="description" content="${echapper(description)}" />`, "meta description");

@@ -10,7 +10,7 @@ const INDEX = `<html><head><title>Repère</title>\n<meta name="description" cont
 
 test("une page par écran : titre, description et aperçu de lien propres, guillemets échappés", () => {
   const h = pageEcran(INDEX, { titre: "Où va l'argent", description: "Le budget \"officiel\"" });
-  assert.match(h, /<title>Où va l'argent · Repère<\/title>/);
+  assert.match(h, /<title>Où va l'argent - Repère<\/title>/);
   assert.match(h, /<meta name="description" content="Le budget &quot;officiel&quot;" \/>/);
   assert.match(h, /og:description" content="Le budget &quot;officiel&quot;"/);
   assert.doesNotMatch(h, /Qui décide chez vous/);
@@ -31,7 +31,7 @@ test("au build : fichiers écrits ; un aperçu n'a pas de sitemap", () => {
   fs.writeFileSync(path.join(d, "index.html"), INDEX);
   assert.deepEqual(ecrireSeo(d, { adresse: "", jour: "2026-11-26" }), { pages: PAGES.length, indexable: false });
   assert.ok(!fs.existsSync(path.join(d, "sitemap.xml")));
-  assert.match(fs.readFileSync(path.join(d, "finances.html"), "utf8"), /<title>Où va l'argent de ma commune · Repère<\/title>/);
+  assert.match(fs.readFileSync(path.join(d, "finances.html"), "utf8"), /<title>Où va l'argent de ma commune - Repère<\/title>/);
   ecrireSeo(d, { adresse: "https://repere-enq.pages.dev", jour: "2026-11-26" });
   assert.ok(fs.existsSync(path.join(d, "sitemap.xml")));
 });

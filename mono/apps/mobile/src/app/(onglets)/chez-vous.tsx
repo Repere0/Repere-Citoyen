@@ -111,7 +111,7 @@ function EtapeBudget({ n, titre, detail }: { n: number; titre: string; detail?: 
 
 export default function ChezVous() {
   const { choix } = useSelection();
-  useMeta(choix && `${choix.nom}, ce qui se passe chez vous`, choix && `${choix.nom} : budget, élus, projets et votes, avec leurs sources officielles.`);
+  useMeta(choix && `${choix.nom} : budget, élus, projets et votes, avec leurs sources officielles.`);
   const { reessayer } = useCommuneChoisie();
   const COULEUR = useCouleurVote();
   const groupes = useGroupes();

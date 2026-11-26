@@ -52,6 +52,7 @@ const texteFinances = await page.locator("body").innerText();
 verifier(/\d[\d   ]*\s?€/.test(texteFinances), "finances : un montant en euros est affiché");
 verifier(/OFGL|Observatoire des finances/.test(texteFinances), "finances : la source (OFGL) est nommée");
 verifier(/Melun/.test(await page.title()), `finances : le titre de l'onglet nomme la commune (« ${await page.title()} »)`);
+verifier(/Où va l'argent de Melun/.test(await page.locator('meta[name="description"]').getAttribute("content") || ""), "finances : la description de la page nomme la commune");
 
 /* 4. Du dictionnaire au quiz */
 await page.goto(BASE + "/dictionnaire", { waitUntil: "networkidle" });

@@ -178,7 +178,7 @@ const variation = (m1: number, m2: number) => {
 export default function Argent() {
   const selection = useSelection();
   const nomMeta = selection.choix?.nom || null;
-  useMeta(nomMeta && `Le budget de ${nomMeta}`, nomMeta && `Où va l'argent de ${nomMeta} : dépenses, recettes, dette et projets, d'après les comptes officiels publiés par l'OFGL.`);
+  useMeta(nomMeta && `Où va l'argent de ${nomMeta} : dépenses, recettes, dette et projets, d'après les comptes officiels publiés par l'OFGL.`);
   const { reessayer } = useCommuneChoisie();
   const [vue, setVue] = useState<Vue>("cent");
   const [tousProjets, setTousProjets] = useState(false);

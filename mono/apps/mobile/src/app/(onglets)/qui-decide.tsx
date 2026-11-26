@@ -54,7 +54,7 @@ const SUJETS: Sujet[] = [
 
 export default function QuiDecide() {
   const { choix } = useSelection();
-  useMeta(choix && `Qui décide à ${choix.nom}`, choix && `Qui décide quoi pour ${choix.nom} : maire, conseil municipal, intercommunalité, département, région et député, avec leurs sources.`);
+  useMeta(choix && `Qui décide quoi pour ${choix.nom} : maire, conseil municipal, intercommunalité, département, région et député, avec leurs sources.`);
   const groupes = useGroupes();
   /* Accordéon : seul l'échelon le plus proche est ouvert au départ (maquette Stitch). */
   const [ouverts, setOuverts] = useState<Set<Echelon>>(() => new Set<Echelon>(["ville"]));
