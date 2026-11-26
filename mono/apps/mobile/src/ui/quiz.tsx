@@ -30,6 +30,7 @@ import { COULEURS_QUIZ } from "../lib/palette";
 import { ACCENTS, CIBLE, couleurs, PAS, POLICE, RAYON, TYPO } from "../lib/theme";
 import { useMouvementReduit } from "./mouvement";
 import { niveauTitre } from "./titre";
+import { enfonce } from "./mouvement";
 
 /* La définition est « en gros » : la taille descend d'un cran quand elle est longue, pour tenir sans défiler. */
 const tailleEnonce = (n: number) => (n <= 80 ? 26 : n <= 130 ? 23 : n <= 170 ? 21 : 19);
@@ -62,7 +63,7 @@ function LesRangs({ ouvert, fermer, points }: { ouvert: boolean; fermer: () => v
         <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3 }}>
           <Text style={[TYPO.affiche, { flex: 1 }]} {...niveauTitre(1)}>Les rangs</Text>
           <Pressable onPress={fermer} accessibilityRole="button" accessibilityLabel="Fermer la liste des rangs"
-            style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.6 : 1 })}>
+            style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, alignItems: "center", justifyContent: "center", ...enfonce(pressed) })}>
             <Text style={[TYPO.corps, { fontFamily: POLICE.titre }]}>Fermer</Text>
           </Pressable>
         </View>
@@ -187,7 +188,7 @@ export function Quiz({ categorieDe }: { categorieDe: (cle: string) => string }) 
 
   const bouton = (texte: string, action: () => void, id?: string) => (
     <Pressable onPress={action} accessibilityRole="button" accessibilityLabel={texte} testID={id}
-      style={({ pressed }) => ({ minHeight: CIBLE + 8, borderRadius: RAYON.pastille, alignItems: "center", justifyContent: "center", backgroundColor: ACCENTS.autorite, opacity: pressed ? 0.8 : 1 })}>
+      style={({ pressed }) => ({ minHeight: CIBLE + 8, borderRadius: RAYON.pastille, alignItems: "center", justifyContent: "center", backgroundColor: ACCENTS.autorite, ...enfonce(pressed) })}>
       <Text style={{ fontSize: 16, fontFamily: POLICE.section, color: ACCENTS.surAutorite }}>{texte}</Text>
     </Pressable>
   );
@@ -280,7 +281,7 @@ export function Quiz({ categorieDe }: { categorieDe: (cle: string) => string }) 
             <Pressable onPress={() => setRangsOuverts(true)} accessibilityRole="button" accessibilityLabel="Voir les rangs et les points qu'ils demandent"
               testID="voir-rangs"
               style={({ pressed }) => ({ flex: 1, minHeight: CIBLE, borderRadius: RAYON.pastille, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: PAS * 2,
-                borderWidth: 1, borderColor: couleurs.trait, backgroundColor: couleurs.carte, opacity: pressed ? 0.7 : 1 })}>
+                borderWidth: 1, borderColor: couleurs.trait, backgroundColor: couleurs.carte, ...enfonce(pressed) })}>
               <Ionicons name="trophy-outline" size={18} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
               <Text style={[TYPO.corps, { fontFamily: POLICE.titre }]}>Les rangs</Text>
             </Pressable>

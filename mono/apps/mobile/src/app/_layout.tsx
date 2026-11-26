@@ -11,7 +11,7 @@
  * l'application : aucune requete vers un hote tiers. */
 import { AdresseCommune } from "../lib/adresse-web";
 import "../lib/donnees";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Platform, View } from "react-native";
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -34,7 +34,7 @@ import { FournisseurTheme } from "../lib/themeChoix";
 import { NEUTRES_PAR_MODE, type Mode } from "../lib/palette";
 import { LIBELLES } from "@repere/core";
 import { Retour } from "../ui/retour";
-import { poserStylesWeb, useBureau } from "../lib/bureau";
+import { fondreEcran, poserStylesWeb, useBureau } from "../lib/bureau";
 import { BarreLaterale } from "../ui/bureau/barre-laterale";
 
 /* Le theme de navigation reprend les neutres de la palette (aucune couleur ici). */
@@ -90,6 +90,9 @@ export default function Coquille() {
      guidé en 3 étapes, ui/bureau/) ; la bienvenue au prénom ne se pose que si on la demande (Réglages). */
   const { bureau } = useBureau();
   useEffect(() => { poserStylesWeb(); }, []);
+  const cheminAvant = useRef<string | null>(null);
+  const reduit = !!etatProfil.profil?.animationsReduites;
+  useEffect(() => { fondreEcran(cheminAvant.current, chemin, reduit); cheminAvant.current = chemin; }, [chemin, reduit]);
   const dressee = bienvenueDressee(barriere, chemin, demandee) && (!bureau || demandee);
   const bienvenue = useMemo(() => ({ ouvrir: () => setDemandee(true) }), []);
   const [polices, erreur] = useFonts({ Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold });
@@ -106,7 +109,7 @@ export default function Coquille() {
             <ThemeProvider value={tema}>
               <View style={{ flex: 1, display: dressee ? "none" : "flex", flexDirection: bureau ? "row" : "column" }} testID="application" accessibilityElementsHidden={dressee} importantForAccessibility={dressee ? "no-hide-descendants" : "auto"}>
               {bureau ? <BarreLaterale /> : null}
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1 }} testID="pile">
               <Stack
                 screenOptions={{
                   headerStyle: { backgroundColor: couleurs.sol },

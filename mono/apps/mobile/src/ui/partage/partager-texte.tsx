@@ -13,6 +13,7 @@ import { useSelection } from "../../lib/selection";
 import { lienDeLaPage, slugDe } from "../../lib/adresse-web";
 import { lienPublic } from "../../lib/adresse-publique";
 import { MESSAGE_RESULTAT, partager, type Resultat } from "./partager";
+import { enfonce } from "../mouvement";
 
 /* « Source : X, relevé le JJ mois AAAA. » — la même forme que la fiche élu. */
 export function ligneSource(s: { producteur?: string; maj?: string } | null | undefined): string {
@@ -42,7 +43,7 @@ export function BoutonCopierLien({ icone = false }: { icone?: boolean }) {
   };
   return (
     <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel="Copier le lien de cette page"
-      style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, alignItems: "center", justifyContent: "center", paddingHorizontal: 8, opacity: pressed ? 0.6 : 1 })}>
+      style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, alignItems: "center", justifyContent: "center", paddingHorizontal: 8, ...enfonce(pressed) })}>
       {icone && !etat ? <Ionicons name="share-outline" size={24} color={couleurs.lien} accessible={false} importantForAccessibility="no" /> : (
         <Text style={{ fontSize: 17, color: couleurs.lien, fontWeight: "500" }} accessibilityLiveRegion="polite">
           {etat === "ok" ? "Lien copié" : etat === "echec" ? "Copie impossible" : "Copier le lien"}
@@ -73,7 +74,7 @@ function BoutonPartager({ titre, chemin, source }: { titre: string; chemin: stri
       }}
       accessibilityRole="button"
       accessibilityLabel={`Partager : ${titre}`}
-      style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, alignItems: "center", justifyContent: "center", paddingHorizontal: 8, opacity: pressed ? 0.6 : 1 })}
+      style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, alignItems: "center", justifyContent: "center", paddingHorizontal: 8, ...enfonce(pressed) })}
     >
       <Ionicons name="share-outline" size={24} color={couleurs.lien} accessible={false} importantForAccessibility="no" />
     </Pressable>

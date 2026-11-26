@@ -11,6 +11,7 @@ import { slugDe } from "../../lib/adresse-web";
 import { lienPublic } from "../../lib/adresse-publique";
 import { MESSAGE_RESULTAT } from "./partager";
 import { usePartageStory } from "./use-partage-story";
+import { enfonce } from "../mouvement";
 
 export function PartagerCarte({ etiquette, repli, rendu, libelle = "Partager", icone, lien }: {
   etiquette: string; repli: string; rendu: (ref: RefObject<ComponentRef<typeof View> | null>) => ReactNode;
@@ -29,7 +30,7 @@ export function PartagerCarte({ etiquette, repli, rendu, libelle = "Partager", i
     <>
       <Pressable onPress={partager} accessibilityRole="button" accessibilityLabel={etiquette}
         style={({ pressed }) => ({ minHeight: CIBLE, borderRadius: 14, borderWidth: 1, borderColor: couleurs.trait,
-          backgroundColor: couleurs.carte, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 4, opacity: pressed ? 0.7 : 1 })}>
+          backgroundColor: couleurs.carte, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS * 4, ...enfonce(pressed) })}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 2 }}>
           {icone ? <Ionicons name={icone} size={18} color={couleurs.encre} accessible={false} importantForAccessibility="no" /> : null}
           <Text style={{ color: couleurs.encre, fontWeight: "500" }}>{libelle}</Text>

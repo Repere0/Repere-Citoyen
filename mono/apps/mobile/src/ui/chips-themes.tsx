@@ -7,6 +7,7 @@ import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { THEMES } from "@repere/core";
 import { CIBLE, couleurs, PAS, POLICE, RAYON } from "../lib/theme";
+import { enfonce } from "./mouvement";
 
 export const ICONE_THEME: Record<string, keyof typeof Ionicons.glyphMap> = {
   "Santé": "medkit-outline", "École": "school-outline", "Transport": "bus-outline", "Environnement": "leaf-outline",
@@ -25,7 +26,7 @@ export function ChipsThemes({ actif, choisir, themes }: { actif?: string | null;
             accessibilityLabel={choisir ? `Thème ${t}${on ? ", choisi : le retirer" : ""}` : `Thème ${t} : voir les votes et les questions liés`}
             style={({ pressed }) => ({ minHeight: CIBLE, flexDirection: "row", alignItems: "center", gap: PAS * 2, paddingHorizontal: PAS * 4,
               borderRadius: RAYON.pastille, borderWidth: 1, borderColor: on ? couleurs.encre : couleurs.trait,
-              backgroundColor: on ? couleurs.encre : couleurs.carte, opacity: pressed ? 0.7 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] })}>
+              backgroundColor: on ? couleurs.encre : couleurs.carte, ...enfonce(pressed) })}>
             <Ionicons name={ICONE_THEME[t] ?? "pricetag-outline"} size={18} color={on ? couleurs.sol : couleurs.encre} accessible={false} importantForAccessibility="no" />
             <Text style={{ fontSize: 16, fontFamily: POLICE.texteMoyen, color: on ? couleurs.sol : couleurs.encre }}>{t}</Text>
           </Pressable>

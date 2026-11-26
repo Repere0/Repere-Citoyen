@@ -28,7 +28,7 @@ import { useCommuneChoisie } from "../lib/useCommune";
 import { ACCENTS, CIBLE, couleurs, PAS, POLICE, RAYON, TYPO } from "../lib/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Onglets } from "../ui/stitch";
-import { AvecDonnees, Page, Question } from "../ui/page";
+import { AvecDonnees, Page, Question, insecable } from "../ui/page";
 import { DateDonnee } from "../ui/fraicheur";
 import { phrasesMoyenne, useMoyenneDepenses } from "../lib/moyenne";
 import { PastilleSource } from "../ui/source";
@@ -67,7 +67,7 @@ function ToutesLesAides({ ouvert, fermer, liste, nom, nomDe }: {
           <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3 }}>
             <Text style={[TYPO.question, { flex: 1 }]} {...niveauTitre(2)}>Les {liste.length} projets aidés</Text>
             <Pressable onPress={fermer} accessibilityRole="button" accessibilityLabel="Fermer la liste des projets"
-              style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, alignItems: "center", justifyContent: "center", opacity: pressed ? 0.6 : 1 })}>
+              style={({ pressed }) => ({ minHeight: CIBLE, minWidth: CIBLE, alignItems: "center", justifyContent: "center", ...enfonce(pressed) })}>
               <Text style={[TYPO.corps, { fontFamily: POLICE.titre }]}>Fermer</Text>
             </Pressable>
           </View>
@@ -83,7 +83,7 @@ function ToutesLesAides({ ouvert, fermer, liste, nom, nomDe }: {
                   <Pressable key={String(code)} onPress={() => setDispositif(code as string | null)} accessibilityRole="button"
                     accessibilityState={{ selected: on }} accessibilityLabel={code ? `Filtrer sur les aides ${nomDe(code as string)}` : "Toutes les aides"}
                     style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", paddingHorizontal: PAS * 4, borderRadius: RAYON.pastille,
-                      borderWidth: on ? 2 : 1, borderColor: on ? couleurs.encre : couleurs.trait, backgroundColor: couleurs.carte, opacity: pressed ? 0.7 : 1 })}>
+                      borderWidth: on ? 2 : 1, borderColor: on ? couleurs.encre : couleurs.trait, backgroundColor: couleurs.carte, ...enfonce(pressed) })}>
                     <Text style={[TYPO.note, on ? { color: couleurs.encre, fontFamily: POLICE.titre } : null]}>{code ? String(code) : "Toutes"}</Text>
                   </Pressable>
                 );
@@ -150,7 +150,7 @@ function Comparaison({ nom, valeur, index, dep, an }: { nom: string; valeur: num
   const p = phrasesMoyenne(nom, valeur, m);
   return (
     <View style={{ gap: 2 }}>
-      <Text style={[TYPO.corps, { fontWeight: "600" }]}>{nom} : {valeur.toLocaleString("fr-FR")} € · {p.court}</Text>
+      <Text style={[TYPO.corps, { fontWeight: "600" }]}>{insecable(`${nom} : ${valeur.toLocaleString("fr-FR")} € · ${p.court}`)}</Text>
       <Text style={TYPO.corps}>{p.position}</Text>
       {/* Audit 5 s : l'explication du calcul se deplie, elle ne s'impose pas. */}
       <Depli titre="Comment est calculée la médiane ?"><Text style={TYPO.corps}>{p.note}</Text></Depli>

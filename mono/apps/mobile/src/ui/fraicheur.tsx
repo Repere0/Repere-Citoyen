@@ -104,7 +104,8 @@ export function DateDonnee({ quoi, date, url, testID, avant }: { quoi: string; d
          ligne), pour garder la réponse héros d'Aujourd'hui dans le premier écran (parcours-web, 390 x 844). */}
       <View style={{ flexDirection: "row", alignItems: "center", columnGap: PAS * 2 }}>
         <Text style={{ fontSize: 14, lineHeight: 19, color: couleurs.sourd, flexShrink: 1 }}>
-          {quoi} du {dateFr(jour)} · {ilYa(age)}
+          {/* Insécables autour du point (26/11/2026) : « · aujourd'hui » ne finit plus seul en bout de ligne. */}
+          {quoi} du {dateFr(jour)}{"\u00a0·\u00a0"}{ilYa(age)}
         </Text>
         {avant ? null : lienSource}
       </View>

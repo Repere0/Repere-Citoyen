@@ -138,6 +138,7 @@ jobs:
           node apps/mobile/tests/accueil-refonte-web.mjs http://localhost:8811
           node apps/mobile/tests/calendrier-themes-web.mjs http://localhost:8811
           node apps/mobile/tests/hemicycle-web.mjs http://localhost:8811
+          node apps/mobile/tests/fondu-web.mjs http://localhost:8811
           node apps/mobile/tests/senat-web.mjs http://localhost:8811
           node apps/mobile/tests/groupes-grille-web.mjs http://localhost:8811
           node apps/mobile/tests/groupe-defilement-web.mjs http://localhost:8811
