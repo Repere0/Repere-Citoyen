@@ -36,7 +36,7 @@ export function BandeauDemo() {
     /* Polish (porteur, 25/11/2026) : un encart doux (fond voile, filet fin, arrondi des cartes), l'icône, le texte et
        le bouton sur une même ligne, centrés verticalement. */
     <View testID="bandeau-demo" accessibilityRole="summary"
-      style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3, paddingLeft: PAS * 4, paddingRight: PAS * 2, paddingVertical: PAS,
+      style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3, padding: PAS * 4,
         borderRadius: RAYON.carte, backgroundColor: couleurs.voile, borderWidth: 1, borderColor: couleurs.trait }}>
       <Ionicons name="flask-outline" size={20} color={couleurs.sourd} accessible={false} importantForAccessibility="no" />
       <Text style={[TYPO.note, { flex: 1, color: couleurs.encre }]}>Version démo : vos retours nous aident.</Text>

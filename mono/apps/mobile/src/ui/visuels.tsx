@@ -63,17 +63,27 @@ export function BarreSegments({ segments, hauteur = 32, etiquette }: { segments:
    sur lui. Les trois postes sont ceux que la source publie : ni école ni route, que les comptes ne
    détaillent pas. Couleurs de la jauge du budget (invariant 7), jamais politiques. */
 export function BarreBudget({ parts }: { parts: { sal: number; inv: number; aut: number } }) {
+  /* 26/11/2026 (porteur) : plus d'icône ni de montant DANS la barre (illisibles) ; une barre fine, puis trois colonnes
+     de même largeur, chacune : la pastille, le mot, le montant. Les libellés s'alignent d'une ligne à l'autre. */
   const lignes: (SegmentBarre & { mot: string })[] = [
-    { cle: "sal", mot: "Salaires", valeur: parts.sal, couleur: JAUGE.salaires, icone: "people", dedans: `${parts.sal}\u00a0€` },
-    { cle: "inv", mot: "Investir", valeur: parts.inv, couleur: JAUGE.investissement, icone: "construct", dedans: `${parts.inv}\u00a0€` },
-    { cle: "aut", mot: "Autres", valeur: parts.aut, couleur: JAUGE.autres, icone: "ellipsis-horizontal", dedans: `${parts.aut}\u00a0€` },
+    { cle: "sal", mot: "Salaires", valeur: parts.sal, couleur: JAUGE.salaires },
+    { cle: "inv", mot: "Investir", valeur: parts.inv, couleur: JAUGE.investissement },
+    { cle: "aut", mot: "Autres", valeur: parts.aut, couleur: JAUGE.autres },
   ];
   return (
-    <View style={{ gap: PAS * 2 }}>
-      <BarreSegments hauteur={48} segments={lignes}
+    <View style={{ gap: PAS * 4 }}>
+      <BarreSegments hauteur={12} segments={lignes}
         etiquette={`Sur 100 euros dépensés : ${parts.sal} de salaires, ${parts.inv} d'investissements, ${parts.aut} d'autres dépenses.`} />
-      <View style={{ flexDirection: "row", gap: 2 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-        {lignes.filter(x => x.valeur > 0).map(x => <Text key={x.cle} numberOfLines={1} style={[TYPO.note, { flex: x.valeur, textAlign: "center" }]}>{x.mot}</Text>)}
+      <View style={{ flexDirection: "row", gap: PAS * 3 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        {lignes.map(x => (
+          <View key={x.cle} style={{ flex: 1, gap: PAS }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 2 }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: x.couleur }} />
+              <Text numberOfLines={1} style={TYPO.note}>{x.mot}</Text>
+            </View>
+            <Text style={[TYPO.section, { fontFamily: POLICE.donneeForte, fontVariant: ["tabular-nums"] }]}>{x.valeur}{"\u00a0"}€</Text>
+          </View>
+        ))}
       </View>
     </View>
   );

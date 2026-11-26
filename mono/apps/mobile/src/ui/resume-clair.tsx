@@ -3,6 +3,7 @@
  * « Pas encore de résumé » et renvoie vers le texte officiel (invariant 5). La mention IA est toujours écrite. */
 import { useEffect, useState } from "react";
 import { Linking, Pressable, Text, View } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { dateFr, mentionResume, PAS_DE_RESUME, resumeAffichable, resumePour } from "@repere/core";
 import { chargerResumesClairs } from "../lib/donnees";
 import { couleurs, CIBLE, PAS, POLICE, RAYON, TYPO } from "../lib/theme";
@@ -18,8 +19,12 @@ export function ResumeClair({ resume, lienOfficiel }: { resume: Resume; lienOffi
     return <Vide titre={PAS_DE_RESUME} lien={lienOfficiel ? { texte: "Lire le texte officiel", url: lienOfficiel } : undefined} />;
   }
   return (
-    <View style={{ gap: PAS * 2, padding: PAS * 4, borderRadius: RAYON.carte, backgroundColor: couleurs.carte }}>
-      <Text style={TYPO.etiquette} {...niveauTitre(2)}>En clair</Text>
+    <View testID="resume-clair" style={{ gap: PAS * 2, padding: PAS * 4, borderRadius: RAYON.carte, backgroundColor: couleurs.carte, borderWidth: 1, borderColor: couleurs.trait }}>
+      {/* 26/11/2026 (porteur) : l'étincelle dit, avant même la mention, que ce texte a été rédigé avec une IA. */}
+      <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 2 }}>
+        <Ionicons name="sparkles-outline" size={18} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
+        <Text style={TYPO.etiquette} {...niveauTitre(2)}>En clair</Text>
+      </View>
       <Text style={TYPO.corps}>{r.texte}</Text>
       <Text style={TYPO.micro}>{mentionResume(r.producteur)}</Text>
       <Pressable onPress={() => Linking.openURL(r.url)} accessibilityRole="link"
@@ -42,4 +47,18 @@ export function ResumeClairDuVote({ dossier, scrutin, lienOfficiel }: { dossier?
     return () => { vivant = false; };
   }, []);
   return <ResumeClair resume={resumePour(index, { dossier, scrutin }) as Resume} lienOfficiel={lienOfficiel} />;
+}
+
+/* Le résumé du budget d'une commune (26/11/2026), clé « budget:<insee> » dans le même fichier. Finances a déjà ses
+   phrases claires, calculées : sans résumé validé, rien de plus ne s'affiche ici (pas un second « pas encore »). */
+export function ResumeClairDuBudget({ insee }: { insee?: string | null }) {
+  const [index, setIndex] = useState<unknown>(null);
+  useEffect(() => {
+    let vivant = true;
+    chargerResumesClairs().then((r: { donnees: unknown }) => { if (vivant) setIndex(r.donnees ?? null); }).catch(() => {});
+    return () => { vivant = false; };
+  }, []);
+  const r = resumePour(index, { budget: insee }) as Resume;
+  if (!resumeAffichable(r)) return null;
+  return <ResumeClair resume={r} />;
 }

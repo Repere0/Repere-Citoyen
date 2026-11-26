@@ -218,9 +218,23 @@ function GroupeCellule({ groupe, ouvert, onPress }: { groupe: Groupe; ouvert: bo
     >
       <View style={s.celluleTete}>
         <View style={[s.groupePoint, { backgroundColor: couleurGroupe(sigle) }]} />
-        <Text style={[s.celluleNom, ouvert && { fontFamily: POLICE.titre }]} numberOfLines={1}>{etiquette}</Text>
+        {/* 26/11/2026 : un nom sans sigle connu passe sur deux lignes au lieu d'être coupé. */}
+        <Text style={[s.celluleNom, ouvert && { fontFamily: POLICE.titre }]} numberOfLines={2}>{etiquette}</Text>
       </View>
-      <Text style={s.celluleStats} numberOfLines={2}>{decompteDuGroupe(groupe, true)}</Text>
+      {/* 26/11/2026 (porteur) : les trois nombres sur une ligne, chacun au-dessus de son mot, alignés d'une cellule à
+          l'autre ; la position reste écrite en toutes lettres (invariant 7). */}
+      {groupe.pour == null && groupe.contre == null && groupe.abstentions == null
+        ? <Text style={s.celluleStats}>décompte non publié</Text>
+        : (
+          <View style={{ flexDirection: "row" }} accessible={false}>
+            {([["pour", groupe.pour], ["contre", groupe.contre], ["abst.", groupe.abstentions]] as const).map(([mot, n]) => (
+              <View key={mot} style={{ flex: 1 }}>
+                <Text style={[s.celluleStats, { color: couleurs.encre, fontFamily: POLICE.donneeForte }]}>{n == null ? "–" : n}</Text>
+                <Text style={[s.celluleStats, { fontSize: 12, lineHeight: 16 }]}>{mot}</Text>
+              </View>
+            ))}
+          </View>
+        )}
     </Pressable>
   );
 }

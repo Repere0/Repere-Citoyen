@@ -115,7 +115,7 @@ export function PanneauSenat() {
               accessibilityLabel={`${g.libelle || g.sigle}, ${g.sieges} sénateurs. ${choisi === g.sigle ? "Montrer tous les sénateurs" : "Ne montrer que ce groupe"}`}
               style={({ pressed }) => [s.item, { opacity: choisi && choisi !== g.sigle ? 0.4 : pressed ? 0.7 : 1 }]}>
               <View style={[s.pastille, { backgroundColor: couleurGroupeSenat(g.sigle) }]} />
-              <Text style={[TYPO.corps, { flexShrink: 1 }, choisi === g.sigle ? { fontFamily: POLICE.titre } : null]} numberOfLines={1}>{g.sigle}</Text>
+              <Text style={[TYPO.corps, { flexShrink: 1 }, choisi === g.sigle ? { fontFamily: POLICE.titre } : null]} numberOfLines={2}>{g.sigle}</Text>
               <Text style={TYPO.donnee}>{g.sieges}</Text>
             </Pressable>
           ))}

@@ -57,22 +57,29 @@ export function VoteBarTricolor({ pour, contre, abstention, position, qui }: {
     { cle: "a", n: a, pct: pa, mot: "Abst." },
   ] as const;
   const mot: Record<string, string> = { p: "Pour", c: "Contre", a: "Abstention" };
+  /* 26/11/2026 (porteur) : une barre fine et aérée, puis trois colonnes de même largeur (le nombre au-dessus de son
+     mot et de sa part), alignées ; la position du député vient dessous, dans la carte, sans fond plein. */
   return (
-    <View style={{ gap: PAS * 2 }} accessible
+    <View style={{ gap: PAS * 4 }} accessible
       accessibilityLabel={`${p} pour, ${c} contre, ${a} abstentions${position && qui ? `. ${qui} : ${mot[position] ?? ""}` : ""}`}>
-      <BarreSegments hauteur={32} etiquette={`${p} pour, ${c} contre, ${a} abstentions`}
-        segments={parts.map(x => ({ cle: x.cle, valeur: x.n, couleur: C[x.cle], dedans: `${x.pct}\u00a0%` }))} />
-      <View style={s.ligne}>
+      <BarreSegments hauteur={12} etiquette={`${p} pour, ${c} contre, ${a} abstentions`}
+        segments={parts.map(x => ({ cle: x.cle, valeur: x.n, couleur: C[x.cle] }))} />
+      <View style={{ flexDirection: "row", gap: PAS * 3 }}>
         {parts.map(x => (
-          <View key={x.cle} style={{ flexDirection: "row", alignItems: "center", gap: PAS }}>
-            <View style={[s.point, { backgroundColor: C[x.cle] }]} />
-            <Text style={[TYPO.micro, { color: couleurs.encre, fontFamily: POLICE.texteGras }]}>{x.n.toLocaleString("fr-FR")} {x.mot} ({x.pct} %)</Text>
+          <View key={x.cle} style={{ flex: 1, gap: PAS }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 2 }}>
+              <View style={[s.point, { backgroundColor: C[x.cle] }]} />
+              <Text style={TYPO.note}>{x.mot}</Text>
+            </View>
+            <Text style={[TYPO.section, { fontFamily: POLICE.donneeForte, fontVariant: ["tabular-nums"] }]}>{x.n.toLocaleString("fr-FR")}</Text>
+            <Text style={TYPO.micro}>{x.pct}{"\u00a0"}%</Text>
           </View>
         ))}
       </View>
       {position && qui && mot[position] ? (
         <View style={s.badgeDepute}>
-          <Text style={[TYPO.micro, { color: ACCENTS.texteAccent, fontFamily: POLICE.texteGras }]}>Position de {qui} : {mot[position]}</Text>
+          <View style={[s.point, { backgroundColor: C[position as "p" | "c" | "a"] }]} />
+          <Text style={[TYPO.corps, { flex: 1, color: couleurs.encre }]}>{qui} : <Text style={{ fontFamily: POLICE.titre }}>{mot[position]}</Text></Text>
         </View>
       ) : null}
     </View>
@@ -120,11 +127,11 @@ const s = feuille(() => StyleSheet.create({
   enClairBadge: { ...TYPO.micro, fontFamily: POLICE.texteGras, color: ACCENTS.texteAccent, letterSpacing: 0.6 },
   ligne: { flexDirection: "row", flexWrap: "wrap", columnGap: PAS * 3, rowGap: PAS },
   point: { width: 10, height: 10, borderRadius: 5 },
-  badgeDepute: { alignSelf: "flex-start", backgroundColor: couleurs.voile, paddingHorizontal: PAS * 2, paddingVertical: PAS, borderRadius: 6 },
+  badgeDepute: { flexDirection: "row", alignItems: "center", gap: PAS * 2, paddingTop: PAS * 4, borderTopWidth: 1, borderTopColor: couleurs.trait },
   /* Refonte « légère » : une jauge fine. */
   piste: { flexDirection: "row", height: 6, borderRadius: 3, overflow: "hidden", backgroundColor: couleurs.voile, gap: 2 },
   segments: { flexDirection: "row", padding: 4, gap: 4, borderRadius: RAYON.bloc, backgroundColor: couleurs.voile },
-  segment: { flex: 1, minHeight: CIBLE - 4, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS, borderRadius: RAYON.bloc - 2 },
+  segment: { flex: 1, minHeight: CIBLE - 4, alignItems: "center", justifyContent: "center", paddingHorizontal: PAS, borderRadius: RAYON.bloc - 4 }, /* 26/11/2026 : arrondi intérieur = arrondi extérieur moins le jour de 4 px */
   segmentActif: { backgroundColor: couleurs.carte, shadowColor: couleurs.encre, shadowOpacity: 0.12, shadowRadius: 3, shadowOffset: { width: 0, height: 1 }, elevation: 1 },
   /* Pas de capitales : à 360 px, « PLAFONDS » se coupait au milieu du mot (capture du 09/11/2026). */
   segmentTexte: { ...TYPO.micro, fontFamily: POLICE.texteMoyen, color: couleurs.sourd, textAlign: "center" },

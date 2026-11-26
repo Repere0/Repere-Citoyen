@@ -34,6 +34,8 @@ import { phrasesMoyenne, useMoyenneDepenses } from "../lib/moyenne";
 import { PastilleSource } from "../ui/source";
 import { BoutonPartageTexte, ligneSource } from "../ui/partage/partager-texte";
 import { Resume } from "../ui/resume";
+import { ResumeClairDuBudget } from "./resume-clair";
+import { useSelection } from "../lib/selection";
 import { BarreBudget, BarrePart, Compteur, DeuxAnnees, Depli, Financement, Mois, RepartitionCent, Tendance, VariationAnnuelle } from "../ui/visuels";
 import { SignalerErreur } from "../ui/contact";
 import { enfonce } from "../ui/mouvement";
@@ -173,12 +175,14 @@ const variation = (m1: number, m2: number) => {
 };
 
 export default function Argent() {
+  const selection = useSelection();
   const { reessayer } = useCommuneChoisie();
   const [vue, setVue] = useState<Vue>("cent");
   const [tousProjets, setTousProjets] = useState(false);
   return (
     <AvecDonnees rendu={r => {
       const { d } = r;
+      const choix = selection.choix;
       const nom = d.nomCommune;
       const ex = d.exercice;
       const rr: Rapport[] = ex ? rapports(ex.ex) : [];
@@ -280,6 +284,8 @@ export default function Argent() {
                       ? <BarreBudget parts={{ sal: ch.partSalaires, inv: ch.partInvestissement, aut: 100 - ch.partSalaires - ch.partInvestissement }} />
                       : <RepartitionCent salaires={ch.partSalaires} investissement={ch.partInvestissement} />}
                   </Resume>
+                  {/* 26/11/2026 : le résumé « En clair » du budget, seulement s'il a été validé par le porteur. */}
+                  <ResumeClairDuBudget insee={choix ? choix.insee : null} />
                   <PasCeQueCaDit r={rap(/salaires/)} sujet="salaires" />
                   <PasCeQueCaDit r={rap(/investir/)} sujet="investissements" />
                   <PastilleSource source={srcComptes(d)} />

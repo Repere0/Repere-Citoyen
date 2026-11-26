@@ -80,7 +80,7 @@ export function etat(r, texteOfficiel) {
   return { valide: !!r && r.valide === true, defauts };
 }
 
-export function brouillon({ dossier, texte, resume, url, titre = null, scrutins = [], jour, sortie = DOSSIER }) {
+export function brouillon({ dossier, texte, resume, url, titre = null, scrutins = [], jour, sortie = DOSSIER, voie = "session" }) {
   if (!REF.test(dossier)) throw new Error(`reference de dossier mal formee : ${dossier} (attendu : DLR5L17N…)`);
   if (!/^https:\/\//.test(url || "")) throw new Error("--url : l'adresse https du texte officiel est obligatoire (invariant 4)");
   if (!String(texte || "").trim()) throw new Error("texte officiel vide");
@@ -93,7 +93,8 @@ export function brouillon({ dossier, texte, resume, url, titre = null, scrutins 
     source: { producteur: "Assemblée nationale", url, releve_le: jour, sha256: empreinte(texte) },
     titre_officiel: titre,
     resume: propre(resume).trim(),
-    methode: { voie: "session", controles: ["nombres", "noms", "vocabulaire", "longueur"] },
+    /* 26/11/2026 : « session » (rédigé en session) ou « ia:<modèle> » (scripts/generer_resumes.mjs). */
+    methode: { voie, controles: ["nombres", "noms", "vocabulaire", "longueur"] },
     valide: false, valide_le: null,
   };
   fs.writeFileSync(path.join(sortie, dossier + ".json"), JSON.stringify(fiche, null, 1) + "\n");

@@ -192,19 +192,19 @@ function CarteVote({ etiquette, nom, acteur, ligne, position, dec, date, titre, 
 /* Les trois accès rapides de l'accueil (07/11/2026) : mêmes écrans, mêmes noms qu'avant. */
 /* router.push écrit en toutes lettres : le contrôle de parcours (tests/parcours.test.mjs) le lit. */
 /* Couleur de chaque tuile : celle d'un échelon (une section), jamais d'un parti (invariant 7). */
-const ACCES: { ouvrir: () => void; texte: string; etiquette: string; icone: keyof typeof Ionicons.glyphMap; couleur: string }[] = [
+const ACCES: { ouvrir: () => void; texte: string; sous: string; etiquette: string; icone: keyof typeof Ionicons.glyphMap; couleur: string }[] = [
   /* 09/11/2026 (porteur) : la tuile ouvre la page de la présidentielle ; le guide « Ma voix » y est à un geste. */
-  { ouvrir: () => router.push("/presidentielle-2027"), texte: "Présidentielle 2027", etiquette: "Présidentielle 2027 : candidats, débats, réunions publiques, comment voter", icone: "flag", couleur: couleurs.dept },
-  { ouvrir: () => router.push("/pour-vous"), texte: "Pour vous", etiquette: "Pour vous : ce qui a été publié selon votre vue", icone: "bookmark", couleur: couleurs.region },
-  { ouvrir: () => router.push("/scrutins"), texte: "Le Parlement", etiquette: "Le Parlement : l'Assemblée nationale et le Sénat, leur composition et les votes publics", icone: "business", couleur: couleurs.france },
-  { ouvrir: () => router.push("/elus"), texte: "Mes élus", etiquette: "Mes élus : l'annuaire des élus, du maire au Parlement", icone: "people", couleur: couleurs.ville },
+  { ouvrir: () => router.push("/presidentielle-2027"), texte: "Présidentielle 2027", sous: "Élection de 2027", etiquette: "Présidentielle 2027 : candidats, débats, réunions publiques, comment voter", icone: "flag", couleur: couleurs.dept },
+  { ouvrir: () => router.push("/pour-vous"), texte: "Pour vous", sous: "Selon vos sujets", etiquette: "Pour vous : ce qui a été publié selon votre vue", icone: "bookmark", couleur: couleurs.region },
+  { ouvrir: () => router.push("/scrutins"), texte: "Le Parlement", sous: "Assemblée et Sénat", etiquette: "Le Parlement : l'Assemblée nationale et le Sénat, leur composition et les votes publics", icone: "business", couleur: couleurs.france },
+  { ouvrir: () => router.push("/elus"), texte: "Mes élus", sous: "Du maire au député", etiquette: "Mes élus : l'annuaire des élus, du maire au Parlement", icone: "people", couleur: couleurs.ville },
 ];
 /* ACCUEIL SANS COMMUNE (17/11/2026, porteur) : la recherche, quatre cartes, « Soutenir Repère », rien d'autre.
    « Pour vous » cède sa place au quiz : sans commune, ce fil n'a rien à montrer (il reste dans « Aujourd'hui »),
    et le quiz n'a pas d'autre entrée que l'accueil. */
 const ACCES_PREMIERE: typeof ACCES = [
   ACCES[0], ACCES[2], ACCES[3],
-  { ouvrir: () => router.push("/quiz"), texte: "Quiz civique", etiquette: "Quiz civique : testez votre culture civique, quatre définitions, une seule juste", icone: "school", couleur: couleurs.region },
+  { ouvrir: () => router.push("/quiz"), texte: "Quiz civique", sous: "Testez-vous", etiquette: "Quiz civique : testez votre culture civique, quatre définitions, une seule juste", icone: "school", couleur: couleurs.region },
 ];
 const MESSAGE_DONS = "Les dons arrivent très bientôt\u00a0! Merci pour votre soutien.";
 
@@ -559,12 +559,12 @@ export default function Accueil() {
                   plus de grand vide entre le logo et la date. */}
               <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3, flexShrink: 1 }}>
                 <Logo size={40} variant={modeTheme} />
-                <View style={{ flexShrink: 1 }}>
+                <View style={{ flexShrink: 1, gap: 2 }}>
                   <Text style={s.marque} accessibilityRole="header">Repère</Text>
                   <DatePublication compact />
                 </View>
               </View>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: PAS }}>
                 {/* 12/11/2026 (porteur) : la bascule clair / sombre, à un geste dès l'accueil. */}
                 <Pressable onPress={() => choisirTheme(modeTheme === "sombre" ? "clair" : "sombre")} accessibilityRole="button"
                   accessibilityLabel={modeTheme === "sombre" ? "Passer en mode clair" : "Passer en mode sombre"}
@@ -663,7 +663,12 @@ export default function Accueil() {
                     <Pressable key={a.texte} onPress={a.ouvrir} accessibilityRole="link" accessibilityLabel={a.etiquette}
                       style={({ pressed, hovered }: { pressed: boolean; hovered?: boolean }) => [s.tuile, hovered && { borderColor: D.sourd }, pressed && enfonce(true)]}>
                       <View style={s.tuileIcone}><Ionicons name={`${a.icone}-outline` as keyof typeof Ionicons.glyphMap} size={20} color={D.encre} accessible={false} importantForAccessibility="no" /></View>
-                      <Text style={s.tuileTexte} numberOfLines={2}>{a.texte}</Text>
+                      {/* 26/11/2026 (porteur) : un titre d'une ligne et une ligne d'aide, dans toutes les cartes ; plus de
+                          « Présidentielle 2027 » cassé sur deux lignes. */}
+                      <View style={{ gap: 2 }}>
+                        <Text style={s.tuileTexte} numberOfLines={1}>{a.texte === "Présidentielle 2027" ? "Présidentielle" : a.texte}</Text>
+                        <Text style={s.tuileSous} numberOfLines={1}>{a.sous}</Text>
+                      </View>
                     </Pressable>
                   ))}
                 </View>
@@ -802,16 +807,17 @@ const s = feuille(() => StyleSheet.create({
   page: { paddingHorizontal: PAS * 4, gap: PAS * 2, maxWidth: 640, width: "100%", alignSelf: "center" },
   tete: { gap: PAS * 4, marginBottom: PAS * 2 },
   /* Taille 26 : la pastille « Chercher » passe sous le logo au lieu de sortir de la marge. */
-  barreHaut: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  barreHaut: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: PAS * 2, paddingVertical: PAS * 2 },
   outil: { width: CIBLE, height: CIBLE, alignItems: "center", justifyContent: "center" },
   tuiles: { flexDirection: "row", flexWrap: "wrap", gap: PAS * 3 },
   /* Fond D.voile : la teinte demandée par le porteur à 3 unités près, sans couleur hors palette. */
   /* Step Up (25/11/2026) : des cartes aérées, l'icône dans une pastille, une ombre douce au lieu du filet. */
   /* Polish (25/11/2026) : une grille régulière — même hauteur, icône au même endroit, titre sur deux lignes au plus,
      un filet fin au lieu de l'ombre. */
-  tuile: { width: "48%", flexGrow: 1, height: 120, padding: PAS * 4, borderRadius: RAYON.carte, backgroundColor: D.carte, borderWidth: 1, borderColor: D.trait, justifyContent: "space-between" },
+  tuile: { width: "48%", flexGrow: 1, height: 128, padding: PAS * 4, borderRadius: RAYON.carte, backgroundColor: D.carte, borderWidth: 1, borderColor: D.trait, justifyContent: "space-between" },
   tuileIcone: { width: 40, height: 40, borderRadius: RAYON.bloc, backgroundColor: D.voile, alignItems: "center", justifyContent: "center" },
   tuileTexte: { fontFamily: POLICE.titre, fontSize: 16, lineHeight: 24, color: D.encre },
+  tuileSous: { fontFamily: POLICE.texte, fontSize: 14, lineHeight: 20, color: D.sourd },
   marque: { fontFamily: POLICE.section, fontSize: 20, lineHeight: 24, letterSpacing: -0.3, color: D.encre },
   /* L'action principale : plus haute, filet plus marqué (refonte du 09/11/2026). */
   chercher: { minHeight: 60, borderRadius: RAYON.bloc, backgroundColor: D.carte, borderWidth: 1.5, borderColor: D.sourd, paddingHorizontal: PAS * 6, flexDirection: "row", alignItems: "center", gap: PAS * 3, marginTop: PAS * 4, ...OMBRE },
@@ -854,7 +860,7 @@ const s = feuille(() => StyleSheet.create({
   },
   note: { fontFamily: POLICE.texte, fontSize: 14, lineHeight: 22, color: D.sourd },
   /* Polish (porteur, 25/11/2026) : un bonjour discret, aligné à gauche, plus un grand titre centré. */
-  bonjour: { fontFamily: POLICE.section, fontSize: 20, lineHeight: 28, letterSpacing: -0.2, color: D.encre, marginTop: PAS * 4 },
+  bonjour: { fontFamily: POLICE.section, fontSize: 20, lineHeight: 28, letterSpacing: -0.2, color: D.encre },
   sousTitre: { fontFamily: POLICE.texte, fontSize: 16, lineHeight: 24, color: D.sourd },
   jouer: { minHeight: 36, paddingHorizontal: PAS * 4, borderRadius: 999, backgroundColor: D.encre, alignItems: "center", justifyContent: "center" },
   jouerTexte: { fontFamily: POLICE.titre, fontSize: 16, color: D.sol },
