@@ -356,7 +356,9 @@ export function TableauDeBord({ communes, ouvrir, aCommune }: { communes: [strin
       {rangees.flatMap((r, i) => etendues(r.map(c => c[0]), large).map((groupe, j) => {
         let k = 0; for (let x = 0; x < j; x++) k += etendues(r.map(c => c[0]), large)[x].length;
         return (
-          <View key={`${i}-${j}`} testID="rangee" style={{ flexDirection: "row", gap: PAS * 6, alignItems: "stretch" }}>
+          /* Porteur, 26/11/2026 : dans une rangée 8 + 4, la petite carte (chiffre clé, mot du jour) prend la hauteur de
+             son contenu au lieu de s'étirer à celle de sa voisine (du vide en bas). 6 + 6 reste à hauteur égale. */
+          <View key={`${i}-${j}`} testID="rangee" style={{ flexDirection: "row", gap: PAS * 6, alignItems: groupe.length > 1 && groupe[0] !== groupe[1] ? "flex-start" : "stretch" }}>
             {groupe.map((n, m) => <View key={m} testID={`colonnes-${n}`} style={{ flex: n, flexBasis: 0, minWidth: 0, display: "flex" }}>{r[k + m][1]}</View>)}
           </View>
         );

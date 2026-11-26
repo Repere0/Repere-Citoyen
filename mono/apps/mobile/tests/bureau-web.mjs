@@ -91,6 +91,12 @@ for (const [larg, large] of [[1440, true], [1100, false]]) {
   const attendu = large ? ["colonnes-8+colonnes-4", "colonnes-6+colonnes-6", "colonnes-8+colonnes-4"] : ["colonnes-8", "colonnes-4", "colonnes-6+colonnes-6", "colonnes-8", "colonnes-4"];
   verifier(JSON.stringify(spans) === JSON.stringify(attendu), `${larg} px : rangées ${spans.join(" | ")}`);
   verifier(await td.getByTestId("widget-budget").isVisible() && await td.getByTestId("widget-agenda").count() === 1, `${larg} px : budget et agenda avec la commune`);
+  if (large) {
+    const h = async id => (await td.getByTestId(id).boundingBox()).height;
+    const [sc, ch, he, mo, bu, ag] = [await h("widget-scrutin"), await h("widget-chiffre"), await h("widget-hemicycle"), await h("widget-mot"), await h("widget-budget"), await h("widget-agenda")];
+    verifier(ch < sc * 0.8 && mo < he * 0.8, `xl : chiffre clé (${Math.round(ch)} px) et mot du jour (${Math.round(mo)} px) à la hauteur de leur contenu, pas de leur voisine (${Math.round(sc)}, ${Math.round(he)})`);
+    verifier(Math.abs(bu - ag) < 2, `xl : budget et agenda (6 + 6) à la même hauteur (${Math.round(bu)}, ${Math.round(ag)})`);
+  }
   await contexte.close();
 }
 
