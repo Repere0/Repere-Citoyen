@@ -10,7 +10,8 @@
  * d'ecran dessine : il ouvre « Qui decide », a confirmer par le porteur.
  * Les ecrans de detail (argent, vote, fiche, partage, dictionnaire...) restent
  * dans la pile, au-dessus de la barre. */
-import { Platform, StyleSheet, Text, type ColorValue } from "react-native";
+import { Platform, StyleSheet, Text, View, type ColorValue } from "react-native";
+import { InvitationInstallation } from "../../ui/invitation-installation";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
 import { useBureau } from "../../lib/bureau";
@@ -22,6 +23,7 @@ import { ACCENTS, couleurs } from "../../lib/theme";
 import { useTheme } from "../../lib/themeChoix";
 import { ChangerCommune } from "../../ui/retour";
 import { BoutonReglages } from "../../ui/reglages";
+import { useState } from "react";
 
 /* Une icone par onglet (@expo/vector-icons, Ionicons, brief V47 bloc 1) : pleine quand l'onglet
  * est actif, contour sinon. L'icone est decorative : le nom de l'onglet la porte. Ionicons n'a pas
@@ -63,8 +65,10 @@ export default function Onglets() {
   const marges = useSafeAreaInsets();
   const { bureau } = useBureau();
   const hauteurBarre = 72 + marges.bottom;
+  const [hauteurInvitation, setHauteurInvitation] = useState(0);
   return (
-    <HauteurOnglets.Provider value={BARRE_FLOTTANTE && !bureau ? hauteurBarre + 16 : 0}>
+    <HauteurOnglets.Provider value={BARRE_FLOTTANTE && !bureau ? hauteurBarre + 16 + hauteurInvitation : 0}>
+    <View style={{ flex: 1 }}>
     <Tabs
       /* Dashboard desktop (25/11/2026) : sur grand écran, la barre latérale remplace la barre du bas. */
       tabBar={bureau ? () => null : undefined}
@@ -102,6 +106,9 @@ export default function Onglets() {
       <Tabs.Screen name="finances" options={{ title: LIBELLES.argent, tabBarLabel: etiquette(LIBELLES.finances), tabBarIcon: icone("wallet") }} />
       <Tabs.Screen name="a-venir" options={{ title: LIBELLES.calendrier, tabBarLabel: etiquette(LIBELLES.calendrier), tabBarIcon: icone("calendar") }} />
     </Tabs>
+    {/* Installer sur l'écran d'accueil (27/11/2026) : au-dessus de la barre d'onglets, téléphone et navigateur seulement. */}
+    <InvitationInstallation bas={hauteurBarre} surHauteur={setHauteurInvitation} />
+    </View>
     </HauteurOnglets.Provider>
   );
 }
