@@ -3,7 +3,7 @@
  * interrupteurs. Tout ce qui est réglé ici s'écrit dans repere.profil, sur l'appareil, et nulle part ailleurs
  * (invariant 2) : aucune clé neuve. */
 import type { ReactNode } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { router, Stack } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { CIBLE, PAS, RAYON, TYPO, OMBRE, couleurs, feuille } from "../lib/theme";
@@ -103,6 +103,7 @@ export default function Reglages() {
       <Groupe titre="Repère">
         {/* 17/11/2026 : l'avis par la messagerie du lecteur ; absent si aucune adresse n'est réglée. */}
         <BoutonAvis style={{ justifyContent: "flex-start", paddingVertical: PAS }} />
+        {Platform.OS === "web" ? <Ligne icone="phone-portrait-outline" texte="Installer sur l'écran d'accueil" testID="reglages-installer" onPress={() => router.push("/installer")} /> : null}
         <Ligne icone="heart-outline" texte="Soutenir Repère" onPress={() => router.push("/soutenir")} />
         <Filet />
         <Ligne icone="help-circle-outline" texte="Questions fréquentes" onPress={() => router.push("/faq")} />
