@@ -109,6 +109,15 @@ jobs:
           node scripts/textes-officiels.mjs --archive "$RUNNER_TEMP/an/brut" --scrutins data/scrutins.json \
             --sortie "$RUNNER_TEMP/officiels" --deja ../data/resumes --limite "${{ steps.reglages.outputs.limite }}"
 
+      # Votes de la semaine (porteur, 27/11/2026, décisions 3 et 5) : la fiche officielle de chaque scrutin des 7
+      # derniers jours, sans ceux déjà en brouillon. Même limite que les lois : 2 x limite textes au plus par lot.
+      - name: Votes de la semaine (fiches des scrutins)
+        working-directory: mono
+        run: |
+          node scripts/sources-explications.mjs --donnees data --sortie "$RUNNER_TEMP/votes" \
+            --depuis "$(date -u -d '7 days ago' +%F)" --deja ../data/resumes --limite "${{ steps.reglages.outputs.limite }}"
+          jq -s 'add' "$RUNNER_TEMP/officiels/lots.json" "$RUNNER_TEMP/votes/lots.json" > "$RUNNER_TEMP/lots.json"
+
       - name: Brouillons de résumés
         working-directory: mono
         env:
@@ -123,7 +132,7 @@ jobs:
           esac
           if [ "${{ steps.reglages.outputs.mode }}" != "simulation" ] && [ -z "$MISTRAL_API_KEY" ]; then
             echo "::error::Secret MISTRAL_API_KEY absent : rien n'est appelé."; exit 1; fi
-          node scripts/generer_resumes.mjs --liste "$RUNNER_TEMP/officiels/lots.json" $OPTIONS | tee "$RUNNER_TEMP/compte-rendu.txt"
+          node scripts/generer_resumes.mjs --liste "$RUNNER_TEMP/lots.json" $OPTIONS | tee "$RUNNER_TEMP/compte-rendu.txt"
           { echo '```'; cat "$RUNNER_TEMP/compte-rendu.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Garder les textes et le compte rendu (7 jours)
@@ -133,6 +142,7 @@ jobs:
           name: resumes-${{ github.run_id }}
           path: |
             ${{ runner.temp }}/officiels
+            ${{ runner.temp }}/votes
             ${{ runner.temp }}/compte-rendu.txt
           retention-days: 7
           if-no-files-found: ignore
