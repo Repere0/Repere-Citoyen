@@ -11,7 +11,7 @@ import type { ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { GLOSSAIRE, dateFr, definition, departementDe, jourParis, parHabitant, titreLisible } from "@repere/core";
+import { GLOSSAIRE, dateFr, definition, departementDe, jourParis, parHabitant, repartitionDepenses, titreLisible } from "@repere/core";
 import { chargerCatalogueScrutins } from "../../lib/donnees";
 import { useCommuneChoisie } from "../../lib/useCommune";
 import { useCouleurVote } from "../../lib/couleur-vote";
@@ -170,11 +170,13 @@ function Budget() {
       </Widget>
     );
   }
-  const sal = hab.salaires, inv = hab.investissement, dep = hab.depenses;
-  const parts = sal !== null && inv !== null && sal + inv <= dep ? [
-    { cle: "Salaires", valeur: sal, couleur: JAUGE.salaires },
-    { cle: "Investissements", valeur: inv, couleur: JAUGE.investissement },
-    { cle: "Autres dépenses", valeur: dep - sal - inv, couleur: JAUGE.autres },
+  const dep = hab.depenses;
+  /* 27/11/2026 : la règle unique de core (avant : chaque part arrondie à part, total 99 ou 101 possible). */
+  const rep = repartitionDepenses(pret.d.exercice!.ex);
+  const parts = rep ? [
+    { cle: "Salaires", valeur: rep.sal, couleur: JAUGE.salaires },
+    { cle: "Investissements", valeur: rep.inv, couleur: JAUGE.investissement },
+    { cle: "Autres dépenses", valeur: rep.aut, couleur: JAUGE.autres },
   ] : null;
   return (
     <Widget testID="widget-budget" interactif titre={`Budget de ${pret.d.nomCommune}, ${pret.d.exercice.an}`} source={source}
@@ -194,7 +196,7 @@ function Budget() {
               <View key={p.cle} style={{ flexDirection: "row", alignItems: "center", gap: PAS * 2 }}>
                 <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: p.couleur }} />
                 <Text style={[TYPO.note, { flex: 1, color: couleurs.encre }]}>{p.cle}</Text>
-                <Text style={[TYPO.note, { fontFamily: POLICE.donneeForte, color: couleurs.encre }]}>{Math.round(p.valeur / dep * 100)}{" "}%</Text>
+                <Text style={[TYPO.note, { fontFamily: POLICE.donneeForte, color: couleurs.encre }]}>{p.valeur}{" "}%</Text>
               </View>
             ))}
           </View>

@@ -96,6 +96,44 @@ export function chiffresComptes(ex) {
   };
 }
 
+/* LA REPARTITION DE 100 EUROS DEPENSES (27/11/2026) : UNE regle pour Finances, l'accueil, le bureau et
+   l'explication calculee. Avant : trois calculs, dont deux sur les montants par habitant deja arrondis par la
+   source (46 communes d'IDF sur 1 262 a 1 euro d'ecart, mesure) et un qui arrondissait chaque part a part (total
+   99 ou 101 possible). Ici : les parts de chiffresComptes (montants totaux), « autres » = le reste, donc 100. */
+export function repartitionDepenses(ex) {
+  if (!Array.isArray(ex)) return null;
+  const c = chiffresComptes(ex);
+  if (c.partSalaires === null || c.partInvestissement === null || c.partSalaires + c.partInvestissement > 100) return null;
+  return { sal: c.partSalaires, inv: c.partInvestissement, aut: 100 - c.partSalaires - c.partInvestissement };
+}
+
+/* L'EXPLICATION CALCULEE D'UN BUDGET (porteur, 27/11/2026 : « sans IA, pour la neutralite et la gratuite »).
+   Trois a cinq phrases, toujours dans le meme ordre, chacune ecrite seulement si ses agregats sont publies :
+   le total et le montant par habitant (publies par l'OFGL), la repartition de 100 euros (repartitionDepenses),
+   la part des impots dans 100 euros encaisses, la dette (etatDette). Aucun qualificatif, aucune comparaison
+   (invariant 3) ; un agregat absent fait disparaitre sa phrase, jamais un zero (invariant 5). « Autres
+   depenses » ne dit pas ce qu'elles contiennent : le perimetre exact de « Depenses totales » (remboursements de
+   dette compris ou non) n'est pas verifie, voir docs/budget-calcule.md. Sans depenses publiees : null. */
+const enLettres = n => montantCourt(n).texte.replace(/ Md€$/, " milliards d'euros").replace(/ M€$/, " millions d'euros");
+export function explicationBudget(ex, { nom, an }) {
+  if (!Array.isArray(ex)) return null;
+  const c = chiffresComptes(ex), dep = valeur(ex, 1);
+  if (c.depenses === null || c.depenses <= 0) return null;
+  const phrases = [];
+  const hab = dep && typeof dep.hab === "number" && dep.hab > 0 ? `, soit ${dep.hab.toLocaleString("fr-FR")} € par habitant` : "";
+  phrases.push(`En ${an}, ${nom} a dépensé ${enLettres(c.depenses)}${hab}.`);
+  const r = repartitionDepenses(ex);
+  if (r) phrases.push(`Sur 100 € dépensés, ${r.sal} € ont payé les salaires des agents, ${r.inv} € ont servi à investir (travaux, bâtiments, équipements) et ${r.aut} € sont allés aux autres dépenses.`);
+  else if (c.partSalaires !== null) phrases.push(`Sur 100 € dépensés, ${c.partSalaires} € ont payé les salaires des agents.`);
+  else if (c.partInvestissement !== null) phrases.push(`Sur 100 € dépensés, ${c.partInvestissement} € ont servi à investir (travaux, bâtiments, équipements).`);
+  if (c.partImpots !== null) phrases.push(`Sur 100 € encaissés, ${c.partImpots} € viennent des impôts et taxes.`);
+  const d = etatDette(ex);
+  if (d === "mois") phrases.push(`Sa dette équivaut à ${c.detteMois.toLocaleString("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} mois de recettes.`);
+  else if (d === "nulle") phrases.push(`${nom} n'a aucune dette.`);
+  /* Un nombre ne se separe jamais de son « € » (vu a 390 px : « Sur 100 » / « € depenses »). */
+  return phrases.join(" ").replace(/(\d) €/g, "$1\u00a0€");
+}
+
 /* LA DETTE, EN TROIS ETATS (29/10/2026). Decision partagee par le site et
    l'application, pour qu'un seul endroit decide ce qui s'affiche :
      "inconnue"            : la source ne porte pas la ligne -> une phrase « non renseigne »,
