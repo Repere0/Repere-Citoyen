@@ -115,22 +115,23 @@ export function repartitionDepenses(ex) {
    depenses » ne dit pas ce qu'elles contiennent : le perimetre exact de « Depenses totales » (remboursements de
    dette compris ou non) n'est pas verifie, voir docs/budget-calcule.md. Sans depenses publiees : null. */
 const enLettres = n => montantCourt(n).texte.replace(/ Md€$/, " milliards d'euros").replace(/ M€$/, " millions d'euros");
+/* Ce que le chiffre par habitant n'est pas (27/11/2026) : UNE phrase, lue par l'explication et par l'ecran Finances. */
+export const PAS_LE_FOYER = "C'est la dépense de la commune, rapportée à chaque habitant, pas ce que paie votre foyer.";
+const PAS_LE_FOYER_TOTAL = "Ce total couvre toutes les dépenses de la commune, pas ce que paie votre foyer.";
+
+/* « Expliquer simplement » du budget, DEUX PHRASES AU PLUS (decision du porteur, 27/11/2026, soir) : le total et
+   son montant par habitant, puis ce que ce chiffre n'est pas. Le detail des 100 €, les impots et la dette restent
+   dans les blocs de Finances. Sans montant par habitant publie : jamais « 0 € par habitant ». */
 export function explicationBudget(ex, { nom, an }) {
   if (!Array.isArray(ex)) return null;
   const c = chiffresComptes(ex), dep = valeur(ex, 1);
   if (c.depenses === null || c.depenses <= 0) return null;
-  const phrases = [];
-  const hab = dep && typeof dep.hab === "number" && dep.hab > 0 ? `, soit ${dep.hab.toLocaleString("fr-FR")} € par habitant` : "";
-  phrases.push(`En ${an}, ${nom} a dépensé ${enLettres(c.depenses)}${hab}.`);
-  const r = repartitionDepenses(ex);
-  if (r) phrases.push(`Sur 100 € dépensés, ${r.sal} € ont payé les salaires des agents, ${r.inv} € ont servi à investir (travaux, bâtiments, équipements) et ${r.aut} € sont allés aux autres dépenses.`);
-  else if (c.partSalaires !== null) phrases.push(`Sur 100 € dépensés, ${c.partSalaires} € ont payé les salaires des agents.`);
-  else if (c.partInvestissement !== null) phrases.push(`Sur 100 € dépensés, ${c.partInvestissement} € ont servi à investir (travaux, bâtiments, équipements).`);
-  if (c.partImpots !== null) phrases.push(`Sur 100 € encaissés, ${c.partImpots} € viennent des impôts et taxes.`);
-  const d = etatDette(ex);
-  if (d === "mois") phrases.push(`Sa dette équivaut à ${c.detteMois.toLocaleString("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} mois de recettes.`);
-  else if (d === "nulle") phrases.push(`${nom} n'a aucune dette.`);
-  /* Un nombre ne se separe jamais de son « € » (vu a 390 px : « Sur 100 » / « € depenses »). */
+  const parHab = dep && typeof dep.hab === "number" && dep.hab > 0;
+  const phrases = [
+    `En ${an}, ${nom} a dépensé ${enLettres(c.depenses)}${parHab ? `, soit ${dep.hab.toLocaleString("fr-FR")} € par habitant` : ""}.`,
+    parHab ? PAS_LE_FOYER : PAS_LE_FOYER_TOTAL,
+  ];
+  /* Un nombre ne se separe jamais de son « € » (vu a 390 px). */
   return phrases.join(" ").replace(/(\d) €/g, "$1\u00a0€");
 }
 

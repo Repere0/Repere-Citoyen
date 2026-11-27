@@ -185,6 +185,13 @@ test("invariant 7 — palette gelée ; couleurs de groupes seulement dans palett
   assert.deepEqual(quiz, ["4a7c59", "aa4a4a"].map(h => "#" + h), "le quiz porte les couleurs de la décision du 13/11/2026 (ADR 0009)");
   for (const h of quiz) jauge.push(h);
   for (const h of ["00a896", "be123c"]) assert.ok(!quiz.includes("#" + h), "une couleur de vote servirait au quiz");
+  /* 27/11/2026 (porteur, ADR 0014) : une teinte par catégorie du Hub des outils, clair et sombre, variante
+     daltonienne : 24 valeurs, dans palette.ts seulement. Jamais une couleur de vote. */
+  const blocOutils = (lire("apps/mobile/src/lib/palette.ts").match(/export const TEINTES_OUTILS[\s\S]*?\}\);/) || [""])[0];
+  const outils = [...blocOutils.matchAll(/#[0-9a-fA-F]{6}\b/g)].map(m => m[0].toLowerCase());
+  assert.equal(outils.length, 24, "le Hub porte 24 teintes (6 catégories, 2 modes, 2 variantes : ADR 0014)");
+  for (const h of ["00a896", "be123c", "94a3b8"]) assert.ok(!outils.includes("#" + h), "une couleur de vote servirait au Hub");
+  for (const h of outils.filter(h => amplitude(h) > AMPLITUDE_MAX)) jauge.push(h);
 
   /* L'émeraude du « pour » est réservée aux données de vote : hors du bloc COULEURS_VOTE, elle
      n'apparaît nulle part dans palette.ts (ni accent, ni jauge, ni neutre). */

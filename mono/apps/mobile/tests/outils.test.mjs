@@ -50,3 +50,35 @@ test("ordre fixe des catégories, alphabétique dans chacune : pas un classement
   for (const x of g) assert.deepEqual(x.outils.map(o => o.nom), [...x.outils.map(o => o.nom)].sort((a, b) => a.localeCompare(b, "fr")));
   assert.deepEqual(parCategorie(filtrerOutils(LISTE.outils, "impot"), LISTE.categories).map(x => x.categorie), ["Impôts"], "catégorie vide cachée");
 });
+
+/* 27/11/2026, soir (porteur, ADR 0014) : une teinte pastel par catégorie, variante daltonienne, clair et sombre.
+   La couleur ne dit jamais seule la catégorie : son nom reste écrit sur la carte (vérifié dans outils-web.mjs). */
+const { TEINTES_OUTILS, NEUTRES_PAR_MODE, rapportContraste, COULEURS_VOTE, COULEURS_VOTE_DALTONIEN, COULEURS_GROUPES } = await import("../src/lib/palette.ts");
+
+test("teintes du Hub : six catégories, dans chaque mode et chaque variante, toutes distinctes", () => {
+  for (const mode of ["clair", "sombre"]) for (const v of ["normal", "daltonien"]) {
+    const t = TEINTES_OUTILS[mode][v];
+    assert.deepEqual(Object.keys(t), LISTE.categories, `${mode}/${v} : les six catégories, dans l'ordre fixe`);
+    assert.equal(new Set(Object.values(t).map(h => h.toLowerCase())).size, 6, `${mode}/${v} : six teintes distinctes`);
+  }
+});
+
+test("teintes du Hub : le pictogramme (encre) reste lisible sur sa teinte, 3:1 au moins (élément graphique, WCAG 1.4.11)", () => {
+  for (const mode of ["clair", "sombre"]) for (const v of ["normal", "daltonien"]) for (const [c, h] of Object.entries(TEINTES_OUTILS[mode][v])) {
+    const r = rapportContraste(NEUTRES_PAR_MODE[mode].encre, h);
+    assert.ok(r >= 3, `${mode}/${v}/${c} : ${r.toFixed(2)}:1`);
+  }
+});
+
+test("teintes du Hub : jamais une couleur de vote ni de groupe politique (invariant 7)", () => {
+  const interdites = new Set([...Object.values(COULEURS_VOTE), ...Object.values(COULEURS_VOTE_DALTONIEN), ...Object.values(COULEURS_GROUPES)].map(h => String(h).toLowerCase()));
+  for (const mode of ["clair", "sombre"]) for (const v of ["normal", "daltonien"]) for (const [c, h] of Object.entries(TEINTES_OUTILS[mode][v]))
+    assert.ok(!interdites.has(h.toLowerCase()), `${mode}/${v}/${c} : ${h} sert déjà à un vote ou un groupe`);
+});
+
+test("la carte : plus de bouton « Site web », un seul lien pour toute la carte, l'application à part", () => {
+  const ecran = fs.readFileSync(new URL("../src/app/(onglets)/outils.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(ecran, /texte="Site web"/, "le bouton « Site web » a disparu");
+  assert.match(ecran, /testID=\{`lien-\$\{o\.id\}`\}/, "la carte entière est un lien (testID lien-<id>)");
+  assert.match(ecran, /useTeinteOutil/, "la teinte suit le mode et le réglage daltonien");
+});

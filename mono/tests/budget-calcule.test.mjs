@@ -53,41 +53,47 @@ const { explicationBudget } = await import("../packages/core/src/index.js");
 const { JUGEMENT_CHIFFRES, JUGEMENT_RESUME } = await import("../packages/data-utils/src/invariants.js");
 const esp = t => t.replace(/[  ]/g, " ");
 
-test("Melun 2025 : la phrase exacte de la spec", () => {
+/* 27/11/2026, soir (porteur) : DEUX PHRASES AU PLUS — le total par habitant, puis ce que ce chiffre n'est pas.
+   Le détail des 100 €, les impôts et la dette restent dans les blocs de Finances, sous la carte. */
+const { PAS_LE_FOYER } = await import("../packages/core/src/index.js");
+const phrases = t => esp(t).split(/(?<=\.) (?=[A-ZÀ-Ý])/);
+
+test("Melun 2025 : les deux phrases exactes", () => {
   const c = Object.fromEntries(communes)["77288"];
   assert.equal(esp(explicationBudget(dernier(c), { nom: "Melun", an: "2025" })),
     "En 2025, Melun a dépensé 109,6 millions d'euros, soit 2 495 € par habitant. "
-    + "Sur 100 € dépensés, 45 € ont payé les salaires des agents, 31 € ont servi à investir (travaux, bâtiments, équipements) et 24 € sont allés aux autres dépenses. "
-    + "Sur 100 € encaissés, 47 € viennent des impôts et taxes. "
-    + "Sa dette équivaut à 11,5 mois de recettes.");
+    + "C'est la dépense de la commune, rapportée à chaque habitant, pas ce que paie votre foyer.");
 });
 
-test("agrégats absents : la phrase disparaît, rien n'est inventé ; sans dépenses, pas de texte", () => {
+test("la phrase du foyer est la même que sous le chiffre de Finances (une seule constante)", () => {
+  assert.equal(PAS_LE_FOYER, "C'est la dépense de la commune, rapportée à chaque habitant, pas ce que paie votre foyer.");
+  const ecran = fs.readFileSync(new URL("../apps/mobile/src/ui/ecran-argent.tsx", import.meta.url), "utf8");
+  assert.match(ecran, /\{PAS_LE_FOYER\}/, "ecran-argent.tsx affiche la constante");
+  assert.doesNotMatch(ecran, /pas ce que paie votre foyer/, "aucune copie de la phrase dans l'écran");
+});
+
+test("sans montant par habitant : une phrase vraie, jamais « 0 € par habitant » ; sans dépenses, pas de texte", () => {
   /* [pop, rec, recH, dep, depH, dette, detteH, inv, invH, sal, salH, imp, impH] */
-  const sansImpotsNiDette = [1000, 500000, 500, 400000, 400, null, null, 100000, 100, 200000, 200, null, null];
-  const t = esp(explicationBudget(sansImpotsNiDette, { nom: "Exemple", an: "2025" }));
-  assert.match(t, /^En 2025, Exemple a dépensé 400 000 €, soit 400 € par habitant\./);
-  assert.ok(!/impôts|dette/.test(t), "ni impôts ni dette quand la source ne les publie pas");
-  assert.ok(!/ 0 €/.test(t), "jamais un zéro inventé");
-  const sansDette0 = [1000, 500000, 500, 400000, 400, 0, 0, 100000, 100, 200000, 200, null, null];
-  assert.match(esp(explicationBudget(sansDette0, { nom: "Exemple", an: "2025" })), /Exemple n'a aucune dette\./, "une dette publiée à zéro est une information");
-  const sansSalaires = [1000, 500000, 500, 400000, 400, null, null, 100000, 100, null, null, null, null];
-  const t2 = esp(explicationBudget(sansSalaires, { nom: "Exemple", an: "2025" }));
-  assert.match(t2, /Sur 100 € dépensés, 25 € ont servi à investir/); assert.ok(!/salaires|autres dépenses/.test(t2), "pas de reste inventé sans les salaires");
+  const sansHab = [1000, 500000, 500, 400000, null, null, null, 100000, 100, 200000, 200, null, null];
+  assert.equal(esp(explicationBudget(sansHab, { nom: "Exemple", an: "2025" })),
+    "En 2025, Exemple a dépensé 400 000 €. Ce total couvre toutes les dépenses de la commune, pas ce que paie votre foyer.");
+  const avecHab = [1000, 500000, 500, 400000, 400, null, null, 100000, 100, 200000, 200, null, null];
+  assert.match(esp(explicationBudget(avecHab, { nom: "Exemple", an: "2025" })), /^En 2025, Exemple a dépensé 400 000 €, soit 400 € par habitant\. C'est la dépense/);
   assert.equal(explicationBudget([1000, 500000, 500, null, null, null, null, null, null, null, null, null, null], { nom: "X", an: "2025" }), null);
   assert.equal(explicationBudget(null, { nom: "X", an: "2025" }), null);
 });
 
-test("toutes les communes d'IDF : aucun mot qui juge, aucun texte vide, chaque part se recalcule", () => {
+test("toutes les communes d'IDF : deux phrases au plus, ni 100 €, ni impôts, ni dette ; aucun mot qui juge", () => {
   let n = 0;
   for (const [insee, c] of communes) {
     const ex = dernier(c); if (!ex) continue;
     const t = explicationBudget(ex, { nom: c.nom, an: "2025" });
     if (!t) continue; n++;
+    assert.ok(phrases(t).length <= 2, `${insee} : ${phrases(t).length} phrases`);
+    assert.doesNotMatch(esp(t), /Sur 100 €|impôts|dette/, insee);
+    assert.doesNotMatch(esp(t), / 0 € par habitant/, insee);
     for (const re of [JUGEMENT_CHIFFRES, JUGEMENT_RESUME]) { re.lastIndex = 0; const m = t.match(re); assert.equal(m, null, `${insee} : « ${m} »`); }
     assert.doesNotMatch(t, /’/, "pas d'apostrophe typographique");
-    const r = repartitionDepenses(ex);
-    if (r) assert.ok(esp(t).includes(`${r.sal} € ont payé les salaires des agents, ${r.inv} € ont servi à investir`), insee);
   }
   assert.ok(n > 1200, `${n} textes`);
 });
@@ -100,10 +106,10 @@ test("la mention du calcul : qui publie, quand, et que Repère a calculé ; jama
   assert.doesNotMatch(mentionCalcul("OFGL", null), /IA|relu/i);
 });
 
-/* 27/11/2026, vu à l'œil sur la capture à 390 px : « Sur 100 » en bout de ligne, « € dépensés » à la ligne suivante.
+/* 27/11/2026, vu à l'œil sur la capture à 390 px : un nombre en bout de ligne, son « € » à la ligne suivante.
    Un nombre et son « € » ne se séparent jamais : espace insécable. */
 test("un nombre ne se sépare jamais de son « € »", () => {
   const t = explicationBudget(dernier(Object.fromEntries(communes)["77288"]), { nom: "Melun", an: "2025" });
   assert.doesNotMatch(t, /\d €/, "espace ordinaire entre un nombre et €");
-  assert.match(t, /Sur 100 € dépensés/);
+  assert.match(esp(t), /2 495 € par habitant/);
 });

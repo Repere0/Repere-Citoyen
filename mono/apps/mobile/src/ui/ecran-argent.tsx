@@ -16,7 +16,7 @@ import { useState } from "react";
 import { FlatList, Linking, Modal, Pressable, Text, TextInput, View } from "react-native";
 import { Stack } from "expo-router";
 import {
-  chiffresComptes, repartitionDepenses, etatDette, comptesAbsents, comptesIncoherents, comptesInsuffisants, diffEuros, eurosArrondis,
+  chiffresComptes, repartitionDepenses, PAS_LE_FOYER, etatDette, comptesAbsents, comptesIncoherents, comptesInsuffisants, diffEuros, eurosArrondis,
   evolution, exercicesEcartes, financementProjet, INTRO_EVOLUTION, introRapports, montantCourt, noteRattachement,
   NOTE_EVOLUTION, NOTE_FINANCEMENT, nomDispositif, parHabitant, partReperee, perimetreChange, phraseEcartes,
   phraseProjetLocal, rapports, sousTitreRapports, euros, CALCUL_REPERE, LIBELLES, exercicePrecedent,
@@ -254,7 +254,7 @@ export default function Argent() {
                 <Resume geant phrase={hero.phrase} chiffre={hero.chiffre} legende={hero.legende} />
                 {vue === "cent" && hab && hab.depenses !== null ? (
                   <Text style={TYPO.note}>
-                    Soit <Text style={{ color: ACCENTS.texteAccent, fontFamily: POLICE.texteGras }}>{Math.round(hab.depenses / 12).toLocaleString("fr-FR")} € par mois</Text> et par habitant (calcul Repère : le montant annuel divisé par 12). C'est la dépense de la commune, pas ce que paie votre foyer.
+                    Soit <Text style={{ color: ACCENTS.texteAccent, fontFamily: POLICE.texteGras }}>{Math.round(hab.depenses / 12).toLocaleString("fr-FR")} € par mois</Text> et par habitant (calcul Repère : le montant annuel divisé par 12). {PAS_LE_FOYER}
                   </Text>
                 ) : null}
                 {/* La tendance est DÉJÀ le grand chiffre dans la vue « Évolution » : on ne la répète pas. */}

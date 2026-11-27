@@ -12,6 +12,7 @@ import { Vide } from "../../lib/composants";
 import { estIos } from "../../lib/installation";
 import { useBureau } from "../../lib/bureau";
 import { CIBLE, couleurs, PAS, POLICE, RAYON, TYPO } from "../../lib/theme";
+import { useTeinteOutil } from "../../lib/couleur-outil";
 import { Page, Question } from "../../ui/page";
 import { enfonce } from "../../ui/mouvement";
 import { niveauTitre } from "../../ui/titre";
@@ -30,32 +31,41 @@ function systemeDeLAppareil(): Systeme {
   return systemeMobile(ua, estIos(ua, navigator.platform || "", navigator.maxTouchPoints || 0));
 }
 
-function Bouton({ texte, etiquette, url, plein, id }: { texte: string; etiquette: string; url: string; plein?: boolean; id: string }) {
-  return (
-    <Pressable onPress={() => Linking.openURL(url)} accessibilityRole="link" accessibilityLabel={etiquette} testID={id}
-      style={({ pressed }) => ({ minHeight: CIBLE, paddingHorizontal: PAS * 4, borderRadius: RAYON.pastille, justifyContent: "center",
-        borderWidth: 1, borderColor: plein ? couleurs.encre : couleurs.trait, backgroundColor: plein ? couleurs.encre : couleurs.carte, ...enfonce(pressed) })}>
-      <Text style={[TYPO.corps, { fontFamily: POLICE.texteMoyen, color: plein ? couleurs.sol : couleurs.encre }]}>{texte} ↗</Text>
-    </Pressable>
-  );
-}
-
-function CarteOutil({ o, systeme, bureau }: { o: Outil; systeme: Systeme; bureau: boolean }) {
+/* LA CARTE (27/11/2026, soir, porteur) : toute la carte est UN lien vers le site officiel ; le bouton « Site web »
+   a disparu. « Télécharger l'app » reste, À PART, sous le lien : un bouton dans un lien serait deux commandes
+   imbriquées (lecteur d'écran et clavier s'y perdent, et un toucher ouvrirait les deux). La teinte de la
+   catégorie (ADR 0014) habille la pastille et le filet du haut ; le nom de la catégorie reste écrit. */
+function CarteOutil({ o, systeme, bureau, teinte }: { o: Outil; systeme: Systeme; bureau: boolean; teinte: string | null }) {
   const app = aUneApp(o) ? lienApp(o, systeme) : null;
   return (
     /* Sur bureau, des cartes de 300 px au moins côte à côte ; sur téléphone, en colonne, à la hauteur de leur contenu
      (un flexBasis en colonne fixe une HAUTEUR : 300 px de vide mesurés à 390 px). */
-    <View testID={`outil-${o.id}`} style={{ ...(bureau ? { flexGrow: 1, flexBasis: 300 } : null), gap: PAS * 2, padding: PAS * 4, borderRadius: RAYON.carte,
-      backgroundColor: couleurs.carte, borderWidth: 1, borderColor: couleurs.trait }}>
-      <Text style={[TYPO.corps, { fontFamily: POLICE.titre, color: couleurs.encre }]} {...niveauTitre(3)}>{o.nom}</Text>
-      <Text style={[TYPO.note, bureau && { flexGrow: 1 }]}>{o.description_simple}</Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: PAS * 2 }}>
-        <Bouton id={`site-${o.id}`} plein texte="Site web" url={o.url_web} etiquette={`Site web de ${o.nom}, ouvre un site externe`} />
-        {app ? (
-          <Bouton id={`app-${o.id}`} texte="Télécharger l'app" url={app.url}
-            etiquette={`Télécharger l'application ${o.nom_app || o.nom}, ouvre ${app.vers}`} />
-        ) : null}
-      </View>
+    <View testID={`outil-${o.id}`} style={{ ...(bureau ? { flexGrow: 1, flexBasis: 300 } : null), borderRadius: RAYON.carte, overflow: "hidden",
+      backgroundColor: couleurs.carte, borderWidth: 1, borderColor: couleurs.trait, borderTopWidth: teinte ? 4 : 1, borderTopColor: teinte || couleurs.trait }}>
+      <Pressable onPress={() => Linking.openURL(o.url_web)} accessibilityRole="link" testID={`lien-${o.id}`}
+        accessibilityLabel={`${o.nom}, site officiel, ouvre un site externe`}
+        style={({ pressed }) => ({ ...(bureau ? { flexGrow: 1 } : null), minHeight: CIBLE, gap: PAS * 2, padding: PAS * 4, ...enfonce(pressed) })}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3 }}>
+          <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: "center", justifyContent: "center", backgroundColor: teinte || couleurs.sol }}>
+            <Ionicons name={ICONE[o.categorie] || "apps-outline"} size={20} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={[TYPO.corps, { fontFamily: POLICE.titre, color: couleurs.encre }]} {...niveauTitre(3)}>{o.nom}</Text>
+            <Text style={TYPO.micro}>{o.categorie}</Text>
+          </View>
+          <Ionicons name="open-outline" size={18} color={couleurs.sourd} accessible={false} importantForAccessibility="no" />
+        </View>
+        <Text style={[TYPO.note, bureau && { flexGrow: 1 }]}>{o.description_simple}</Text>
+      </Pressable>
+      {app ? (
+        <Pressable onPress={() => Linking.openURL(app.url)} accessibilityRole="link" testID={`app-${o.id}`}
+          accessibilityLabel={`Télécharger l'application ${o.nom_app || o.nom}, ouvre ${app.vers}`}
+          style={({ pressed }) => ({ minHeight: CIBLE, paddingHorizontal: PAS * 4, flexDirection: "row", alignItems: "center", gap: PAS * 2,
+            borderTopWidth: 1, borderTopColor: couleurs.trait, ...enfonce(pressed) })}>
+          <Ionicons name="download-outline" size={18} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
+          <Text style={[TYPO.corps, { fontFamily: POLICE.texteMoyen, color: couleurs.encre }]}>Télécharger l'app ↗</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -64,6 +74,7 @@ export default function Outils() {
   const [recherche, setRecherche] = useState("");
   const { bureau } = useBureau();
   const systeme = useMemo(systemeDeLAppareil, []);
+  const teinteDe = useTeinteOutil();
   const groupes = parCategorie(filtrerOutils(OUTILS, recherche), LISTE.categories);
   return (
     <Page sansDate>
@@ -92,7 +103,7 @@ export default function Outils() {
             <Text style={TYPO.etiquette} {...niveauTitre(2)}>{g.categorie}</Text>
           </View>
           <View style={{ flexDirection: bureau ? "row" : "column", flexWrap: "wrap", gap: PAS * 3 }}>
-            {g.outils.map(o => <CarteOutil key={o.id} o={o} systeme={systeme} bureau={bureau} />)}
+            {g.outils.map(o => <CarteOutil key={o.id} o={o} systeme={systeme} bureau={bureau} teinte={teinteDe(o.categorie)} />)}
           </View>
         </View>
       ))}
