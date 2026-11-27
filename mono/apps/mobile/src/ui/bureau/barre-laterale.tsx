@@ -23,6 +23,7 @@ export const ENTREES: { chemin: string; texte: string; icone: Icone; actif?: (c:
   { chemin: "/a-venir", texte: "Calendrier", icone: "calendar-outline" },
   { chemin: "/quiz", texte: "Quiz", icone: "school-outline" },
   { chemin: "/dictionnaire", texte: "Dictionnaire", icone: "book-outline" },
+  { chemin: "/outils", texte: "Outils", icone: "apps-outline" },
 ];
 const BAS: typeof ENTREES = [
   { chemin: "/reglages", texte: "Réglages", icone: "settings-outline" },

@@ -28,7 +28,7 @@ import { useState } from "react";
 /* Une icone par onglet (@expo/vector-icons, Ionicons, brief V47 bloc 1) : pleine quand l'onglet
  * est actif, contour sinon. L'icone est decorative : le nom de l'onglet la porte. Ionicons n'a pas
  * « landmark » ni « users » en contour : « business » (un batiment) et « calendar » font l'affaire. */
-type NomIcone = "newspaper" | "business" | "calendar" | "person-circle" | "wallet";
+type NomIcone = "newspaper" | "business" | "calendar" | "person-circle" | "wallet" | "apps";
 const icone = (nom: NomIcone) => ({ color, focused }: { color: ColorValue; focused: boolean }) => (
   /* Refonte « légère » (09/11/2026) : toujours le contour, fin ; l'onglet actif se lit à sa couleur et à son libellé. */
   <Ionicons name={`${nom}-outline` as const} size={22} color={typeof color === "string" ? color : undefined} allowFontScaling={false} accessible={false} importantForAccessibility="no" style={{ opacity: focused ? 1 : 0.9 }} />
@@ -105,6 +105,8 @@ export default function Onglets() {
       <Tabs.Screen name="qui-decide" options={{ title: LIBELLES.qui, tabBarLabel: etiquette(LIBELLES.qui), tabBarIcon: icone("business") }} />
       <Tabs.Screen name="finances" options={{ title: LIBELLES.argent, tabBarLabel: etiquette(LIBELLES.finances), tabBarIcon: icone("wallet") }} />
       <Tabs.Screen name="a-venir" options={{ title: LIBELLES.calendrier, tabBarLabel: etiquette(LIBELLES.calendrier), tabBarIcon: icone("calendar") }} />
+      {/* 27/11/2026 (porteur) : le Hub des outils citoyens, cinquième onglet. */}
+      <Tabs.Screen name="outils" options={{ title: LIBELLES.outils, tabBarLabel: etiquette(LIBELLES.outils), tabBarIcon: icone("apps") }} />
     </Tabs>
     {/* Installer sur l'écran d'accueil (27/11/2026) : au-dessus de la barre d'onglets, téléphone et navigateur seulement. */}
     <InvitationInstallation bas={hauteurBarre} surHauteur={setHauteurInvitation} />
