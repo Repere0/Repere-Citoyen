@@ -96,6 +96,11 @@ jobs:
         working-directory: mono
         run: node scripts/extract-html.js ../app_repere_v18_20.html ./data > /dev/null
 
+      # 27/11/2026 (chantier Calendrier) : l'agenda des séances à venir, avec les dossiers de leur ordre du jour.
+      - name: Agenda publié (dossiers des séances à venir)
+        working-directory: mono
+        run: node scripts/agenda-an.mjs data ../outils/agenda_an.json
+
       - name: Archive des dossiers législatifs de l'Assemblée
         run: |
           mkdir -p "$RUNNER_TEMP/an"
@@ -106,7 +111,7 @@ jobs:
       - name: Textes officiels (exposés des motifs)
         working-directory: mono
         run: |
-          node scripts/textes-officiels.mjs --archive "$RUNNER_TEMP/an/brut" --scrutins data/scrutins.json \
+          node scripts/textes-officiels.mjs --archive "$RUNNER_TEMP/an/brut" --scrutins data/scrutins.json --agenda data/agenda-an.json \
             --sortie "$RUNNER_TEMP/officiels" --deja ../data/resumes --limite "${{ steps.reglages.outputs.limite }}"
 
       # Votes de la semaine (porteur, 27/11/2026, décisions 3 et 5) : la fiche officielle de chaque scrutin des 7

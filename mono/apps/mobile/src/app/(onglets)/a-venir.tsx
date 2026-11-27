@@ -41,10 +41,11 @@ import { messageAgenda } from "../../ui/partage/messages";
 import { BoutonPartageTexte, ligneSource } from "../../ui/partage/partager-texte";
 import { enfonce } from "../../ui/mouvement";
 import { niveauTitre } from "../../ui/titre";
+import { ExpliquerDesDossiers, useResumesClairs } from "../../ui/resume-clair";
 
 type Ev = { titre: string; debut: string; institution: string; categorie?: string; lieu?: string; description?: string; source: Record<string, string> };
 type Groupe = { jour: string; institution: string; titre: string; debut: string; debuts: string[]; fins?: (string | null)[]; seances: number;
-  categorie: string | null; lieu: string | null; points: string[] | null; textesLibres: string[] };
+  categorie: string | null; lieu: string | null; points: string[] | null; textesLibres: string[]; dossiers?: string[] };
 
 const JOURS_OUVERTS = 3;
 const INSTITUTIONS = ["Assemblée nationale", "Sénat"];
@@ -84,7 +85,7 @@ function rangLundi(iso: string): number {
   return (new Date(Date.UTC(y, m - 1, d)).getUTCDay() + 6) % 7;
 }
 
-function Ligne({ g }: { g: Groupe }) {
+function Ligne({ g, resumes }: { g: Groupe; resumes: unknown }) {
   /* espaces insecables dans chaque heure : « 21 h 30 » ne se coupe jamais (vu sur capture) */
   /* debut et fin de chaque seance, au meme rang. Fin absente : on l'ecrit, on ne la
      devine pas (doctrine du vide, invariant 5). */
@@ -124,6 +125,8 @@ function Ligne({ g }: { g: Groupe }) {
           {g.textesLibres.map((t, k) => <Text key={k} style={TYPO.note}>{t}</Text>)}
         </Depli>
       ) : null}
+      {/* 27/11/2026 : l'explication relue du dossier de la séance, s'il y en a une ; sinon, rien. */}
+      <ExpliquerDesDossiers index={resumes} dossiers={g.dossiers} />
       </View>
     </View>
   );
@@ -172,6 +175,8 @@ export default function AVenir() {
   /* 13/11/2026 : avec le vrai agenda de l'Assemblée (17 rendez-vous sur deux semaines), l'écran mesurait 6 269 px de
      haut. La liste montre les trois premiers jours ; les suivants s'ouvrent d'un geste. */
   const [suite, setSuite] = useState(false);
+  /* 27/11/2026 : les explications publiées, lues une fois pour toutes les séances de l'écran. */
+  const resumes = useResumesClairs();
   return (
     <AvecDonnees rendu={r => {
       const { d } = r;
@@ -312,7 +317,7 @@ export default function AVenir() {
                   {parMoment(items).map(([moment, liste]) => (
                     <View key={moment} style={{ gap: PAS * 4 }}>
                       <Text {...niveauTitre(2)} style={[TYPO.etiquette, { paddingTop: PAS * 2 }]}>{moment}</Text>
-                      {liste.map((g, i) => <Ligne key={g.debut + i} g={g} />)}
+                      {liste.map((g, i) => <Ligne key={g.debut + i} g={g} resumes={resumes} />)}
                     </View>
                   ))}
                 </Carte>

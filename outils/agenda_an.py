@@ -24,7 +24,7 @@ Regles d'ingestion — chacune a une raison, et la raison compte plus que la reg
 
 Usage : python3 outils/agenda_an.py <dossier_agenda> <dossier_amo30> <sortie.json>
 """
-import sys, io, json, glob, collections
+import sys, io, json, glob, collections, re
 import datetime
 
 if len(sys.argv) != 4:
@@ -59,6 +59,35 @@ def objets(odj):
     return out
 
 
+
+# DOSSIERS DE L'ORDRE DU JOUR (27/11/2026, chantier Calendrier). Chaque point porte, dans la
+# source, la reference de son dossier legislatif (dossiersLegislatifsRefs.dossierRef, une valeur
+# ou une liste). Mesure sur le runner le 27/11 : 33 seances a venir sur 37 la portent. On la
+# recopie telle quelle, dans l'ordre, sans doublon ; un point supprime ou une valeur qui n'a pas
+# la forme d'une reference de dossier (DLR5L<legislature>N<numero>) est ecarte, jamais corrige.
+REF_DOSSIER = re.compile(r"^DLR5L\d+N\d+$")
+
+
+def dossiers(odj):
+    if not odj or not odj.get("pointsODJ"):
+        return []
+    pts = odj["pointsODJ"].get("pointODJ")
+    if pts is None:
+        return []
+    if isinstance(pts, dict):
+        pts = [pts]
+    out = []
+    for p in pts:
+        if (p.get("cycleDeVie") or {}).get("etat") == "Supprimé":
+            continue
+        refs = (p.get("dossiersLegislatifsRefs") or {})
+        v = refs.get("dossierRef") if isinstance(refs, dict) else None
+        for x in (v if isinstance(v, list) else [v]):
+            if isinstance(x, str) and REF_DOSSIER.match(x.strip()) and x.strip() not in out:
+                out.append(x.strip())
+    return out
+
+
 stats = collections.Counter()
 lignes = []
 for p in glob.glob(AGENDA + "/reunion/*.json"):
@@ -84,6 +113,10 @@ for p in glob.glob(AGENDA + "/reunion/*.json"):
     if ob:
         e["j"] = ob
         stats["avec ordre du jour"] += 1
+    dl = dossiers(r.get("ODJ"))
+    if dl:
+        e["dl"] = dl
+        stats["avec reference de dossier"] += 1
     if r.get("compteRenduRef"):
         e["c"] = r["compteRenduRef"]
     # HEURE DE FIN (13/10/2026) : la source la porte-t-elle ? On la recopie si elle est

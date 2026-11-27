@@ -38,3 +38,10 @@ test("votes : seulement ceux des 7 derniers jours, déjà faits sautés, dans le
   assert.match(W, /generer_resumes\.mjs --liste "\$RUNNER_TEMP\/lots\.json"/, "lois et votes passent ensemble");
 });
 
+
+/* 27/11/2026 (chantier Calendrier) : le lot du dimanche prend aussi les dossiers des séances à venir. */
+test("le lot lit l'agenda publié : agenda-an.mjs avant textes-officiels, avec --agenda", () => {
+  assert.match(W, /node scripts\/agenda-an\.mjs data \.\.\/outils\/agenda_an\.json/, "l'agenda est publié depuis outils/agenda_an.json");
+  assert.match(W, /textes-officiels\.mjs[^\n]*--agenda data\/agenda-an\.json/, "textes-officiels reçoit l'agenda");
+  assert.ok(W.indexOf("scripts/agenda-an.mjs") < W.indexOf("scripts/textes-officiels.mjs"), "l'agenda est prêt avant les textes");
+});

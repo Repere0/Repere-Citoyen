@@ -59,7 +59,7 @@ explicite du porteur les change ; la PR qui l'applique met alors à jour
    `#D3D3D3` (pastels), sombre `#D4AF37` / `#818CF8` / `#475569` (salaires / investissements / fonctionnement), jamais politiques.
    Émeraude réservée aux données de vote, jamais en texte ; l'interface reste neutre (noir, ivoire, gris). Quiz (ADR 0009) :
    `#4A7C59` juste / `#AA4A4A` faux, au quiz seul, jamais un vote ni une opinion, jamais sans la coche et le mot écrits ;
-   groupes du Sénat : aucune couleur neuve, la teinte de la même famille, correspondance dans palette.ts. Tout dans palette.ts. D27 (ADR 0004) : photo d'élu sous licence libre Wikimedia Commons, crédit affiché ; jamais celles de l'AN. D27 étendu aux candidats à la présidentielle (ADR 0008, 12/11/2026) ; jamais une couleur de parti sur un candidat.
+   groupes du Sénat : aucune couleur neuve, la teinte de la même famille, correspondance dans palette.ts. Tout dans palette.ts. D27 (ADR 0004) : photo d'élu sous licence libre Wikimedia Commons, crédit affiché ; jamais celles de l'AN. D27 étendu aux candidats à la présidentielle (ADR 0008, 12/11/2026) ; jamais une couleur de parti sur un candidat. Hub des outils (ADR 0014, 27/11/2026) : une teinte pastel par catégorie de service public, variante daltonienne, nom de la catégorie toujours écrit, dans palette.ts.
 8. **Jamais le patrimoine d'un élu, jamais de donnée de présence ou d'absence.**
 9. **Fraîcheur** (décision du porteur, 30/09/2026). Une donnée gardée sur
    l'appareil peut être affichée pour préserver l'accès hors ligne, mais jamais
@@ -98,7 +98,7 @@ explicite du porteur les change ; la PR qui l'applique met alors à jour
 | histoire de l'ère mono-fichier (avant le 23/09) | `CONTEXTE_PROJET.md` § 4 à 8 et 12 |
 | carte produit, questions citoyennes | `docs/PRODUCT_MAP_V1_2026-09-23.md` |
 | retour arrière de la production, couche éditoriale | `docs/MONO_PRODUCTION_ROLLBACK.md`, `docs/COUCHE_EDITORIALE.md` |
-| décisions qui ont amendé un invariant | `docs/adr/` (0001 à 0013) |
+| décisions qui ont amendé un invariant | `docs/adr/` (0001 à 0014) |
 
 ## Procédures — skills de `.claude/skills/`
 

@@ -114,7 +114,10 @@ test("l'entrée d'écran dure entre 100 et 300 ms (règle des animations)", () =
 /* ZERO EMOJI (05/11/2026) : les icones sont des Ionicons (@expo/vector-icons). Les signes de
    texte (coche, croix, fleche) restent permis : ils n'ont pas de presentation emoji par defaut. */
 test("aucun emoji dans le code de l'application", () => {
-  const EMOJI = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{26FF}\u{1F1E6}-\u{1F1FF}]/u;
+  /* 27/11/2026 : l'ancienne liste de plages laissait passer ✨ (U+2728, Dingbats) et ⭐ (U+2B50). Desormais tout
+     pictogramme Unicode (Extended_Pictographic) est refuse, sauf les fleches (U+2190-21FF, dont ↗ utilise 12 fois)
+     et © ® ™, signes de texte. Le bouton « Expliquer simplement » dessine son etincelle avec Ionicons. */
+  const EMOJI = /(?![\u{2190}-\u{21FF}\u{00A9}\u{00AE}\u{2122}])[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}]/u;
   const fautifs = fichiers(path.join(MOBILE, "src"), [".ts", ".tsx"]).flatMap(f =>
     fs.readFileSync(f, "utf8").split("\n").map((l, i) => (EMOJI.test(l) ? `${path.relative(MOBILE, f)}:${i + 1}` : null)).filter(Boolean));
   assert.deepEqual(fautifs, [], "emoji(s) trouvé(s) : " + fautifs.join(", "));

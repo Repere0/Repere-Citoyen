@@ -257,3 +257,19 @@ export function translucide(hex: string, alpha: number): string {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 export const OMBRE_INTERIEURE_CHAMP = "inset 0 1px 2px rgba(0, 0, 0, 0.05)";
+
+/* LES TEINTES DU HUB DES OUTILS CITOYENS (porteur, 27/11/2026, ADR 0014 — amendement de l'invariant 7).
+   Une teinte par CATEGORIE de service public (jamais un parti, un vote, un elu ou un territoire), pastel en clair,
+   sombre et peu saturee en sombre ; variante daltonienne tiree d'Okabe-Ito (bleu, orange, ciel, vert bleute,
+   jaune, pourpre). La couleur n'est jamais seule : le nom de la categorie reste ecrit sur chaque carte.
+   Contraste du pictogramme (encre) sur la teinte : 3:1 au moins, teste (outils.test.mjs). */
+export const TEINTES_OUTILS = Object.freeze({
+  clair: {
+    normal: { "Identité et connexion": "#DBEAFE", "Démarches et droits": "#EDE9FE", "Impôts": "#FEF9C3", "Santé": "#FCE7F3", "Aides et famille": "#ECFCCB", "Emploi et formation": "#CFFAFE" },
+    daltonien: { "Identité et connexion": "#CCE3F2", "Démarches et droits": "#FBE3C4", "Impôts": "#FCF8CC", "Santé": "#F2DCE8", "Aides et famille": "#C9EDE2", "Emploi et formation": "#D6EEFA" },
+  },
+  sombre: {
+    normal: { "Identité et connexion": "#1E3A5F", "Démarches et droits": "#3B2F5C", "Impôts": "#4A3F12", "Santé": "#4A2238", "Aides et famille": "#2F3F12", "Emploi et formation": "#134049" },
+    daltonien: { "Identité et connexion": "#0B3A5A", "Démarches et droits": "#5A3D00", "Impôts": "#5A5410", "Santé": "#4D2A3F", "Aides et famille": "#00402F", "Emploi et formation": "#1C4A66" },
+  },
+});

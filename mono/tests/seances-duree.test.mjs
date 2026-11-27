@@ -63,3 +63,14 @@ test("seances — les commissions ne passent pas dans le calendrier de la seance
   assert.equal(ev.length, 1);
   assert.equal(ev[0].debut, "2099-10-13T17:00");
 });
+
+/* 27/11/2026 (chantier Calendrier) : la séance publie les dossiers de son ordre du jour, recopiés de
+   agenda_an.json (champ dl) ; sans référence, une liste vide, jamais une référence devinée. */
+test("seances — les dossiers de l'ordre du jour sont publiés tels quels, sinon une liste vide", () => {
+  const ev = publier([
+    { d: "2099-10-13T15:00", t: "seance", o: 0, j: ["Discussion du projet de loi A"], dl: ["DLR5L17N5242", "DLR5L17N5167"] },
+    { d: "2099-10-14T15:00", t: "seance", o: 0, j: ["Questions au Gouvernement"] },
+    { d: "2099-10-15T15:00", t: "seance", o: 0, j: ["Texte B"], dl: ["pas-une-reference", "DLR5L17N9"] },
+  ]);
+  assert.deepEqual(ev.map(e => e.dossiers), [["DLR5L17N5242", "DLR5L17N5167"], [], ["DLR5L17N9"]]);
+});

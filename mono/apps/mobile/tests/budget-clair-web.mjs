@@ -4,6 +4,7 @@ const { chromium } = createRequire(process.cwd() + "/")("playwright");
 const BASE = process.argv[2] || "http://localhost:8811";
 /* La mention vient de core (une phrase partagée ne s'écrit qu'à un endroit : invariants.test, « même vérité »). */
 const { mentionCalcul } = await import(new URL("../../../packages/core/src/source.js", import.meta.url));
+const { PAS_LE_FOYER } = await import(new URL("../../../packages/core/src/visuels.js", import.meta.url));
 let echecs = 0;
 const ok = (c, m) => { console.log((c ? "ok    " : "ECHEC ") + m); if (!c) echecs++; };
 const nav = await chromium.launch();
@@ -24,13 +25,19 @@ async function page(largeur = 390) {
     ok((await b.boundingBox()).height >= 44, `cible de 44 px au moins (${Math.round((await b.boundingBox()).height)} px)`);
     await b.click(); await p.waitForTimeout(300);
     const carte = esp(await p.getByTestId("explication").innerText());
-    ok(carte.includes("Sur 100 € dépensés, 45 € ont payé les salaires des agents, 31 € ont servi à investir (travaux, bâtiments, équipements) et 24 € sont allés aux autres dépenses."), "la répartition calculée de Melun");
+    /* 27/11/2026, soir (porteur) : deux phrases au plus ; le détail des 100 € reste dans les blocs. */
+    ok(carte.includes("En 2025, Melun a dépensé 109,6 millions d'euros, soit 2 495 € par habitant. " + PAS_LE_FOYER), "les deux phrases de Melun");
+    ok(!carte.includes("Sur 100 €"), "pas de détail des 100 € dans la carte");
+    /* 27/11/2026, 20:13 (porteur) : la phrase du foyer ne se lit qu'une fois, dans la carte. */
+    const fois = esp(await p.locator("body").innerText()).split(PAS_LE_FOYER).length - 1;
+    ok(fois === 1, `la phrase du foyer n'apparaît qu'une fois sur l'écran (${fois})`);
     ok(carte.includes(esp(mentionCalcul("Observatoire des finances et de la gestion publique locales (OFGL)", "29 juillet 2026"))), "la mention « Calculé par Repère », la source et sa date");
     ok(!/IA|Relu/.test(carte), "ni « IA » ni « Relu » : le texte est calculé, pas rédigé");
     ok(await p.getByTestId("explication").getByRole("link", { name: /Lire les comptes officiels/ }).count() === 1, "le lien vers les comptes officiels");
     ok(await b.getAttribute("aria-expanded") === "true", "déplié, état annoncé");
   }
-  /* Les blocs détaillés et leurs mises en garde restent (décision 2 du porteur). */
+  /* Les blocs détaillés et leurs mises en garde restent (décision 2 du porteur), dont la répartition des 100 €. */
+  ok(/Sur 100 € dépensés|Où vont 100 € dépensés/.test(esp(await p.locator("body").innerText())), "la répartition des 100 € reste dans les blocs, hors de la carte");
   ok(esp(await p.locator("body").innerText()).includes("Une part élevée n'est pas un gaspillage") || await p.getByText(/Où vont 100 € dépensés/).count() > 0, "les blocs détaillés de Finances restent sous la carte");
   await p.context().close();
 }

@@ -51,13 +51,31 @@ const ouvert = async page => (await page.evaluate(() => window.__ouverts.slice(-
   ok(await page.locator('[data-testid^="outil-"]').count() === 10, "« Effacer » remet les dix services");
 
   /* Le clic sur une carte renvoie vers le bon site ; sur iPhone, l'app vers l'App Store. */
-  await page.getByTestId("site-ameli").click();
-  ok(await ouvert(page) === "https://www.ameli.fr", `« Site web » d'ameli ouvre https://www.ameli.fr (${await ouvert(page)})`);
+  /* 27/11/2026, soir (porteur) : toute la carte ouvre le site ; plus de bouton « Site web ». */
+  ok(!t.includes("Site web"), "plus aucun bouton « Site web »");
+  await page.getByTestId("lien-ameli").click();
+  ok(await ouvert(page) === "https://www.ameli.fr", `la carte d'ameli ouvre https://www.ameli.fr (${await ouvert(page)})`);
+  const hLien = (await page.getByTestId("lien-ameli").boundingBox()).height;
+  ok(hLien >= 48, `la carte-lien fait 48 px au moins (${Math.round(hLien)} px)`);
+  const imbriques = await page.evaluate(() => [...document.querySelectorAll('[data-testid^="lien-"]')]
+    .filter(l => l.querySelector('a, button, [role="link"], [role="button"]')).length);
+  ok(imbriques === 0, `aucune commande imbriquée dans une carte-lien (${imbriques})`);
+  ok((await page.getByTestId("lien-ameli").innerText()).includes("Santé"), "le nom de la catégorie est écrit sur la carte, la couleur n'est jamais seule");
+  const filet = await page.getByTestId("outil-ameli").evaluate(e => getComputedStyle(e).borderTopColor);
+  ok(filet === "rgb(252, 231, 243)", `filet de la carte à la teinte « Santé » du mode clair (${filet})`);
   await page.getByTestId("app-impots").click();
   ok(await ouvert(page) === "https://apps.apple.com/fr/app/id505488770", `iPhone : « Télécharger l'app » ouvre l'App Store (${await ouvert(page)})`);
   const h = (await page.getByTestId("app-impots").boundingBox()).height;
   ok(h >= 44, `cible tactile de 44 px au moins (${Math.round(h)} px)`);
-  ok(await page.getByRole("link", { name: /^Site web de ameli, ouvre un site externe$/ }).count() === 1, "chaque lien a un nom accessible clair");
+  ok(await page.getByRole("link", { name: /^ameli, site officiel, ouvre un site externe$/ }).count() === 1, "chaque carte-lien a un nom accessible clair");
+  await ctx.close();
+}
+{ /* Réglage « mode daltonien » : la variante Okabe-Ito (ADR 0014). */
+  const { ctx, page } = await ouvrir();
+  await ctx.addInitScript(() => localStorage.setItem("repere.profil", JSON.stringify({ prenom: "Test", modeDaltonien: true })));
+  await page.goto(BASE + "/outils", { waitUntil: "networkidle" }); await page.waitForTimeout(1500);
+  const filet = await page.getByTestId("outil-ameli").evaluate(e => getComputedStyle(e).borderTopColor);
+  ok(filet === "rgb(242, 220, 232)", `mode daltonien : filet « Santé » de la variante (${filet})`);
   await ctx.close();
 }
 { /* Android : le Play Store. */
