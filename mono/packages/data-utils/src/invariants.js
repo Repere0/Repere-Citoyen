@@ -110,8 +110,16 @@ export const MOTS_A_ACCENTS = [
 
 /* Resumes « En clair » (12/11/2026, scripts/resumes-clairs.mjs) : un resume qui contient l'un de ces mots est refuse.
    Jugement ou comparaison de valeur ; radical suivi de ses terminaisons. */
-export const JUGEMENT_RESUME = /\b(mieux|pires?|meilleure?s?|importante?s?|majeure?s?|historiques?|controvers[ée]e?s?|scandal\w*|excellente?s?|catastroph\w*|inacceptables?|courageu\w+|dangereu\w+|heureusement|malheureusement|enfin|bonne nouvelle|mauvaise nouvelle|il faut|on doit)\b/giu;
+/* Frontières Unicode (27/11/2026) : avec \b, « controversé » (finale accentuée) n'était jamais refusé. */
+export const JUGEMENT_RESUME = /(?<![\p{L}\d])(mieux|pires?|meilleure?s?|importante?s?|majeure?s?|historiques?|controvers[ée]e?s?|scandal\w*|excellente?s?|catastroph\w*|inacceptables?|courageu\w+|dangereu\w+|heureusement|malheureusement|enfin|bonne nouvelle|mauvaise nouvelle|il faut|on doit)(?![\p{L}\d])/giu;
 /* EXCEPTIONS FACTUELLES (porteur, 26/11/2026) : « jeunes majeurs » désigne un âge légal (18 ans révolus), pas une
    importance. Ces expressions sont ôtées avant la recherche des mots de jugement ; « un enjeu majeur » reste refusé. */
-export const FAITS_RESUME = /\bjeunes majeure?s\b/giu;
+export const FAITS_RESUME = /(?<![\p{L}\d])jeunes majeure?s(?![\p{L}\d])/giu;
+/* JUGER UN CHIFFRE (27/11/2026, explications de budgets et de votes) : un montant ou un score de vote n'est ni
+   « élevé » ni « faible » sans point de comparaison, et la source n'en donne pas. Ces mots s'ajoutent à
+   JUGEMENT_RESUME pour les explications de chiffres (budget, vote). « plus » et « moins » restent permis
+   (invariant 3, ADR 0002) : le contrôle des nombres refuse déjà toute moyenne ou tout chiffre inventé. */
+/* Frontières Unicode, pas \b : en JavaScript, \b ne voit pas de début de mot devant une lettre accentuée (« élevée »,
+   « énorme » passaient le contrôle, mesuré le 27/11/2026). */
+export const JUGEMENT_CHIFFRES = /(?<![\p{L}\d])(élevée?s?|faibles?|lourde?s?|légère?s?|beaucoup|peu|seulement|trop|énorme?s?|considérables?|modestes?|raisonnables?|excessi(?:f|ve)s?|dépensi[eè]re?s?|endettée?s?|large(?:ment)?|nettement|largement|confortable?s?|inquiétante?s?|préoccupante?s?|serrée?s?|écrasante?s?|massi(?:f|ve)(?:ment|s)?)(?![\p{L}\d])/giu;
 
