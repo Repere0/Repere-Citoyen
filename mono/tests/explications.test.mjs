@@ -74,3 +74,21 @@ test("lot de la semaine : --depuis garde les votes récents, --deja saute ce qui
   assert.ok(r.ecartes.some(e => e.cle === "scrutin:8501" && /déjà/.test(e.raison)));
   assert.ok(r.ecartes.some(e => e.cle === "scrutin:8421" && /avant le/.test(e.raison)));
 });
+
+test("carte « Expliquer simplement » : le modèle et la date de relecture publiés, les mentions écrites", async () => {
+  const { nomDuModele, mentionGeneration, mentionRelecture, resumeAffichable } = await import("../packages/core/src/index.js");
+  assert.equal(nomDuModele("ia:mistral-small-latest"), "Mistral");
+  assert.equal(nomDuModele("session"), null, "un modèle inconnu n'a pas de nom inventé");
+  assert.equal(mentionGeneration("Mistral", "Assemblée nationale"), "Généré par IA (Mistral) à partir des données officielles de l'Assemblée nationale.");
+  assert.equal(mentionRelecture("27 novembre 2026"), "Relu et validé par Repère le 27 novembre 2026.");
+  const r = resumeAffichable({ valide: true, valide_le: "2026-11-27", modele: "ia:mistral-small-latest", resume: "Texte.", source: { producteur: "Assemblée nationale", url: "https://a.fr", releve_le: "2026-11-12" } });
+  assert.equal(r.valideLe, "2026-11-27"); assert.equal(r.modele, "Mistral");
+  /* Le fichier publié porte le modèle du brouillon (methode.voie). */
+  const d = fs.mkdtempSync(path.join(os.tmpdir(), "mod-"));
+  const t = path.join(d, "v.txt"); fs.writeFileSync(t, sourceVote(SCRUTIN).texte);
+  await genererLot([{ type: "vote", cle: "scrutin:8421", texte: t, url: URL }], { cle: "k", fetchImpl: faux("Les députés ont voté : 376 pour, 92 contre et 4 abstentions."), jour: "2026-11-27", sortie: d });
+  const f = JSON.parse(fs.readFileSync(path.join(d, "scrutin-8421.json"), "utf8")); f.valide = true; f.valide_le = "2026-11-27";
+  fs.writeFileSync(path.join(d, "scrutin-8421.json"), JSON.stringify(f));
+  const data = fs.mkdtempSync(path.join(os.tmpdir(), "pub-")); publier(data, { dossier: d, jour: "2026-11-27" });
+  assert.equal(JSON.parse(fs.readFileSync(path.join(data, "resumes-clairs.json"), "utf8")).resumes["scrutin:8421"].modele, "ia:mistral-small-latest");
+});
