@@ -24,5 +24,17 @@ export function resumeAffichable(r) {
   const texte = String(r.resume || "").trim();
   const src = r.source || {};
   if (!texte || !/^https:\/\//.test(src.url || "") || !/^\d{4}-\d{2}-\d{2}$/.test(src.releve_le || "")) return null;
-  return { texte, producteur: src.producteur || "", url: src.url, releveLe: src.releve_le };
+  /* 27/11/2026 (« Expliquer simplement ») : la date de relecture et le modèle, s'ils sont publiés. */
+  const valideLe = /^\d{4}-\d{2}-\d{2}$/.test(r.valide_le || "") ? r.valide_le : null;
+  return { texte, producteur: src.producteur || "", url: src.url, releveLe: src.releve_le, valideLe, modele: nomDuModele(r.modele) };
 }
+
+/* « ia:mistral-small-latest » → « Mistral ». Rien d'autre n'est nommé : un modèle inconnu n'a pas de nom inventé. */
+export function nomDuModele(voie) {
+  return /^ia:mistral/i.test(String(voie || "")) ? "Mistral" : null;
+}
+
+/* Les deux mentions de la carte « Expliquer simplement » (porteur, 27/11/2026). Toujours écrites : un texte d'IA
+   ne s'affiche jamais sans le dire, ni sans dire qui l'a relu. `jour` est déjà en toutes lettres. */
+export const mentionGeneration = (modele, producteur) => `Généré par IA${modele ? ` (${modele})` : ""} à partir des données officielles ${producteur === "Assemblée nationale" ? "de l'Assemblée nationale" : "de la source citée"}.`;
+export const mentionRelecture = jour => (jour ? `Relu et validé par Repère le ${jour}.` : "Relu et validé par Repère.");

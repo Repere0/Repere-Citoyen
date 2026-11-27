@@ -128,7 +128,7 @@ export function publier(dossierData, { dossier = DOSSIER, jour } = {}) {
   const resumes = {};
   for (const x of inv.filter(x => x.valide && !x.defauts.length)) {
     const cle = x.r.cle || x.r.dossier;
-    const fiche = { ...(x.r.dossier ? { dossier: x.r.dossier } : { cle }), resume: x.r.resume, source: { producteur: x.r.source.producteur, url: x.r.source.url, releve_le: x.r.source.releve_le }, valide: true, valide_le: x.r.valide_le || null };
+    const fiche = { ...(x.r.dossier ? { dossier: x.r.dossier } : { cle }), resume: x.r.resume, source: { producteur: x.r.source.producteur, url: x.r.source.url, releve_le: x.r.source.releve_le }, valide: true, valide_le: x.r.valide_le || null, ...(/^ia:/.test((x.r.methode && x.r.methode.voie) || "") ? { modele: x.r.methode.voie } : {}) };
     resumes[cle] = fiche;
     for (const n of x.r.scrutins || []) resumes["scrutin:" + n] = fiche;
   }

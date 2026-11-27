@@ -527,8 +527,8 @@ export default function Scrutins() {
                   <StatutVote detail={detail} />
                 </View>
 
-                {/* « En clair » sur tout scrutin (12/11/2026). Aucun résumé validé n'existe pour ce texte : le bloc dit
-                    « Pas encore de résumé » et renvoie au scrutin officiel, jamais le résumé d'un autre texte. */}
+                {/* « Expliquer simplement » (27/11/2026) : seulement si une explication validée est publiée pour CE scrutin,
+                    jamais celle d'un autre texte ; la source officielle reste sous le détail. */}
                 <ResumeClairDuVote scrutin={detail.n} lienOfficiel={/^https:\/\//.test(detail.url || "") ? detail.url : undefined} />
 
                 <Text style={TYPO.etiquette}>Position des groupes</Text>
