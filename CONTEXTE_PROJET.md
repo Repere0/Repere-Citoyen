@@ -341,6 +341,12 @@ PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node test_repere.mjs site_v18_20/index
   présidentielle n'a pas été publiée : son script importait `rss-parser` avant `pnpm install`. Depuis : toute étape
   non bloquante passe par `avertir` (`outils/pipeline.sh`), et `outils/alerte_collecte.mjs` ouvre une issue au
   deuxième jour (`data/etat_collecte.json`). Une nouvelle étape qui utilise `echo "::warning::"` échappe à l'alerte.
+- **Une alerte qui vit dans la collecte se tait quand la collecte ne démarre pas** (27/11/2026). Le cron de 05:47 UTC
+  part en pratique entre 13:37 et 16:30 UTC (mesuré du 21 au 27/11), et GitHub suspend les crons d'un dépôt public
+  après 60 jours sans activité. Depuis : `.github/workflows/veille-collecte.yml` (deux fois par jour) et
+  `outils/veille_collecte.mjs` ouvrent une issue si aucune collecte n'a réussi depuis 40 h, si le workflow n'est plus
+  actif, ou si la production n'est pas remise en ligne. Ne voit pas un arrêt de GitHub Actions pour tout le dépôt
+  (aucun service tiers pour la V1, décision du porteur). Voir `docs/veille-collecte.md`.
 - **Cloudflare Pages, deux pièges mesurés** (12/11/2026, émulateur `wrangler pages dev`) : une réécriture vers
   `/index.html` répond 308 vers `/` et perd l'écran ; un service worker qui range la coquille sous `/index.html` ne
   s'ouvre plus hors ligne. Voir `docs/hebergement-cloudflare.md`.

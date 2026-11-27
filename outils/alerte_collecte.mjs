@@ -58,26 +58,36 @@ export function corps(alertes, urlRun, jour) {
   ].join("\n");
 }
 
-const gh = (...args) => execFileSync("gh", args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
-function issueOuverte() {
-  const n = gh("issue", "list", "--state", "open", "--search", `in:title "${TITRE}"`, "--json", "number,title", "--jq", `[.[] | select(.title == "${TITRE}")][0].number // empty`);
-  return n || null;
-}
-function publier(alertes, urlRun, jour) {
-  const texte = corps(alertes, urlRun, jour);
-  const n = issueOuverte();
-  if (alertes.length && !n) {
+export const gh = (...args) => execFileSync("gh", args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+
+/* OUVRIR / METTRE A JOUR / FERMER UNE ISSUE D'ALERTE — une seule fonction, partagee avec
+   outils/veille_collecte.mjs (27/11/2026) : une regle, une fonction. Titre fixe = une seule issue.
+   alerte vrai : ouverte (assignee au proprietaire, donc un courriel) ou mise a jour sans bruit.
+   alerte faux : fermee avec `fermeture` en commentaire si elle etait ouverte ; sinon rien. */
+export function publierIssue({ titre, texte, alerte, fermeture, resume }) {
+  const n = gh("issue", "list", "--state", "open", "--search", `in:title "${titre}"`, "--json", "number,title", "--jq", `[.[] | select(.title == "${titre}")][0].number // empty`) || null;
+  if (alerte && !n) {
     const proprio = (process.env.GITHUB_REPOSITORY || "").split("/")[0];
-    try { gh("issue", "create", "--title", TITRE, "--body", texte, "--assignee", proprio); }
-    catch { gh("issue", "create", "--title", TITRE, "--body", texte); }   /* proprietaire non assignable : l'issue s'ouvre quand meme */
-    console.log(`::error title=Alerte de collecte::${alertes.length} étape(s) en échec depuis au moins ${SEUIL} jours : issue ouverte.`);
-  } else if (alertes.length) {
+    try { gh("issue", "create", "--title", titre, "--body", texte, "--assignee", proprio); }
+    catch { gh("issue", "create", "--title", titre, "--body", texte); }   /* proprietaire non assignable : l'issue s'ouvre quand meme */
+    console.log(`::error title=${titre}::${resume} : issue ouverte.`);
+  } else if (alerte) {
     gh("issue", "edit", n, "--body", texte);
-    console.log(`::warning::alerte de collecte toujours ouverte (issue #${n}), ${alertes.length} étape(s).`);
+    console.log(`::warning::${titre} : toujours ouverte (issue #${n}). ${resume}`);
   } else if (n) {
-    gh("issue", "close", n, "--comment", `Rétabli le ${jour} : plus aucune étape en échec depuis ${SEUIL} jours. ${urlRun || ""}`);
-    console.log(`::notice::alerte de collecte fermée (issue #${n}).`);
+    gh("issue", "close", n, "--comment", fermeture);
+    console.log(`::notice::${titre} : fermée (issue #${n}).`);
   }
+}
+
+function publier(alertes, urlRun, jour) {
+  publierIssue({
+    titre: TITRE,
+    texte: corps(alertes, urlRun, jour),
+    alerte: alertes.length > 0,
+    fermeture: `Rétabli le ${jour} : plus aucune étape en échec depuis ${SEUIL} jours. ${urlRun || ""}`,
+    resume: `${alertes.length} étape(s) en échec depuis au moins ${SEUIL} jours`,
+  });
 }
 
 function main() {
