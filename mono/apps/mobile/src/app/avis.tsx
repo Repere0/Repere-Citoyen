@@ -6,7 +6,8 @@ import { Linking, Platform, Pressable, ScrollView, Text, TextInput, View } from 
 import { Stack } from "expo-router";
 import Constants from "expo-constants";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { COURRIEL_AVIS, lienAvis, POINTS_AVIS } from "../lib/avis";
+import { COURRIEL_AVIS, lienAvis, POINTS_AVIS, THEMES_AVIS } from "../lib/avis";
+import { useProfil } from "../lib/profil";
 import { CIBLE, OMBRE, PAS, POLICE, RAYON, TYPO, couleurs } from "../lib/theme";
 import { MARQUE_DEFILEMENT } from "../lib/defilement-ios";
 import { useBasSur } from "../ui/page";
@@ -26,11 +27,44 @@ function Bouton({ texte, onPress, plein = false, testID, desactive = false }: { 
   );
 }
 
+/* LE MENU « VOTRE AVIS PORTE SUR » (porteur, 27/11/2026) : un menu déroulant, liste fixe. Le choix entre dans le sujet
+   du message ([Avis - Finances]). Un bouton qui se déplie (et dit son état), puis une liste à choix unique. */
+function MenuTheme({ theme, choisir }: { theme: string | null; choisir: (t: string) => void }) {
+  const [ouvert, setOuvert] = useState(false);
+  return (
+    <View style={{ gap: PAS * 2 }}>
+      <Text style={TYPO.note} nativeID="avis-theme-titre">Votre avis porte sur :</Text>
+      <Pressable onPress={() => setOuvert(o => !o)} accessibilityRole="button" accessibilityState={{ expanded: ouvert }} aria-expanded={ouvert}
+        accessibilityLabel={`Votre avis porte sur : ${theme || "aucune page choisie"}`} accessibilityHint="Ouvrir la liste des pages" testID="avis-theme"
+        style={({ pressed }) => [{ minHeight: CIBLE, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: PAS * 3,
+          borderRadius: RAYON.bloc, borderWidth: 1, borderColor: couleurs.trait, backgroundColor: couleurs.sol }, pressed && enfonce(true)]}>
+        <Text style={[TYPO.corps, { color: theme ? couleurs.encre : couleurs.sourd }]}>{theme || "Choisir une page (facultatif)"}</Text>
+        <Ionicons name={ouvert ? "chevron-up" : "chevron-down"} size={18} color={couleurs.sourd} accessible={false} importantForAccessibility="no" />
+      </Pressable>
+      {ouvert ? (
+        <View accessibilityRole="radiogroup" aria-labelledby="avis-theme-titre" style={{ borderRadius: RAYON.bloc, borderWidth: 1, borderColor: couleurs.trait, overflow: "hidden" }}>
+          {THEMES_AVIS.map((t, i) => (
+            <Pressable key={t} onPress={() => { choisir(t); setOuvert(false); }} accessibilityRole="radio" accessibilityState={{ checked: theme === t }} aria-checked={theme === t}
+              accessibilityLabel={t} testID={`avis-theme-${i}`}
+              style={({ pressed }) => [{ minHeight: CIBLE, flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: PAS * 3,
+                borderTopWidth: i ? 1 : 0, borderColor: couleurs.trait, backgroundColor: theme === t ? couleurs.voile : couleurs.carte }, pressed && enfonce(true)]}>
+              <Text style={[TYPO.corps, { color: couleurs.encre }]}>{t}</Text>
+              {theme === t ? <Ionicons name="checkmark" size={18} color={couleurs.encre} accessible={false} importantForAccessibility="no" /> : null}
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 export default function Avis() {
   const [etape, setEtape] = useState(0);
   const [note, setNote] = useState(0);
   const [points, setPoints] = useState<string[]>([]);
   const [texte, setTexte] = useState("");
+  const [theme, setTheme] = useState<string | null>(null);
+  const { profil } = useProfil();
   const bas = useBasSur();
   if (!COURRIEL_AVIS) return (
     <View style={{ flex: 1, backgroundColor: couleurs.sol, padding: PAS * 4 }}>
@@ -43,7 +77,7 @@ export default function Avis() {
     const lien = lienAvis(COURRIEL_AVIS as string, {
       version: Constants.expoConfig?.version || "inconnue", date: new Date(),
       plateforme: `${Platform.OS} ${String(Platform.Version ?? "")}`.trim(), navigateur,
-    }, { note, points, texte });
+    }, { note, points, texte, theme, prenom: profil ? profil.prenom : null });
     /* Sur le web (26/11/2026) : react-native-web ouvrait mailto: par window.open(…, "_blank"), qui laisse un onglet
        vide sur ordinateur et peut ne rien ouvrir dans l'application installée sur l'écran d'accueil d'un iPhone.
        Une adresse mailto: posée sur la page ouvre la messagerie sans quitter Repère. */
@@ -75,6 +109,7 @@ export default function Avis() {
               ))}
             </View>
             <Text style={[TYPO.note, { textAlign: "center" }]}>{note ? `${note} sur 5 : ${NOMS_NOTE[note]}` : "Touchez une étoile."}</Text>
+            <MenuTheme theme={theme} choisir={setTheme} />
           </>
         ) : etape === 1 ? (
           <>
@@ -100,10 +135,7 @@ export default function Avis() {
             <TextInput value={texte} onChangeText={setTexte} multiline placeholder="Ce qui vous a plu, ce qui manque, ce qui est faux…"
               placeholderTextColor={couleurs.sourd} accessibilityLabel="Votre avis, en quelques mots" testID="avis-texte"
               style={[TYPO.corps, { color: couleurs.encre, minHeight: 140, textAlignVertical: "top", padding: PAS * 3, borderRadius: RAYON.bloc, borderWidth: 1, borderColor: couleurs.trait, backgroundColor: couleurs.sol }]} />
-            <Text style={TYPO.micro}>Le bouton ouvre votre messagerie avec un message prêt. Vous le relisez, vous effacez ce que vous voulez, vous l'envoyez. Repère n'envoie et ne garde rien.</Text>
-            {/* Aucune messagerie réglée sur l'appareil : le bouton ne peut rien ouvrir, et aucun navigateur ne le dit.
-                L'adresse reste lisible et sélectionnable pour écrire autrement. */}
-            <Text style={TYPO.micro} selectable testID="avis-adresse">Rien ne s'ouvre ? Écrivez à {COURRIEL_AVIS}.</Text>
+
           </>
         )}
       </View>
@@ -114,6 +146,14 @@ export default function Avis() {
           ? <Bouton plein texte="Continuer" onPress={() => setEtape(etape + 1)} desactive={etape === 0 && !note} testID="avis-suivant" />
           : <Bouton plein texte="Ouvrir ma messagerie" onPress={envoyer} testID="avis-envoyer" />}
       </View>
+      {etape === 2 ? (
+        /* Porteur, 27/11/2026 : un lien mailto ne transporte pas d'image (et Repère n'a pas de serveur) ; la capture se
+           joint dans la messagerie. Aucune messagerie réglée : l'adresse reste lisible pour écrire autrement. */
+        <View style={{ gap: PAS }}>
+          <Text style={TYPO.micro} testID="avis-aide">Votre messagerie va s'ouvrir. Vous pourrez y joindre une capture d'écran si besoin. Repère n'envoie et ne garde rien.</Text>
+          <Text style={TYPO.micro} selectable testID="avis-adresse">Rien ne s'ouvre ? Écrivez à {COURRIEL_AVIS}.</Text>
+        </View>
+      ) : null}
     </ScrollView>
   );
 }
