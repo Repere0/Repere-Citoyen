@@ -65,11 +65,12 @@ test("Melun 2025 : les deux phrases exactes", () => {
     + "C'est la dépense de la commune, rapportée à chaque habitant, pas ce que paie votre foyer.");
 });
 
-test("la phrase du foyer est la même que sous le chiffre de Finances (une seule constante)", () => {
+/* 27/11/2026, 20:13 (porteur) : la phrase du foyer n'est plus sous le grand chiffre ; elle ne vit que dans la carte
+   dépliée, pour ne pas la lire deux fois de suite. */
+test("la phrase du foyer ne vit que dans la carte « Expliquer simplement »", () => {
   assert.equal(PAS_LE_FOYER, "C'est la dépense de la commune, rapportée à chaque habitant, pas ce que paie votre foyer.");
   const ecran = fs.readFileSync(new URL("../apps/mobile/src/ui/ecran-argent.tsx", import.meta.url), "utf8");
-  assert.match(ecran, /\{PAS_LE_FOYER\}/, "ecran-argent.tsx affiche la constante");
-  assert.doesNotMatch(ecran, /pas ce que paie votre foyer/, "aucune copie de la phrase dans l'écran");
+  assert.doesNotMatch(ecran, /PAS_LE_FOYER|pas ce que paie votre foyer/, "ni la constante ni une copie sous le grand chiffre");
 });
 
 test("sans montant par habitant : une phrase vraie, jamais « 0 € par habitant » ; sans dépenses, pas de texte", () => {

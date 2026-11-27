@@ -28,6 +28,9 @@ async function page(largeur = 390) {
     /* 27/11/2026, soir (porteur) : deux phrases au plus ; le détail des 100 € reste dans les blocs. */
     ok(carte.includes("En 2025, Melun a dépensé 109,6 millions d'euros, soit 2 495 € par habitant. " + PAS_LE_FOYER), "les deux phrases de Melun");
     ok(!carte.includes("Sur 100 €"), "pas de détail des 100 € dans la carte");
+    /* 27/11/2026, 20:13 (porteur) : la phrase du foyer ne se lit qu'une fois, dans la carte. */
+    const fois = esp(await p.locator("body").innerText()).split(PAS_LE_FOYER).length - 1;
+    ok(fois === 1, `la phrase du foyer n'apparaît qu'une fois sur l'écran (${fois})`);
     ok(carte.includes(esp(mentionCalcul("Observatoire des finances et de la gestion publique locales (OFGL)", "29 juillet 2026"))), "la mention « Calculé par Repère », la source et sa date");
     ok(!/IA|Relu/.test(carte), "ni « IA » ni « Relu » : le texte est calculé, pas rédigé");
     ok(await p.getByTestId("explication").getByRole("link", { name: /Lire les comptes officiels/ }).count() === 1, "le lien vers les comptes officiels");
