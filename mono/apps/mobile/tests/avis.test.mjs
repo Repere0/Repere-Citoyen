@@ -33,3 +33,14 @@ test("avis en trois étapes : note, points d'une liste fixe, texte ; rien d'inve
   assert.ok(!corpsAvis(sys, { note: 9 }).includes("Ma note"), "une note hors de 1 à 5 n'est pas écrite");
   assert.ok(corpsAvis(sys).startsWith("Mon avis sur Repère :"), "sans réponses, le message d'avant");
 });
+
+test("signaler une erreur (filet, 27/11/2026) : écran sans commune ni paramètre, erreur bornée, rien d'autre", async () => {
+  const { lienSignalement } = await import("../src/lib/avis.ts");
+  const l = lienSignalement("a@b.fr", { version: "1.2.3", date: new Date("2026-11-27T10:00:00Z"), chemin: "/finances?x=1#melun", erreur: "x".repeat(500), navigateur: "Safari" });
+  const corps = decodeURIComponent(l.split("body=")[1]);
+  assert.match(l, /^mailto:a@b\.fr\?subject=/);
+  assert.match(corps, /Écran : \/finances\n/);
+  assert.doesNotMatch(corps, /melun|x=1/, "jamais la commune ni un paramètre (invariant 2)");
+  assert.equal((corps.match(/x/g) || []).length, 300, "erreur bornée à 300 caractères");
+  assert.match(corps, /Version : 1\.2\.3\nDate : 2026-11-27\nNavigateur : Safari$/);
+});

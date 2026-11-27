@@ -19,7 +19,7 @@ import { useEffect, useMemo, useState } from "react";
 import { FlatList, KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
-import { mots, motsCible, correspond, chercherCommunes, departementDe, titreLisible, dernierExercice, evolution, parHabitant, dateFr, decompte, ordinal, positionSur, positionsFiables } from "@repere/core";
+import { mots, motsCible, correspond, chercherCommunes, departementDe, titreLisible, dernierExercice, evolution, parHabitant, dateFr, decompte, ordinal, positionSur, positionsFiables, departementDeIndex } from "@repere/core";
 import { chargerCatalogueScrutins, chargerCodesPostaux, chargerCommunesBeta, chargerDepartement, chargerDeputes, chargerIndex, chargerVotes, ETATS, PHRASES } from "../lib/donnees";
 import { Bouton, Carte, Texte, Vide } from "../lib/composants";
 import { useSelection } from "../lib/selection";
@@ -299,7 +299,7 @@ export default function Accueil() {
   /* Le departement se lit par @repere/core (departementDe), comme sur le site :
      trois chiffres outre-mer (971...), deux ailleurs, 2A/2B en Corse. */
   const nomDep = (code: string) => {
-    const d = index && index.departements.find(x => x.code === code);
+    const d = departementDeIndex(index, code);
     return d && d.nom ? d.nom : "département " + code;
   };
 

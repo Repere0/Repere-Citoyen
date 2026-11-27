@@ -100,7 +100,8 @@ export default function Recherche() {
       });
     });
     chargerIndex().then(r => {
-      if (vivant && r.donnees) setDepartements((r.donnees as { departements: Departement[] }).departements);
+      /* Index malformé (27/11/2026) : une liste vide, jamais undefined (sinon .find plus bas laisse une page blanche). */
+      if (vivant && r.donnees) { const l = (r.donnees as { departements?: unknown }).departements; setDepartements(Array.isArray(l) ? (l as Departement[]) : []); }
     });
     chargerFiches().then(({ etat, fiches }) => {
       if (vivant) setElus({ etat, liste: fiches.map(f => ({ ...f, cible: motsCible(`${f.nom} ${f.fonction} ${f.lieu}`) })) });
