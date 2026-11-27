@@ -1,10 +1,18 @@
 # =============================================================================
 # Résumés « en clair » des lois votées — brouillons par IA (Mistral), 26/11/2026.
 #
-# LANCEMENT MANUEL SEULEMENT (Actions > Résumés en clair > Run workflow). Chaque
-# lancement réel coûte des jetons Mistral : aucun déclenchement planifié tant que le
-# porteur ne l'a pas décidé. Par défaut, mode « essai » : le modèle répond, les
-# contrôles tournent, RIEN n'est écrit ; les résumés se lisent dans le résumé du run.
+# DEUX DÉCLENCHEMENTS :
+# - à la main (Actions > Résumés en clair > Run workflow) : mode « essai » par défaut,
+#   le modèle répond, les contrôles tournent, RIEN n'est écrit ;
+# - EN LOT, chaque dimanche (porteur, 27/11/2026 : « générer les brouillons en batch sans
+#   que j'aie à cliquer ») : mode « brouillons », 10 textes au plus. Coût signalé au
+#   porteur avant activation (de l'ordre de quelques centimes par semaine au tarif
+#   affiché par Mistral, NON VÉRIFIÉ ; le nombre réel de jetons s'écrit à la fin du run).
+#
+# LES BROUILLONS VIVENT SUR UNE BRANCHE FIXE, `brouillons/resumes`, avec UNE pull request
+# ouverte qui s'enrichit de semaine en semaine. Chaque lancement repart de cette branche :
+# un texte déjà en brouillon (relu ou non) est sauté (--deja), donc jamais payé deux fois.
+# Rien n'arrive sur main sans que le porteur fusionne ; rien ne s'affiche avant valide: true.
 #
 # Chaîne (docs/resumes-ia.md) :
 #   1. catalogue des scrutins publiés (extract-html.js) → dossiers législatifs concernés ;
@@ -21,6 +29,10 @@
 name: Résumés en clair
 
 on:
+  schedule:
+    # Dimanche 04:23 UTC : la collecte du samedi est passée (elle part vers 16 h UTC), minute décalée pour éviter
+    # l'heure pleine (GitHub retarde les crons à :00).
+    - cron: "23 4 * * 0"
   workflow_dispatch:
     inputs:
       # Un seul menu (26/11/2026, porteur : lancer depuis le téléphone, sans PC).
@@ -48,6 +60,31 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Réglages du lancement
+        id: reglages
+        run: |
+          # En lot (schedule), pas de menu : brouillons, 10 textes au plus.
+          echo "mode=${{ inputs.mode || 'brouillons' }}" >> "$GITHUB_OUTPUT"
+          echo "limite=${{ inputs.limite || 10 }}" >> "$GITHUB_OUTPUT"
+          echo "Mode : ${{ inputs.mode || 'brouillons' }}, limite : ${{ inputs.limite || 10 }} (déclencheur : ${{ github.event_name }})" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Repartir de la branche des brouillons (textes déjà faits sautés)
+        if: steps.reglages.outputs.mode == 'brouillons'
+        run: |
+          git config user.name "Collecte Repere"
+          git config user.email "repere0@protonmail.com"
+          if git ls-remote --exit-code --heads origin brouillons/resumes > /dev/null; then
+            git fetch -q origin brouillons/resumes
+            git switch -q -C brouillons/resumes FETCH_HEAD
+            # La branche ne porte que des brouillons : main y entre sans conflit, pour les scripts à jour.
+            git merge -q --no-edit origin/main -m "Brouillons de résumés : main à jour"
+          else
+            git switch -q -C brouillons/resumes
+          fi
+          echo "Brouillons déjà sur la branche : $(ls data/resumes 2>/dev/null | grep -c '\.json$' || true)" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Outils (pdftotext)
         run: |
@@ -70,7 +107,7 @@ jobs:
         working-directory: mono
         run: |
           node scripts/textes-officiels.mjs --archive "$RUNNER_TEMP/an/brut" --scrutins data/scrutins.json \
-            --sortie "$RUNNER_TEMP/officiels" --deja ../data/resumes --limite "${{ inputs.limite }}"
+            --sortie "$RUNNER_TEMP/officiels" --deja ../data/resumes --limite "${{ steps.reglages.outputs.limite }}"
 
       - name: Brouillons de résumés
         working-directory: mono
@@ -78,13 +115,13 @@ jobs:
           MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
         run: |
           OPTIONS=""
-          case "${{ inputs.mode }}" in
+          case "${{ steps.reglages.outputs.mode }}" in
             simulation) OPTIONS="--mock --essai" ;;
             essai) OPTIONS="--essai" ;;
             brouillons) OPTIONS="" ;;
-            *) echo "::error::Mode inconnu : ${{ inputs.mode }}"; exit 1 ;;
+            *) echo "::error::Mode inconnu : ${{ steps.reglages.outputs.mode }}"; exit 1 ;;
           esac
-          if [ "${{ inputs.mode }}" != "simulation" ] && [ -z "$MISTRAL_API_KEY" ]; then
+          if [ "${{ steps.reglages.outputs.mode }}" != "simulation" ] && [ -z "$MISTRAL_API_KEY" ]; then
             echo "::error::Secret MISTRAL_API_KEY absent : rien n'est appelé."; exit 1; fi
           node scripts/generer_resumes.mjs --liste "$RUNNER_TEMP/officiels/lots.json" $OPTIONS | tee "$RUNNER_TEMP/compte-rendu.txt"
           { echo '```'; cat "$RUNNER_TEMP/compte-rendu.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
@@ -101,21 +138,23 @@ jobs:
           if-no-files-found: ignore
 
       - name: Pull request de brouillons (mode brouillons seulement)
-        if: inputs.mode == 'brouillons'
+        if: steps.reglages.outputs.mode == 'brouillons'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -z "$(git status --porcelain data/resumes)" ]; then echo "Aucun brouillon nouveau."; exit 0; fi
+          if [ -z "$(git status --porcelain data/resumes)" ]; then echo "Aucun brouillon nouveau cette fois." | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
           # Garde : un brouillon ne porte jamais valide: true (seul le porteur le pose).
-          if grep -l '"valide": *true' $(git status --porcelain data/resumes | awk '{print $2}' | grep '\.json$') 2>/dev/null; then
+          NOUVEAUX=$(git status --porcelain data/resumes | awk '{print $2}' | grep '\.json$' || true)
+          if [ -n "$NOUVEAUX" ] && grep -l '"valide": *true' $NOUVEAUX 2>/dev/null; then
             echo "::error::Un brouillon porte valide: true : refusé."; exit 1; fi
-          BRANCHE="data/resumes-$(date -u +%Y%m%d-%H%M)"
-          git config user.name "Collecte Repere"
-          git config user.email "repere0@protonmail.com"
-          git switch -c "$BRANCHE"
           git add data/resumes
-          git commit -q -m "Brouillons de résumés en clair (Mistral, valide: false)"
-          git push -q origin "$BRANCHE"
-          gh pr create --base main --head "$BRANCHE" --title "Brouillons de résumés en clair à relire" \
-            --body "Brouillons écrits par Mistral à partir des exposés des motifs officiels, tous en valide: false. À relire un par un ; rien ne s'affiche avant valide: true puis resumes-clairs.mjs --publier. Compte rendu : run ${{ github.run_id }}." \
-            || echo "::warning::Pull request non créée (réglage du dépôt ?). La branche $BRANCHE est poussée : ouvrir la PR à la main."
+          git commit -q -m "Brouillons de résumés en clair du $(TZ=Europe/Paris date +%d/%m/%Y) (Mistral, valide: false)"
+          git push -q origin brouillons/resumes
+          echo "Brouillons poussés sur brouillons/resumes : $(echo "$NOUVEAUX" | grep -c . ) nouveau(x)." >> "$GITHUB_STEP_SUMMARY"
+          if [ "$(gh pr list --head brouillons/resumes --state open --json number --jq length)" = "0" ]; then
+            gh pr create --base main --head brouillons/resumes --title "Brouillons de résumés en clair à relire" \
+              --body "Brouillons écrits par Mistral à partir des exposés des motifs officiels, tous en valide: false. Cette PR s'enrichit chaque dimanche. À relire un par un : poser valide: true sur ceux qui sont justes, puis resumes-clairs.mjs --publier. Rien ne s'affiche avant." \
+              || echo "::warning::Pull request non créée (réglage du dépôt ?). La branche brouillons/resumes est poussée : ouvrir la PR à la main."
+          else
+            echo "La pull request des brouillons est déjà ouverte : elle reçoit ce commit." >> "$GITHUB_STEP_SUMMARY"
+          fi
