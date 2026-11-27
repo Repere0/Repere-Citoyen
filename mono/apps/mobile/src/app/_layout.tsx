@@ -52,6 +52,9 @@ function AvecCommune({ children }: { children: ReactNode }) {
 /* Safari iOS : la feuille de style du defilement, posee une fois, avant le premier rendu. */
 poserDefilementIos();
 
+/* Une erreur de rendu n'importe où dans l'application : le filet, jamais une page blanche (27/11/2026). */
+export { FiletErreur as ErrorBoundary } from "../ui/filet";
+
 export default function Coquille() {
   /* Le rendu attend la police (quelques millisecondes, fichier local) : un
      titre qui change de forme sous les yeux du lecteur gene davantage qu'un

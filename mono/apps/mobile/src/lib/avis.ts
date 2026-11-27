@@ -47,3 +47,18 @@ export function corpsAvis(s: Systeme, r: Reponses = {}): string {
 export function lienAvis(adresse: string, s: Systeme, r: Reponses = {}): string {
   return `mailto:${adresse}?subject=${encodeURIComponent(`Avis sur Repère ${s.version}`)}&body=${encodeURIComponent(corpsAvis(s, r))}`;
 }
+
+/* SIGNALER UNE ERREUR (filet d'erreurs, 27/11/2026). Sans traceur (invariant 2), Repère ne sait rien d'un plantage
+   chez un lecteur : le filet propose de l'écrire. Le message contient l'écran (chemin, jamais la commune : elle vit
+   après le « # »), le texte de l'erreur borné à 300 caractères, la version et la date. Le lecteur relit et envoie. */
+export function lienSignalement(adresse: string, s: { version: string; date: Date; chemin: string; erreur: string; navigateur?: string | null }): string {
+  const lignes = [
+    "Bonjour,", "", "Repère a affiché une erreur sur cet écran. (Vous pouvez ajouter ce que vous faisiez.)", "", "", "—",
+    `Écran : ${s.chemin.split("#")[0].split("?")[0] || "/"}`,
+    `Erreur : ${String(s.erreur || "inconnue").slice(0, 300)}`,
+    `Version : ${s.version}`,
+    `Date : ${s.date.toISOString().slice(0, 10)}`,
+    ...(s.navigateur ? [`Navigateur : ${s.navigateur}`] : []),
+  ];
+  return `mailto:${adresse}?subject=${encodeURIComponent("Repère : une erreur à signaler")}&body=${encodeURIComponent(lignes.join("\n"))}`;
+}
