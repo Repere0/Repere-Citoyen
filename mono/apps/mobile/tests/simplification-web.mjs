@@ -119,7 +119,9 @@ const photo = async (page, nom) => { if (CAP) await page.screenshot({ path: `${C
   verifier(!cles.some(k => /quiz|serie|série|streak|score/i.test(k)), "quiz : rien n'est enregistré sur l'appareil (invariant 2)");
   verifier(await page.getByText(/bonne réponse|mauvaise réponse|bravo|score/i).count() === 0, "quiz : aucun vocabulaire de récompense ni de score");
   await page.goto(BASE + "/dictionnaire", { waitUntil: "networkidle" });
-  verifier(await page.getByLabel("Rechercher un mot du dictionnaire").first().isVisible(), "dictionnaire : la liste des mots a son écran, sans quiz");
+  /* 27/11/2026 : `isVisible()` lisait l'écran sans attendre ; sous la charge de la CI, le champ n'était pas encore
+     dessiné (rouge sur #26, vert seul 3 fois sur 3). On attend son apparition, 10 s au plus. */
+  verifier(await page.getByLabel("Rechercher un mot du dictionnaire").first().waitFor({ state: "visible", timeout: 10000 }).then(() => true, () => false), "dictionnaire : la liste des mots a son écran, sans quiz");
   verifier(erreurs.length === 0, "quiz : aucune erreur JavaScript" + (erreurs[0] ? " : " + erreurs[0] : ""));
   await contexte.close();
 }

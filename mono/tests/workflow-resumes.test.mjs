@@ -31,3 +31,10 @@ test("sans clé, rien n'est appelé ; la simulation ne coûte rien", () => {
   assert.match(W, /Secret MISTRAL_API_KEY absent : rien n'est appelé/);
   assert.match(W, /simulation\) OPTIONS="--mock --essai"/);
 });
+
+/* 27/11/2026 (porteur, décision 5) : les votes de la semaine seulement, et jamais deux fois. */
+test("votes : seulement ceux des 7 derniers jours, déjà faits sautés, dans le même lot", () => {
+  assert.match(W, /sources-explications\.mjs[^\n]*\\\n[^\n]*--depuis "\$\(date -u -d '7 days ago' \+%F\)" --deja \.\.\/data\/resumes/);
+  assert.match(W, /generer_resumes\.mjs --liste "\$RUNNER_TEMP\/lots\.json"/, "lois et votes passent ensemble");
+});
+

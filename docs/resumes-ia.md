@@ -132,3 +132,10 @@ s'écrit à la fin de chaque run. Pour arrêter le lot : Actions > « Résumés 
 - **Finances** : **décision du porteur le 26/11/2026 : non**, pas de résumé IA des budgets pour l'instant. L'écran
   garde ses phrases claires calculées sans IA ; le code qui afficherait un résumé `budget:<insee>` validé reste
   inerte (aucun fichier ne le nourrit).
+  **Confirmé le 27/11/2026 (décision 1)** : l'explication d'un budget sera calculée par Repère, sans IA.
+- **Votes** (27/11/2026) : `scripts/sources-explications.mjs --donnees data --sortie <dossier> --depuis <date>`
+  écrit le texte officiel de chaque scrutin (fiche publiée) et `lots.json`, que lit `generer_resumes.mjs` (consigne
+  « vote » ; contrôles des mots qui jugent un chiffre, `JUGEMENT_CHIFFRES`). Clé `scrutin:<n>`, fichier
+  `scrutin-<n>.json`. Une panne de l'API (401, 402, 429) arrête le lot et rend le run rouge.
+- **Groupes parlementaires** : pas d'IA (décision 2, 27/11/2026), faits officiels seulement.
+- **Calendrier** : pas de texte propre ; un événement lié à un dossier montre l'explication de ce dossier (décision 4).
