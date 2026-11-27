@@ -46,11 +46,13 @@ export function regrouperParJour(evenements) {
     let g = index.get(k);
     if (!g) {
       g = { jour, institution: e.institution, cle: e.cle, source: e.source, titre: e.titre, debut: e.debut,
-        categorie: e.categorie || null, lieu: e.lieu || null, debuts: [], fins: [], points: null, textesLibres: [] };
+        categorie: e.categorie || null, lieu: e.lieu || null, debuts: [], fins: [], points: null, textesLibres: [], dossiers: [] };
       index.set(k, g);
       groupes.push(g);
     }
     g.debuts.push(e.debut);
+    /* 27/11/2026 : les dossiers legislatifs de l'ordre du jour (agenda de l'Assemblee), sans doublon. */
+    for (const d of Array.isArray(e.dossiers) ? e.dossiers : []) if (!g.dossiers.includes(d)) g.dossiers.push(d);
     /* La fin de chaque seance, au meme rang que son debut. null quand la source ne
        la donne pas : l'ecran l'ecrit (« fin non publiee »), il n'invente rien. */
     g.fins.push(e.fin && String(e.fin) >= String(e.debut) ? e.fin : null);

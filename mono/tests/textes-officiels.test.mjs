@@ -55,3 +55,34 @@ test("preparer : écrit le lot, écarte et dit pourquoi", async () => {
   assert.equal(ecartes.length, 1);
   assert.match(ecartes[0].raison, /aucun projet/);
 });
+
+/* 27/11/2026 (chantier Calendrier) : les dossiers des séances à venir entrent dans le même lot, APRÈS ceux des
+   scrutins, sans doublon et dans la même limite. Le texte expliqué reste l'exposé des motifs du dossier, jamais
+   le titre de la séance (invariant 4). */
+const { dossiersDeLAgenda } = await import("../scripts/textes-officiels.mjs");
+
+test("dossiers de l'agenda : ceux des séances, sans doublon, références invalides écartées", () => {
+  const agenda = { evenements: [
+    { titre: "Discussion du projet de loi A", dossiers: ["DLR5L17N1", "DLR5L17N3"] },
+    { titre: "Suite de la discussion du projet de loi A", dossiers: ["DLR5L17N1"] },
+    { titre: "Questions au Gouvernement", dossiers: [] },
+    { titre: "Ancien format", },
+    { titre: "Étrange", dossiers: ["pas-une-ref"] },
+  ] };
+  assert.deepEqual(dossiersDeLAgenda(agenda).map(d => d.dossier), ["DLR5L17N1", "DLR5L17N3"]);
+  assert.deepEqual(dossiersDeLAgenda(agenda)[0].scrutins, []);
+  assert.deepEqual(dossiersDeLAgenda(null), []);
+});
+
+test("preparer avec l'agenda : un dossier déjà venu des scrutins n'est pas pris deux fois, la limite vaut pour tous", async () => {
+  const t = fs.mkdtempSync(path.join(os.tmpdir(), "to-"));
+  const archive = path.join(t, "archive", "json", "document");
+  fs.mkdirSync(archive, { recursive: true });
+  for (const n of [1, 3, 4]) fs.writeFileSync(path.join(archive, `D${n}.json`), JSON.stringify({ document: { ...doc(`PRJLANR5L17B000${n}`, "Texte Déposé", "2026-01-01"), dossierRef: `DLR5L17N${n}` } }));
+  const fetchImpl = async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(4) });
+  const { lots } = await preparer({ archive: path.join(t, "archive"), sortie: path.join(t, "sortie"), fetchImpl, pdftotext: () => PDF, limite: 2,
+    catalogue: { scrutins: [{ n: 9, dr: "DLR5L17N1", dl: "Montagne" }] },
+    agenda: { evenements: [{ titre: "Séance", dossiers: ["DLR5L17N1", "DLR5L17N3", "DLR5L17N4"] }] } });
+  assert.deepEqual(lots.map(l => l.dossier), ["DLR5L17N1", "DLR5L17N3"], "scrutins d'abord, sans doublon, limite de 2");
+  assert.equal(lots[1].agenda, true, "le lot dit d'où vient le dossier");
+});

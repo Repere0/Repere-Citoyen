@@ -16,7 +16,7 @@
  *
  * USAGE (depuis mono/) :
  *   node scripts/textes-officiels.mjs --archive ../data/brut_Dossiers_Legislatifs --scrutins data/scrutins.json \
- *        --sortie officiels [--deja data/resumes] [--limite 20]
+ *        --sortie officiels [--agenda data/agenda-an.json] [--deja data/resumes] [--limite 20]
  *   --deja : dossiers qui ont déjà un fichier (brouillon ou validé) : sautés, on ne repaie pas un résumé. */
 import fs from "node:fs";
 import path from "node:path";
@@ -34,6 +34,18 @@ export function dossiersDesScrutins(catalogue) {
   for (const s of (catalogue && catalogue.scrutins) || []) {
     if (typeof s.dr === "string" && REF.test(s.dr) && !vus.has(s.dr)) vus.set(s.dr, { dossier: s.dr, titre: s.dl || null, scrutins: [] });
     if (vus.has(s.dr)) vus.get(s.dr).scrutins.push(String(s.n));
+  }
+  return [...vus.values()];
+}
+
+/* 27/11/2026 (chantier Calendrier) : les dossiers des séances à venir (data/agenda-an.json, champ `dossiers`).
+   Le titre de la séance ne sert qu'au compte rendu : le texte expliqué reste l'exposé des motifs du dossier. */
+export function dossiersDeLAgenda(agenda) {
+  const vus = new Map();
+  for (const e of (agenda && agenda.evenements) || []) {
+    for (const d of Array.isArray(e.dossiers) ? e.dossiers : []) {
+      if (typeof d === "string" && REF.test(d) && !vus.has(d)) vus.set(d, { dossier: d, titre: e.titre || null, scrutins: [], agenda: true });
+    }
   }
   return [...vus.values()];
 }
@@ -109,12 +121,15 @@ async function pdfEnTexte(uid, { fetchImpl = fetch, pdftotext = fichier => execF
   return pdftotext(tmp);
 }
 
-export async function preparer({ archive, catalogue, sortie, deja = null, limite = 20, fetchImpl, pdftotext }) {
+export async function preparer({ archive, catalogue, agenda = null, sortie, deja = null, limite = 20, fetchImpl, pdftotext }) {
   const docs = indexerDocuments(archive);
   const existants = deja && fs.existsSync(deja) ? new Set(fs.readdirSync(deja).filter(f => f.endsWith(".json")).map(f => f.replace(/\.json$/, ""))) : new Set();
   fs.mkdirSync(sortie, { recursive: true });
   const lots = [], ecartes = [];
-  for (const d of dossiersDesScrutins(catalogue)) {
+  /* Scrutins d'abord, puis les dossiers de l'agenda qui n'y sont pas déjà : une seule limite pour tous. */
+  const desScrutins = dossiersDesScrutins(catalogue);
+  const connus = new Set(desScrutins.map(d => d.dossier));
+  for (const d of [...desScrutins, ...dossiersDeLAgenda(agenda).filter(d => !connus.has(d.dossier))]) {
     if (lots.length >= limite) break;
     if (existants.has(d.dossier)) { ecartes.push({ dossier: d.dossier, raison: "déjà un fichier de résumé" }); continue; }
     const doc = documentInitial(docs.get(d.dossier));
@@ -124,7 +139,7 @@ export async function preparer({ archive, catalogue, sortie, deja = null, limite
       if (!expose) { ecartes.push({ dossier: d.dossier, raison: `pas d'exposé des motifs lisible dans ${doc.uid}` }); continue; }
       const fichier = path.join(sortie, d.dossier + ".txt");
       fs.writeFileSync(fichier, expose + "\n");
-      lots.push({ dossier: d.dossier, texte: fichier, url: URL_DOSSIER(d.dossier), titre: d.titre, scrutins: d.scrutins, document: doc.uid, pdf: URL_PDF(doc.uid) });
+      lots.push({ dossier: d.dossier, texte: fichier, url: URL_DOSSIER(d.dossier), titre: d.titre, scrutins: d.scrutins, document: doc.uid, pdf: URL_PDF(doc.uid), ...(d.agenda ? { agenda: true } : {}) });
     } catch (e) {
       ecartes.push({ dossier: d.dossier, raison: String(e && e.message ? e.message : e) });
     }
@@ -140,7 +155,13 @@ async function main() {
     console.error("usage : node scripts/textes-officiels.mjs --archive DOSSIER --scrutins data/scrutins.json --sortie officiels [--deja data/resumes] [--limite 20]");
     process.exit(2);
   }
-  const { lots, ecartes } = await preparer({ archive: val("--archive"), catalogue: JSON.parse(fs.readFileSync(val("--scrutins"), "utf8")),
+  /* --agenda : facultatif ; un fichier absent ou illisible n'empêche pas le lot des scrutins (et le dit). */
+  let agenda = null;
+  if (val("--agenda")) {
+    try { agenda = JSON.parse(fs.readFileSync(val("--agenda"), "utf8")); }
+    catch (e) { console.log(`::warning::agenda illisible (${val("--agenda")}) : seuls les dossiers des scrutins sont pris`); }
+  }
+  const { lots, ecartes } = await preparer({ archive: val("--archive"), catalogue: JSON.parse(fs.readFileSync(val("--scrutins"), "utf8")), agenda,
     sortie: val("--sortie"), deja: val("--deja"), limite: Number(val("--limite") || 20) });
   for (const l of lots) console.log(`texte prêt   ${l.dossier} (${l.document}, ${fs.statSync(l.texte).size} octets)`);
   for (const e of ecartes) console.log(`écarté       ${e.dossier} : ${e.raison}`);

@@ -137,6 +137,7 @@ jobs:
           node apps/mobile/tests/quiz-ecran-web.mjs http://localhost:8811
           node apps/mobile/tests/accueil-refonte-web.mjs http://localhost:8811
           node apps/mobile/tests/calendrier-themes-web.mjs http://localhost:8811
+          node apps/mobile/tests/calendrier-explication-web.mjs http://localhost:8811
           node apps/mobile/tests/hemicycle-web.mjs http://localhost:8811
           node apps/mobile/tests/fondu-web.mjs http://localhost:8811
           node apps/mobile/tests/parcours-citoyen-web.mjs http://localhost:8811

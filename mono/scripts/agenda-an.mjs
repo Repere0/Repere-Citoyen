@@ -90,6 +90,9 @@ function principal() {
       lieu: null,
       description,
       url: URL_AGENDA,
+      /* 27/11/2026 : les dossiers legislatifs de l'ordre du jour, recopies de agenda_an.json (dl), pour
+         relier la seance a l'explication deja relue de son dossier. Jamais devines. */
+      dossiers: Array.isArray(s.dl) ? s.dl.filter(x => typeof x === "string" && /^DLR5L\d+N\d+$/.test(x)) : [],
     };
   });
   evenements.sort((a, b) => (a.debut < b.debut ? -1 : a.debut > b.debut ? 1 : 0));

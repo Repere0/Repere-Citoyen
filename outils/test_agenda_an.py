@@ -83,5 +83,42 @@ class AgendaAN(unittest.TestCase):
                           ("2099-10-13T17:00", "seance", "2099-10-13T18:00")])
 
 
+
+
+def avec_odj(r, points):
+    r["reunion"]["ODJ"] = {"pointsODJ": {"pointODJ": points}}
+    return r
+
+
+class DossiersDeLOrdreDuJour(unittest.TestCase):
+    """27/11/2026 (chantier Calendrier) : la reference du dossier legislatif de chaque point de
+    l'ordre du jour est gardee telle que la source l'ecrit (dossiersLegislatifsRefs.dossierRef),
+    jamais devinee. Mesure sur le runner : 33 seances a venir sur 37 la portent."""
+    setUp = AgendaAN.setUp
+    lancer = AgendaAN.lancer
+
+    def test_reference_recopiee_sans_doublon(self):
+        r = avec_odj(reunion("R1", "2026-12-01T15:00:00.000+01:00"), [
+            {"objet": "Discussion du projet de loi A", "dossiersLegislatifsRefs": {"dossierRef": "DLR5L17N5242"}},
+            {"objet": "Suite de la discussion du projet de loi A", "dossiersLegislatifsRefs": {"dossierRef": "DLR5L17N5242"}},
+            {"objet": "Discussion de deux textes", "dossiersLegislatifsRefs": {"dossierRef": ["DLR5L17N5167", "DLR5L17N5462"]}},
+        ])
+        e = self.lancer([r])["r"][0]
+        self.assertEqual(e["dl"], ["DLR5L17N5242", "DLR5L17N5167", "DLR5L17N5462"])
+
+    def test_sans_reference_rien_n_est_devine(self):
+        r = avec_odj(reunion("R1", "2026-12-01T15:00:00.000+01:00"), [{"objet": "Questions au Gouvernement"}])
+        e = self.lancer([r])["r"][0]
+        self.assertNotIn("dl", e)
+
+    def test_point_supprime_et_reference_mal_formee_ecartes(self):
+        r = avec_odj(reunion("R1", "2026-12-01T15:00:00.000+01:00"), [
+            {"objet": "Point retire", "cycleDeVie": {"etat": "Supprimé"}, "dossiersLegislatifsRefs": {"dossierRef": "DLR5L17N1111"}},
+            {"objet": "Reference etrange", "dossiersLegislatifsRefs": {"dossierRef": "pas-une-reference"}},
+        ])
+        e = self.lancer([r])["r"][0]
+        self.assertNotIn("dl", e)
+
+
 if __name__ == "__main__":
     unittest.main()

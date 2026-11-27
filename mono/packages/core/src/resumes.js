@@ -19,6 +19,15 @@ export function resumePour(index, cles = {}) {
   const lire = k => (k && Object.prototype.hasOwnProperty.call(t, k) ? t[k] : null);
   return lire(dossier) || lire(scrutin != null ? "scrutin:" + scrutin : null) || lire(budget ? "budget:" + budget : null);
 }
+/* Une séance du calendrier et ses dossiers (27/11/2026) : l'explication du premier dossier qui en a une VALIDÉE,
+   dans l'ordre de l'ordre du jour ; aucune : null (le bouton n'apparaît pas). */
+export function resumeDesDossiers(index, dossiers) {
+  for (const d of Array.isArray(dossiers) ? dossiers : []) {
+    const r = resumePour(index, { dossier: d });
+    if (resumeAffichable(r)) return r;
+  }
+  return null;
+}
 export function resumeAffichable(r) {
   if (!r || r.valide !== true) return null;
   const texte = String(r.resume || "").trim();

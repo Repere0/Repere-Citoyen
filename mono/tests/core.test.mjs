@@ -836,3 +836,15 @@ test("core — thèmes du calendrier : mots-clés, « sécurité sociale » n'es
   assert.deepEqual(t("Ecole de la Republique"), ["Éducation"], "sans accents");
   assert.deepEqual(t("Malécoles"), [], "début de mot seulement");
 });
+
+/* 27/11/2026 (chantier Calendrier) : un groupe de séances porte les dossiers de son ordre du jour, sans doublon,
+   dans l'ordre publié ; un événement sans dossiers (Sénat, ancien fichier) donne une liste vide. */
+test("regrouperParJour : les dossiers des séances d'un même texte, réunis sans doublon", async () => {
+  const { regrouperParJour } = await import("../packages/core/src/calendrier.js");
+  const gs = regrouperParJour([
+    { debut: "2026-12-01T09:00", institution: "Assemblée nationale", titre: "Discussion du projet de loi A", dossiers: ["DLR5L17N1"] },
+    { debut: "2026-12-01T15:00", institution: "Assemblée nationale", titre: "Suite de la discussion du projet de loi A", dossiers: ["DLR5L17N1", "DLR5L17N2"] },
+    { debut: "2026-12-01T15:00", institution: "Sénat", titre: "Projet de loi B" },
+  ]);
+  assert.deepEqual(gs.map(g => g.dossiers), [["DLR5L17N1", "DLR5L17N2"], []]);
+});

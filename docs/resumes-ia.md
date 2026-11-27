@@ -139,3 +139,21 @@ s'écrit à la fin de chaque run. Pour arrêter le lot : Actions > « Résumés 
   `scrutin-<n>.json`. Une panne de l'API (401, 402, 429) arrête le lot et rend le run rouge.
 - **Groupes parlementaires** : pas d'IA (décision 2, 27/11/2026), faits officiels seulement.
 - **Calendrier** : pas de texte propre ; un événement lié à un dossier montre l'explication de ce dossier (décision 4).
+
+## Calendrier : l'explication du dossier de la séance (27/11/2026)
+
+Décision du porteur : **pas d'IA sur le titre d'une séance** (« Suite de la discussion du projet de loi… » ne dit
+rien du contenu ; l'expliquer reviendrait à l'inventer, contre l'invariant 4). À la place :
+
+- `outils/agenda_an.py` recopie la référence du dossier législatif de chaque point de l'ordre du jour
+  (`dossiersLegislatifsRefs.dossierRef` → champ `dl`), sans la deviner. Mesure sur le runner le 27/11/2026 :
+  **33 séances plénières à venir sur 37** la portent.
+- `scripts/agenda-an.mjs` la publie (`dossiers` dans `agenda-an.json`) ; le core la garde par groupe de séances.
+- Le calendrier affiche l'explication **déjà relue** du premier dossier de la séance qui en a une validée
+  (`resumeDesDossiers`). Aucune : pas de bouton.
+- Le lot du dimanche prend aussi les dossiers des séances à venir (`textes-officiels.mjs --agenda`), **après** ceux
+  des scrutins, dans la **même limite** : aucun coût de plus.
+
+**Limites assumées (V1)** : les séances du Sénat n'ont pas de référence de dossier (pas de bouton) ; **les lois de
+finances (PLF, PLFSS) n'ont pas d'explication**, parce que leur « exposé des motifs » lu dans le PDF est un sommaire
+et que le tri du 26/11 les écarte. Les expliquer demandera une lecture à part de l'exposé général, à spécifier.

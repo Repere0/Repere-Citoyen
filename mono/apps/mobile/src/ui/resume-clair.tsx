@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { Linking, Pressable, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { dateFr, explicationBudget, mentionCalcul, mentionGeneration, mentionRelecture, mentionResume, PAS_DE_RESUME, resumeAffichable, resumePour } from "@repere/core";
+import { dateFr, explicationBudget, mentionCalcul, mentionGeneration, mentionRelecture, mentionResume, PAS_DE_RESUME, resumeAffichable, resumeDesDossiers, resumePour } from "@repere/core";
 import { chargerResumesClairs } from "../lib/donnees";
 import { couleurs, CIBLE, PAS, POLICE, RAYON, TYPO } from "../lib/theme";
 import { Vide } from "../lib/composants";
@@ -98,6 +98,23 @@ export function ExplicationBudget({ ex, nom, an, source }: { ex: unknown; nom: s
     pied: source.licence ? `Licence : ${source.licence}` : "",
     indice: "Déplier une explication en mots simples, calculée par Repère à partir des comptes publiés",
   }} />;
+}
+
+/* LES EXPLICATIONS PUBLIÉES, lues une fois par écran (27/11/2026) : le calendrier en a besoin pour chaque séance. */
+export function useResumesClairs(): unknown {
+  const [index, setIndex] = useState<unknown>(null);
+  useEffect(() => {
+    let vivant = true;
+    chargerResumesClairs().then((r: { donnees: unknown }) => { if (vivant) setIndex(r.donnees ?? null); }).catch(() => {});
+    return () => { vivant = false; };
+  }, []);
+  return index;
+}
+
+/* Une séance du calendrier (27/11/2026, chantier Calendrier) : l'explication déjà relue du PREMIER dossier de son
+   ordre du jour qui en a une. Jamais une explication du titre de la séance (invariant 4). Aucune : rien. */
+export function ExpliquerDesDossiers({ index, dossiers }: { index: unknown; dossiers?: string[] }) {
+  return <ExpliquerSimplement resume={resumeDesDossiers(index, dossiers || []) as Resume} />;
 }
 
 /* Le résumé d'un vote, lu dans le fichier publié : par dossier législatif, sinon par numéro de scrutin. Fichier
