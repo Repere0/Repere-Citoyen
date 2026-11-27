@@ -19,7 +19,7 @@ import { useEffect, useMemo, useState } from "react";
 import { FlatList, KeyboardAvoidingView, Linking, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
-import { mots, motsCible, correspond, chercherCommunes, departementDe, titreLisible, dernierExercice, evolution, parHabitant, dateFr, decompte, ordinal, positionSur, positionsFiables, departementDeIndex } from "@repere/core";
+import { mots, motsCible, correspond, chercherCommunes, departementDe, titreLisible, dernierExercice, evolution, parHabitant, repartitionDepenses, dateFr, decompte, ordinal, positionSur, positionsFiables, departementDeIndex } from "@repere/core";
 import { chargerCatalogueScrutins, chargerCodesPostaux, chargerCommunesBeta, chargerDepartement, chargerDeputes, chargerIndex, chargerVotes, ETATS, PHRASES } from "../lib/donnees";
 import { Bouton, Carte, Texte, Vide } from "../lib/composants";
 import { useSelection } from "../lib/selection";
@@ -72,7 +72,7 @@ type Index = { departements: { code: string; nom?: string }[]; agregats?: unknow
    evolution) et la commune mediane de la region (D23, A1) ; la consequence,
    lue dans les memes comptes (salaires, investissement par habitant, publies par
    l'OFGL) ; la source. Une couche sans donnee n'est pas affichee. */
-type Argent = { nom: string; an: string; depenses: number; avant: { an: string; depenses: number } | null; salaires: number | null; investissement: number | null };
+type Argent = { nom: string; an: string; depenses: number; avant: { an: string; depenses: number } | null; repartition: { sal: number; inv: number; aut: number } | null };
 /* D21 : le dernier vote publie du depute de la commune retenue. « partagee » : la commune
    est sur plusieurs circonscriptions, le depute depend de l'adresse (aucun n'est choisi). */
 type VoteVu = { depute: string; acteur: string; circo: number; position: string; d: string; t: string; dec?: Record<string, string>; lien?: string } | { partagee: number };
@@ -92,8 +92,8 @@ const nombre = (x: unknown) => { const n = Number(x); return Number.isFinite(n) 
 const POSITION_MOT: Record<string, string> = { p: "Pour", c: "Contre", a: "Abstention" };
 /* NIVEAU 1 DU BUDGET (V28, bloc 3) : la phrase-conclusion est un calcul sur les montants lus,
    jamais un texte écrit à la main. Sans part des salaires, on garde le titre neutre. */
-const accroche = (a: Argent) => a.salaires !== null && a.depenses > 0
-  ? `Sur 100 € dépensés à ${a.nom}, ${Math.round(a.salaires / a.depenses * 100)} € vont aux salaires des agents.`
+const accroche = (a: Argent) => a.repartition
+  ? `Sur 100 € dépensés à ${a.nom}, ${a.repartition.sal} € vont aux salaires des agents.`
   : `L'argent de ${a.nom}`;
 /* Sans commune retenue, la carte montre un exemple, dit comme tel : Melun. */
 const EXEMPLE = { insee: "77288", nom: "Melun" };
@@ -386,8 +386,8 @@ export default function Accueil() {
       setArgent(ex && hab && typeof hab.depenses === "number" ? {
         nom: cible.nom, an: ex.an, depenses: hab.depenses,
         avant: habAvant && typeof habAvant.depenses === "number" && evo ? { an: evo.an1, depenses: habAvant.depenses } : null,
-        salaires: typeof hab.salaires === "number" ? hab.salaires : null,
-        investissement: typeof hab.investissement === "number" ? hab.investissement : null,
+        /* 27/11/2026 : sur les montants totaux, comme Finances (avant : par habitant, 1 € d'écart dans 46 communes). */
+        repartition: repartitionDepenses(ex.ex),
       } : null);
     }).catch(() => { if (vivant) setArgent(null); });
     return () => { vivant = false; };
@@ -398,11 +398,8 @@ export default function Accueil() {
   const comparaison = argent && moyenne ? phrasesMoyenne(argent.nom, argent.depenses, moyenne) : null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const urlComptes: string | null = (index as any)?.sources?.comptes?.url ?? null;
-  /* La répartition des montants par habitant (salaires, investissement, autres) : seulement si elle s'additionne. */
-  const repartition = argent && argent.salaires !== null && argent.investissement !== null && argent.salaires + argent.investissement <= argent.depenses
-    ? { sal: Math.round(argent.salaires / argent.depenses * 100), inv: Math.round(argent.investissement / argent.depenses * 100), aut: 0 }
-    : null;
-  if (repartition) repartition.aut = 100 - repartition.sal - repartition.inv;
+  /* La répartition de 100 € (salaires, investissement, autres) : la règle unique de core (repartitionDepenses). */
+  const repartition = argent ? argent.repartition : null;
   const [budgetTout, setBudgetTout] = useState(false);
   const [donsAnnonces, setDonsAnnonces] = useState(false);
 

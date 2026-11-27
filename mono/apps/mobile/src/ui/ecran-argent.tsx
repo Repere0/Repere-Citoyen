@@ -16,7 +16,7 @@ import { useState } from "react";
 import { FlatList, Linking, Modal, Pressable, Text, TextInput, View } from "react-native";
 import { Stack } from "expo-router";
 import {
-  chiffresComptes, etatDette, comptesAbsents, comptesIncoherents, comptesInsuffisants, diffEuros, eurosArrondis,
+  chiffresComptes, repartitionDepenses, etatDette, comptesAbsents, comptesIncoherents, comptesInsuffisants, diffEuros, eurosArrondis,
   evolution, exercicesEcartes, financementProjet, INTRO_EVOLUTION, introRapports, montantCourt, noteRattachement,
   NOTE_EVOLUTION, NOTE_FINANCEMENT, nomDispositif, parHabitant, partReperee, perimetreChange, phraseEcartes,
   phraseProjetLocal, rapports, sousTitreRapports, euros, CALCUL_REPERE, LIBELLES, exercicePrecedent,
@@ -34,7 +34,7 @@ import { phrasesMoyenne, useMoyenneDepenses } from "../lib/moyenne";
 import { PastilleSource } from "../ui/source";
 import { BoutonPartageTexte, ligneSource } from "../ui/partage/partager-texte";
 import { Resume } from "../ui/resume";
-import { ResumeClairDuBudget } from "./resume-clair";
+import { ExplicationBudget } from "./resume-clair";
 import { useSelection } from "../lib/selection";
 import { BarreBudget, BarrePart, Compteur, DeuxAnnees, Depli, Financement, Mois, RepartitionCent, Tendance, VariationAnnuelle } from "../ui/visuels";
 import { SignalerErreur } from "../ui/contact";
@@ -185,11 +185,11 @@ export default function Argent() {
   return (
     <AvecDonnees rendu={r => {
       const { d } = r;
-      const choix = selection.choix;
       const nom = d.nomCommune;
       const ex = d.exercice;
       const rr: Rapport[] = ex ? rapports(ex.ex) : [];
       const ch = ex ? chiffresComptes(ex.ex) : null;
+      const repartition = ex ? repartitionDepenses(ex.ex) : null;
       const hab = ex ? parHabitant(ex.ex) : null;
       /* V54 : tendance par habitant d'un exercice a l'autre (calcul Repere, annonce comme tel).
          Absente si l'exercice precedent n'est pas publie (exercicePrecedent renvoie null). */
@@ -233,6 +233,9 @@ export default function Argent() {
 
           {/* Refonte « légère » (porteur, 09/11/2026) : les onglets en haut de l'écran. */}
           {ex && rr.length >= 2 && ch ? <Onglets etiquette="Vue du budget" valeurs={VUES} actif={vue} choisir={setVue} /> : null}
+          {/* 27/11/2026 (porteur) : « Expliquer simplement », le budget en clair, CALCULÉ par core (sans IA). Visible
+              dans toutes les vues ; les blocs détaillés restent dessous, avec leurs mises en garde. */}
+          {ex && rr.length >= 2 && ch ? <ExplicationBudget ex={ex.ex} nom={nom} an={ex.an} source={r.index?.sources?.comptes} /> : null}
 
           {!ex ? (
             <Vide icone="wallet-outline" {...(phraseEc ? comptesIncoherents(nom, phraseEc) : comptesAbsents(nom))} />
@@ -283,12 +286,11 @@ export default function Argent() {
                     enClair="Le reste des dépenses n'est pas détaillé par la source.">
                     {/* « Test des 3 secondes » (11/11/2026) : une seule barre épaisse, le montant dans chaque segment.
                        Si un des deux postes manque, les lignes d'avant, qui savent n'en montrer qu'un. */}
-                    {ch.partSalaires !== null && ch.partInvestissement !== null && ch.partSalaires + ch.partInvestissement <= 100
-                      ? <BarreBudget parts={{ sal: ch.partSalaires, inv: ch.partInvestissement, aut: 100 - ch.partSalaires - ch.partInvestissement }} />
+                    {/* 27/11/2026 : la répartition vient de repartitionDepenses (core), seule règle des trois écrans. */}
+                    {repartition
+                      ? <BarreBudget parts={repartition} />
                       : <RepartitionCent salaires={ch.partSalaires} investissement={ch.partInvestissement} />}
                   </Resume>
-                  {/* 26/11/2026 : le résumé « En clair » du budget, seulement s'il a été validé par le porteur. */}
-                  <ResumeClairDuBudget insee={choix ? choix.insee : null} />
                   <PasCeQueCaDit r={rap(/salaires/)} sujet="salaires" />
                   <PasCeQueCaDit r={rap(/investir/)} sujet="investissements" />
                   <PastilleSource source={srcComptes(d)} />

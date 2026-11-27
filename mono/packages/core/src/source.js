@@ -12,6 +12,9 @@ import { dateFr } from "./format.js";
    au-dessus ; seule la carte « D'un exercice a l'autre » en montrait. La phrase renvoie desormais a la
    source nommee juste apres elle, ce qui est vrai partout. */
 export const CALCUL_REPERE = "Calculé par Repère à partir des montants publiés par cette source — ce n'est pas un chiffre publié.";
+/* Le budget en clair (27/11/2026) : un texte CALCULÉ par une règle fixe, pas rédigé ; ni IA ni relecture à dire.
+   `jour` est déjà en toutes lettres. */
+export const mentionCalcul = (producteur, jour) => `Calculé par Repère à partir des comptes publiés par l'${producteur}${jour ? `, mis à jour le ${jour}` : ""}.`;
 export function ligneSource({ producteur, licence, maj, mention } = {}) {
   return `${producteur || ""}${licence ? " · " + licence : ""}${maj ? " · mise à jour du " + dateFr(maj) : ""}${mention ? " · " + mention : ""}`;
 }

@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { Linking, Pressable, Text, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { dateFr, mentionGeneration, mentionRelecture, mentionResume, PAS_DE_RESUME, resumeAffichable, resumePour } from "@repere/core";
+import { dateFr, explicationBudget, mentionCalcul, mentionGeneration, mentionRelecture, mentionResume, PAS_DE_RESUME, resumeAffichable, resumePour } from "@repere/core";
 import { chargerResumesClairs } from "../lib/donnees";
 import { couleurs, CIBLE, PAS, POLICE, RAYON, TYPO } from "../lib/theme";
 import { Vide } from "../lib/composants";
@@ -42,15 +42,17 @@ export function ResumeClair({ resume, lienOfficiel }: { resume: Resume; lienOffi
    Toujours écrit dans la carte : généré par IA (et par quel modèle, s'il est publié), à partir de quelle source, et
    relu par Repère. Pas d'appel au réseau : le texte est déjà dans resumes-clairs.json (pré-généré, aucune clé ici). */
 type Affichable = { texte: string; producteur: string; url: string; releveLe: string; valideLe: string | null; modele: string | null };
-export function ExpliquerSimplement({ resume }: { resume: Resume }) {
+/* LE BOUTON ET SA CARTE, COMMUNS (porteur, 27/11/2026 : « même bouton, mention différente »). Vote et texte de loi :
+   texte d'IA validé, mentions « Généré par IA » et « Relu ». Budget : texte calculé, mention « Calculé par Repère ».
+   La mention est toujours écrite : le lecteur sait d'où vient le texte. */
+type Explication = { texte: string; mentions: string[]; url: string; producteur: string; pied: string; indice: string; lien: string };
+export function BoutonExplication({ e }: { e: Explication }) {
   const [ouvert, setOuvert] = useState(false);
-  const r = resumeAffichable(resume) as Affichable | null;
-  if (!r) return null;
   return (
     <View style={{ gap: PAS * 2 }}>
       <Pressable testID="expliquer-simplement" onPress={() => setOuvert(o => !o)} accessibilityRole="button"
         accessibilityState={{ expanded: ouvert }} aria-expanded={ouvert} accessibilityLabel="Expliquer simplement"
-        accessibilityHint={ouvert ? "Replier l'explication" : "Déplier une explication en mots simples, rédigée avec une IA et relue"}
+        accessibilityHint={ouvert ? "Replier l'explication" : e.indice}
         style={({ pressed }) => ({ minHeight: CIBLE, alignSelf: "flex-start", flexDirection: "row", alignItems: "center", gap: PAS * 2,
           paddingHorizontal: PAS * 4, borderRadius: RAYON.pastille, borderWidth: 1, borderColor: couleurs.trait, backgroundColor: couleurs.carte, ...enfonce(pressed) })}>
         <Ionicons name="sparkles-outline" size={18} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
@@ -59,19 +61,43 @@ export function ExpliquerSimplement({ resume }: { resume: Resume }) {
       </Pressable>
       {ouvert ? (
         <View testID="explication" style={{ gap: PAS * 2, padding: PAS * 4, borderRadius: RAYON.carte, backgroundColor: couleurs.carte, borderWidth: 1, borderColor: couleurs.trait }}>
-          <Text style={[TYPO.corps, { color: couleurs.encre }]}>{r.texte}</Text>
-          <Text style={TYPO.micro}>{mentionGeneration(r.modele, r.producteur)}</Text>
-          <Text style={TYPO.micro}>{mentionRelecture(r.valideLe ? dateFr(r.valideLe) : null)}</Text>
-          <Pressable onPress={() => Linking.openURL(r.url)} accessibilityRole="link"
-            accessibilityLabel={`Lire le texte officiel${r.producteur ? ` (${r.producteur})` : ""}, ouvre un site externe`}
+          <Text style={[TYPO.corps, { color: couleurs.encre }]}>{e.texte}</Text>
+          {e.mentions.map(m => <Text key={m} style={TYPO.micro}>{m}</Text>)}
+          <Pressable onPress={() => Linking.openURL(e.url)} accessibilityRole="link"
+            accessibilityLabel={`${e.lien}${e.producteur ? ` (${e.producteur})` : ""}, ouvre un site externe`}
             style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", alignSelf: "flex-start", ...enfonce(pressed) })}>
-            <Text style={[TYPO.corps, { fontFamily: POLICE.texteMoyen, color: couleurs.lien }]}>Lire le texte officiel ↗</Text>
+            <Text style={[TYPO.corps, { fontFamily: POLICE.texteMoyen, color: couleurs.lien }]}>{e.lien} ↗</Text>
           </Pressable>
-          <Text style={TYPO.micro}>{r.producteur ? `${r.producteur} · ` : ""}source relevée le {dateFr(r.releveLe)}</Text>
+          {e.pied ? <Text style={TYPO.micro}>{e.pied}</Text> : null}
         </View>
       ) : null}
     </View>
   );
+}
+
+export function ExpliquerSimplement({ resume }: { resume: Resume }) {
+  const r = resumeAffichable(resume) as Affichable | null;
+  if (!r) return null;
+  return <BoutonExplication e={{
+    texte: r.texte, url: r.url, producteur: r.producteur, lien: "Lire le texte officiel",
+    mentions: [mentionGeneration(r.modele, r.producteur), mentionRelecture(r.valideLe ? dateFr(r.valideLe) : null)],
+    pied: `${r.producteur ? `${r.producteur} · ` : ""}source relevée le ${dateFr(r.releveLe)}`,
+    indice: "Déplier une explication en mots simples, rédigée avec une IA et relue",
+  }} />;
+}
+
+/* LE BUDGET EN CLAIR (porteur, 27/11/2026) : le texte est CALCULÉ par core (explicationBudget), jamais rédigé ;
+   sans dépenses publiées, ni texte ni bouton (les comptes absents ont déjà leur phrase sur l'écran). */
+type SourceComptes = { producteur?: string; licence?: string; maj?: string; url?: string } | undefined;
+export function ExplicationBudget({ ex, nom, an, source }: { ex: unknown; nom: string; an: string; source: SourceComptes }) {
+  const texte = explicationBudget(ex, { nom, an });
+  if (!texte || !source || !source.url) return null;
+  return <BoutonExplication e={{
+    texte, url: source.url, producteur: "OFGL", lien: "Lire les comptes officiels",
+    mentions: [mentionCalcul(source.producteur || "OFGL", source.maj ? dateFr(source.maj) : null)],
+    pied: source.licence ? `Licence : ${source.licence}` : "",
+    indice: "Déplier une explication en mots simples, calculée par Repère à partir des comptes publiés",
+  }} />;
 }
 
 /* Le résumé d'un vote, lu dans le fichier publié : par dossier législatif, sinon par numéro de scrutin. Fichier
@@ -89,16 +115,3 @@ export function ResumeClairDuVote({ dossier, scrutin, lienOfficiel }: { dossier?
   return <ExpliquerSimplement resume={resumePour(index, { dossier, scrutin }) as Resume} />;
 }
 
-/* Le résumé du budget d'une commune (26/11/2026), clé « budget:<insee> » dans le même fichier. Finances a déjà ses
-   phrases claires, calculées : sans résumé validé, rien de plus ne s'affiche ici (pas un second « pas encore »). */
-export function ResumeClairDuBudget({ insee }: { insee?: string | null }) {
-  const [index, setIndex] = useState<unknown>(null);
-  useEffect(() => {
-    let vivant = true;
-    chargerResumesClairs().then((r: { donnees: unknown }) => { if (vivant) setIndex(r.donnees ?? null); }).catch(() => {});
-    return () => { vivant = false; };
-  }, []);
-  const r = resumePour(index, { budget: insee }) as Resume;
-  if (!resumeAffichable(r)) return null;
-  return <ResumeClair resume={r} />;
-}

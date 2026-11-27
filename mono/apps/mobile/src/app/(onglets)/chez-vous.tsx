@@ -35,7 +35,7 @@ import { router, Stack } from "expo-router";
 import {
   dateFr, datePublication, decompte, euros, financementProjet, montantCourt, ordinal, parHabitant, phrasePosition,
   repartitionVote, texteDe,
-  titreLisible, LIBELLES, copieVoteVide, ETAT_VOTE, estParis, departementDeIndex } from "@repere/core";
+  titreLisible, LIBELLES, copieVoteVide, ETAT_VOTE, estParis, departementDeIndex, repartitionDepenses } from "@repere/core";
 import { Vide } from "../../lib/composants";
 import { CarteMemoire } from "../../cartes/CarteMemoire";
 import { useSelection } from "../../lib/selection";
@@ -138,9 +138,9 @@ export default function ChezVous() {
           <Text style={[TYPO.corps, { fontFamily: POLICE.titre, flex: 1 }]} numberOfLines={2}>{titreLisible(vote.sc.t)}</Text>
         </View>
       ) : null;
-      /* La répartition de 100 € : seulement si salaires et investissements sont publiés et tiennent dans les dépenses. */
-      const parts = hab && hab.depenses && hab.salaires !== null && hab.investissement !== null && hab.salaires + hab.investissement <= hab.depenses
-        ? (() => { const sal = Math.round(hab.salaires / hab.depenses * 100), inv = Math.round(hab.investissement / hab.depenses * 100); return { sal, inv, aut: 100 - sal - inv }; })() : null;
+      /* La répartition de 100 € : la règle unique de core (27/11/2026 ; avant, sur les montants par habitant arrondis :
+         Barcy affichait 6 € de salaires ici et 7 € sur Finances). */
+      const parts = d.exercice ? repartitionDepenses(d.exercice.ex) : null;
       return (
         <Page sansDate>
           {/* VARIANTE A (porteur, 11/11/2026) : le nom de la commune en grand titre, le territoire au-dessus,
