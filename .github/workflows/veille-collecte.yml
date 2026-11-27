@@ -1,0 +1,50 @@
+# =============================================================================
+# VEILLE DE LA COLLECTE (« Heartbeat ») — 27/11/2026, decision du porteur.
+#
+# Les alertes de collecte vivent DANS collecte.yml : si la collecte ne demarre
+# pas, elles se taisent. Ce workflow, separe, regarde deux fois par jour si la
+# collecte donne signe de vie (derniere reussite sur main, etat du workflow,
+# date de la production en ligne). Seuil : 40 h. Toute la logique est dans
+# outils/veille_collecte.mjs ; ce fichier ne fait que declencher.
+#
+# Limite connue : si GitHub Actions s'arrete pour tout le depot, cette veille
+# s'arrete aussi (aucun service tiers pour la V1, decision du 27/11/2026).
+# =============================================================================
+
+name: Veille de la collecte
+
+on:
+  schedule:
+    # Minutes non rondes, et hors du creneau reel de la collecte (13 h - 17 h UTC).
+    - cron: "23 9 * * *"
+    - cron: "41 21 * * *"
+  workflow_dispatch:
+    inputs:
+      seuil_heures:
+        description: "Seuil en heures (40 par defaut ; 1 pour prouver que l'alerte s'ouvre)"
+        required: false
+        default: "40"
+
+permissions:
+  actions: read
+  issues: write
+
+concurrency:
+  group: veille-collecte
+  cancel-in-progress: false
+
+jobs:
+  veille:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Regarder si la collecte vit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SEUIL_HEURES: ${{ inputs.seuil_heures || '40' }}
+          URL_RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node outils/veille_collecte.mjs
