@@ -10,6 +10,7 @@ import { Linking, Platform, Pressable, ScrollView, Text, View, useColorScheme } 
 import type { ErrorBoundaryProps } from "expo-router";
 import { NEUTRES_FILET } from "../lib/palette";
 import { COURRIEL_AVIS, lienSignalement } from "../lib/avis";
+import { MARQUE_DEFILEMENT } from "../lib/defilement-ios";
 
 export function FiletErreur({ error, retry }: ErrorBoundaryProps) {
   const c = NEUTRES_FILET[useColorScheme() === "dark" ? "sombre" : "clair"];
@@ -26,13 +27,13 @@ export function FiletErreur({ error, retry }: ErrorBoundaryProps) {
   };
   const bouton = (texte: string, action: () => void, plein: boolean, id: string) => (
     <Pressable onPress={action} accessibilityRole="button" testID={id}
-      style={({ pressed }) => ({ minHeight: 48, borderRadius: 12, paddingHorizontal: 20, alignItems: "center", justifyContent: "center",
+      style={({ pressed }) => ({ minHeight: 48, borderRadius: 12, paddingHorizontal: 24, alignItems: "center", justifyContent: "center",
         backgroundColor: plein ? c.encre : "transparent", borderWidth: plein ? 0 : 1, borderColor: c.trait, opacity: pressed ? 0.85 : 1 })}>
       <Text style={{ fontSize: 16, fontWeight: "600", color: plein ? c.sol : c.encre }}>{texte}</Text>
     </Pressable>
   );
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: c.sol }} contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 24 }}>
+    <ScrollView {...MARQUE_DEFILEMENT} style={{ flex: 1, backgroundColor: c.sol }} contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 24 }}>
       <View testID="filet-erreur" accessibilityRole="alert" style={{ maxWidth: 480, width: "100%", alignSelf: "center", gap: 16, padding: 24, borderRadius: 16, backgroundColor: c.carte, borderWidth: 1, borderColor: c.trait }}>
         <Text accessibilityRole="header" style={{ fontSize: 20, lineHeight: 28, fontWeight: "700", color: c.encre }}>Cet écran n'a pas pu s'afficher.</Text>
         <Text style={{ fontSize: 16, lineHeight: 24, color: c.encre }}>
