@@ -71,6 +71,8 @@ const BALISES = (nom, couleur, description, adresse) => [
   '<style id="repere-ios">html,body{height:100%;overflow:hidden;overscroll-behavior:none}body{position:fixed;top:0;right:0;bottom:0;left:0;width:100%}#root{height:100%}@supports(height:100dvh){html,body,#root{height:100dvh}}</style>',
 ].join("\n    ");
 
+export const NOSCRIPT = "<noscript>Repère a besoin de JavaScript pour s'afficher. Activez-le dans les réglages de votre navigateur, puis rechargez la page.</noscript>";
+
 const ENREGISTRE = "<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}</script>";
 
 export function injecterBalises(html, appJson) {
@@ -80,6 +82,8 @@ export function injecterBalises(html, appJson) {
   const adresse = (appJson.expo.extra?.adressePublique || "").replace(/\/$/, "");
   const couleur = /<meta name="theme-color"/.test(sortie) ? null : w.themeColor;
   sortie = sortie.replace("</head>", `  ${BALISES(w.shortName || appJson.expo.name, couleur, w.description, adresse)}\n    ${ENREGISTRE}\n  </head>`);
+  /* Sans JavaScript, Expo affiche « You need to enable JavaScript to run this app. » : en anglais (audit V1, 27/11/2026). */
+  sortie = sortie.replace(/<noscript>[\s\S]*?<\/noscript>/, NOSCRIPT);
   /* Langue du document : sans elle, lecteurs d'ecran et moteurs lisent le francais avec une voix anglaise. */
   if (!/<html[^>]*\blang=/.test(sortie)) sortie = sortie.replace(/<html(\s|>)/, '<html lang="fr"$1');
   return sortie;
@@ -88,6 +92,7 @@ export function injecterBalises(html, appJson) {
 // Garde de fin de build : liste ce qui manque, vide si tout est la.
 export function manques(html, manifeste) {
   const m = [];
+  if (/<noscript>[^<]*You need to enable JavaScript/.test(html)) m.push("message sans JavaScript en anglais");
   for (const t of ['rel="manifest"', 'rel="apple-touch-icon"', 'name="apple-mobile-web-app-capable" content="yes"',
     'name="apple-mobile-web-app-status-bar-style" content="black-translucent"', "viewport-fit=cover"]) if (!html.includes(t)) m.push(t);
   if (!html.includes("serviceWorker.register('/sw.js')")) m.push("enregistrement du service worker");

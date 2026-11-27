@@ -61,6 +61,9 @@ const NEUTRES_SOMBRE: Neutres = {
   sol: "#0D1117", carte: "#171D26", encre: "#F3F4F6", sourd: "#9CA3AF",
   trait: "#2A313C", voile: "#212833", blanc: "#ffffff", lien: "#F3F4F6",
 };
+/* Pour le filet d'erreurs (ui/filet.tsx, 27/11/2026) : il s'affiche quand l'application a planté, donc sans le
+   fournisseur de thème ; il prend ces neutres directement, selon le mode du système. */
+export const NEUTRES_FILET = Object.freeze({ clair: NEUTRES_CLAIR, sombre: NEUTRES_SOMBRE });
 /* Les cartes de partage gardent le sombre chaud du 23/11 : leurs modèles A à D sont validés tels quels. */
 const NUIT_CARTE: Neutres = {
   sol: "#141311", carte: "#1F1E1B", encre: "#F5F4F0", sourd: "#9C9A92",

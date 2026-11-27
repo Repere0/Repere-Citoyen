@@ -1,3 +1,4 @@
+import { departementDeIndex } from "./aujourdhui.js";
 import { memeNom } from "./noms.js";
 /* @repere/core — CE QUE LES INFOGRAPHIES MONTRENT, CALCULE UNE SEULE FOIS
  * (30/09/2026, refonte de l'experience mobile).
@@ -246,7 +247,7 @@ export function listeFr(noms) {
    personne nommee par la source garde sa place et le dit (invariant 5). */
 export function chaineDecision({ fiche, paquet, index, deputes, elusRegion, dep }) {
   if (!fiche) return [];
-  const depIndex = index && Array.isArray(index.departements) ? index.departements.find(x => x.code === dep) : null;
+  const depIndex = departementDeIndex(index, dep);
   const circos = Array.isArray(fiche.circo) ? fiche.circo : (fiche.circo == null ? [] : [fiche.circo]);
   const dd = deputes && deputes.deputes ? circos.map(c => ({ circo: c, d: deputes.deputes[dep + "-" + c] })) : [];
   const ed = elusDepartement(paquet, fiche);

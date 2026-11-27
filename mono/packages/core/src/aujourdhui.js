@@ -166,7 +166,7 @@ export function deriverAujourdhui({ fiche, commune, dep, index, projets, cat, po
      calcule ici : le nombre de circonscriptions vient de la fiche, le nom du
      departement de l'index, le projet de lib/faits.js. */
   const nbCircos = Array.isArray(fiche.circo) ? fiche.circo.length : (fiche.circo == null ? 0 : 1);
-  const depIndex = index && Array.isArray(index.departements) ? index.departements.find(x => x.code === dep) : null;
+  const depIndex = departementDeIndex(index, dep);
   const nomDep = depIndex ? depIndex.nom : "";
   const dernierProjet = faits.find(f => f.type === "projet");
 
@@ -183,3 +183,11 @@ export function deriverAujourdhui({ fiche, commune, dep, index, projets, cat, po
   };
 }
 
+
+/* LE DÉPARTEMENT DANS L'INDEX DE PUBLICATION — UNE SEULE FONCTION (27/11/2026). Mesuré : un index.json malformé
+   (sans liste `departements`) laissait une PAGE BLANCHE, quatre écrans lisant `index.departements.find` sans vérifier
+   la liste (vote, accueil, ma commune, annuaire). Toute lecture passe désormais par ici : absent ou malformé = null. */
+export function departementDeIndex(index, code) {
+  if (!index || !Array.isArray(index.departements)) return null;
+  return index.departements.find(x => x && x.code === code) || null;
+}

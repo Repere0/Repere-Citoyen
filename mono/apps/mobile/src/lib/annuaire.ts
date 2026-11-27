@@ -6,6 +6,7 @@
  * chaque fichier en mémoire pour la session. */
 import { chargerComptesRegions, chargerDeputes, chargerElusRegion, chargerIndex, ETATS } from "./donnees";
 import type { Fiche } from "../types/annuaire";
+import { departementDeIndex } from "@repere/core";
 
 /* Les 14 régions dont l'exécutif est publié : les fichiers de data/elus-regions/. */
 export const REGIONS = ["01", "04", "11", "24", "27", "28", "32", "44", "52", "53", "75", "76", "84", "93"];
@@ -25,7 +26,7 @@ export function construire(
   regions: (FichierRegion | null)[],
 ): Fiche[] {
   const nomDep = (code: string) => {
-    const d = index && index.departements.find(x => x.code === code);
+    const d = departementDeIndex(index, code);
     return d && d.nom ? d.nom : "département " + code;
   };
   const sourceDeputes = deputes.source || {};

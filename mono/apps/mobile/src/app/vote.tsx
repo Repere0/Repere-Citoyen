@@ -17,8 +17,7 @@ import {
   CONSTITUTION_45_URL, dateFr, ETAPES_LOI, etapeDuScrutin, ligneScrutin, motPosition,
   phraseCirconscription, phraseDenominateurVote, phrasePosition, POSITION_NON_PORTEE, procedure,
   repartitionVote, titreLisible, MOTS, chaineDecision, copieVoteVide, ETAT_VOTE, dossierDuScrutin, dossierReleve, etapesDuScrutin,
-  metaScrutin, resultatScrutin, dateCourte, ordinal,
-} from "@repere/core";
+  metaScrutin, resultatScrutin, dateCourte, ordinal, departementDeIndex } from "@repere/core";
 import { Carte, LienSortant, Segments, Vide } from "../lib/composants";
 import { srcScrutins, srcVote } from "../lib/sources";
 import { useCommuneChoisie } from "../lib/useCommune";
@@ -72,7 +71,7 @@ export default function Vote() {
       const mot = MOTS_POS[vote.position || ""];
       const etape = etapeDuScrutin(procedure(vote.sc.t));
       const autres = (d.faits as FaitVote[]).filter(x => x.type === "vote" && x.cle !== vote.cle && x.circo === vote.circo).slice(0, 4);
-      const depIndex = r.index.departements.find((x: { code: string }) => x.code === d.dep);
+      const depIndex = departementDeIndex(r.index, d.dep);
       /* Le député : le niveau « France » de la chaîne de décision, celui de « Qui décide ».
          Sa fiche s'ouvre avec les mêmes paramètres que depuis cet onglet. */
       type NiveauFiche = { echelon: string; niveau?: string; institution?: string; lieu?: string; personne?: { nom: string; role?: string } | null };
