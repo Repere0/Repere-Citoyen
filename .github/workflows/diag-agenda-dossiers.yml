@@ -1,0 +1,49 @@
+# DIAGNOSTIC JETABLE (27/11/2026, tache 0 du chantier Calendrier) : l'agenda de l'AN porte-t-il,
+# par point d'ordre du jour, la reference du dossier legislatif ? Ne publie rien, n'ecrit rien.
+# A supprimer avec la branche diag/agenda-dossiers.
+name: DIAG agenda et dossiers (jetable)
+on:
+  push:
+    branches: [diag/agenda-dossiers]
+permissions:
+  contents: read
+jobs:
+  mesurer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Telecharger l'agenda et mesurer
+        run: |
+          curl -sSfL -o a.zip https://data.assemblee-nationale.fr/static/openData/repository/17/vp/reunions/Agenda.json.zip
+          mkdir a && cd a && unzip -q ../a.zip && cd ..
+          python3 - <<'PY'
+          import glob, json, collections, datetime
+          cles = collections.Counter(); exemples = {}; n = 0; plen = 0; avec = 0; avenir = 0; avenir_avec = 0; refs = collections.Counter()
+          auj = datetime.date.today().isoformat()
+          for p in glob.glob("a/**/reunion/*.json", recursive=True):
+              r = json.load(open(p))["reunion"]; n += 1
+              odj = r.get("ODJ") or {}
+              pts = ((odj.get("pointsODJ") or {}).get("pointODJ")) or []
+              if isinstance(pts, dict): pts = [pts]
+              seance = "seance" in (r.get("@xsi:type") or "")
+              if seance: plen += 1
+              fut = (r.get("timeStampDebut") or "")[:10] >= auj
+              if seance and fut: avenir += 1
+              a_ref = False
+              for pt in pts:
+                  for k, v in pt.items():
+                      cles[k] += 1
+                      if k not in exemples and v: exemples[k] = json.dumps(v, ensure_ascii=False)[:200]
+                  d = pt.get("dossiersLegislatifsRefs")
+                  if d:
+                      a_ref = True
+                      v = d.get("dossierRef") if isinstance(d, dict) else d
+                      for x in (v if isinstance(v, list) else [v]): refs[str(x)[:12]] += 1
+              if seance and a_ref: avec += 1
+              if seance and fut and a_ref: avenir_avec += 1
+          print("reunions", n, "seances", plen, "seances avec ref dossier", avec)
+          print("seances a venir", avenir, "dont avec ref dossier", avenir_avec)
+          print("prefixes des refs", refs.most_common(8))
+          print("CLES des pointODJ :")
+          for k, c in cles.most_common(): print(" ", c, k, "=>", exemples.get(k, ""))
+          PY
