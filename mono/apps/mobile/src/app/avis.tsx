@@ -7,7 +7,6 @@ import { Stack } from "expo-router";
 import Constants from "expo-constants";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { COURRIEL_AVIS, lienAvis, POINTS_AVIS, THEMES_AVIS } from "../lib/avis";
-import { useProfil } from "../lib/profil";
 import { CIBLE, OMBRE, PAS, POLICE, RAYON, TYPO, couleurs } from "../lib/theme";
 import { MARQUE_DEFILEMENT } from "../lib/defilement-ios";
 import { useBasSur } from "../ui/page";
@@ -64,7 +63,6 @@ export default function Avis() {
   const [points, setPoints] = useState<string[]>([]);
   const [texte, setTexte] = useState("");
   const [theme, setTheme] = useState<string | null>(null);
-  const { profil } = useProfil();
   const bas = useBasSur();
   if (!COURRIEL_AVIS) return (
     <View style={{ flex: 1, backgroundColor: couleurs.sol, padding: PAS * 4 }}>
@@ -77,7 +75,7 @@ export default function Avis() {
     const lien = lienAvis(COURRIEL_AVIS as string, {
       version: Constants.expoConfig?.version || "inconnue", date: new Date(),
       plateforme: `${Platform.OS} ${String(Platform.Version ?? "")}`.trim(), navigateur,
-    }, { note, points, texte, theme, prenom: profil ? profil.prenom : null });
+    }, { note, points, texte, theme });
     /* Sur le web (26/11/2026) : react-native-web ouvrait mailto: par window.open(…, "_blank"), qui laisse un onglet
        vide sur ordinateur et peut ne rien ouvrir dans l'application installée sur l'écran d'accueil d'un iPhone.
        Une adresse mailto: posée sur la page ouvre la messagerie sans quitter Repère. */

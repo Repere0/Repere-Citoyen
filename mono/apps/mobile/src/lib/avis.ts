@@ -24,7 +24,7 @@ const VA_BIEN: readonly string[] = POINTS_AVIS.slice(0, 3);
 /* LA PAGE CONCERNÉE (porteur, 27/11/2026) : un choix dans une liste fixe ; il entre dans le sujet du message, pour
    que l'équipe range les avis. Sans choix : « Général ». */
 export const THEMES_AVIS = ["Accueil", "L'Assemblée", "Ma commune", "Finances", "Les élus", "Le calendrier", "Le quiz", "Autre"] as const;
-export type Reponses = { note?: number | null; points?: string[]; texte?: string; theme?: string | null; prenom?: string | null };
+export type Reponses = { note?: number | null; points?: string[]; texte?: string; theme?: string | null };
 
 const NOMS_NOTE = ["", "Pas du tout", "Un peu", "Moyennement", "Beaucoup", "Énormément"];
 export const SEPARATEUR_TECHNIQUE = "--- Ne pas modifier en dessous de cette ligne ---";
@@ -45,10 +45,11 @@ export function navigateurCourt(ua: string | null | undefined): string | null {
   return [nav, os].filter(Boolean).join(" sur ") || null;
 }
 
+/* Sujet neutre (porteur, 27/11/2026) : le prénom gardé sur l'appareil n'en sort jamais, même par un mail que le
+   lecteur envoie lui-même (invariant 2). */
 export function sujetAvis(r: Reponses = {}): string {
   const theme = r.theme && (THEMES_AVIS as readonly string[]).includes(r.theme) ? r.theme : "Général";
-  const prenom = (r.prenom || "").trim();
-  return `[Avis - ${theme}] ${prenom ? `Retour de ${prenom}` : "Retour d'un lecteur"}`;
+  return `[Avis - ${theme}] Retour d'un lecteur`;
 }
 
 /* LE MESSAGE (porteur, 27/11/2026) : la note, les points cochés (ce qui va, ce qui ne va pas), le texte libre, puis,

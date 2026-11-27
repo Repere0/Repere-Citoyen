@@ -27,12 +27,15 @@ test("navigateur en clair : Safari, Chrome, Firefox, Edge et le système", async
   assert.equal(navigateurCourt(null), null);
 });
 
-test("sujet : la page choisie entre crochets, « Général » sans choix, le prénom s'il existe", async () => {
+/* Porteur, 27/11/2026 (14:51) : le prénom ne sort JAMAIS de l'appareil, même dans un mail que le lecteur envoie
+   lui-même (invariant 2). Le sujet reste neutre. */
+test("sujet : la page choisie entre crochets, « Général » sans choix, jamais le prénom", async () => {
   const { sujetAvis, THEMES_AVIS } = await import("../src/lib/avis.ts");
   assert.deepEqual([...THEMES_AVIS], ["Accueil", "L'Assemblée", "Ma commune", "Finances", "Les élus", "Le calendrier", "Le quiz", "Autre"]);
-  assert.equal(sujetAvis({ theme: "Finances", prenom: "Jean" }), "[Avis - Finances] Retour de Jean");
+  assert.equal(sujetAvis({ theme: "Finances", prenom: "Jean" }), "[Avis - Finances] Retour d'un lecteur", "le prénom n'entre pas dans le sujet");
+  assert.ok(!lienAvis("a@b.fr", sys, { theme: "Finances", prenom: "Jean", texte: "x" }).includes("Jean"), "ni dans le message");
   assert.equal(sujetAvis({}), "[Avis - Général] Retour d'un lecteur");
-  assert.equal(sujetAvis({ theme: "Inventé", prenom: "  " }), "[Avis - Général] Retour d'un lecteur", "hors liste : Général");
+  assert.equal(sujetAvis({ theme: "Inventé" }), "[Avis - Général] Retour d'un lecteur", "hors liste : Général");
   const l = lienAvis("a@b.fr", sys, { theme: "Le quiz" });
   assert.equal(decodeURIComponent(l.split("subject=")[1].split("&body=")[0]), "[Avis - Le quiz] Retour d'un lecteur");
 });
