@@ -24,7 +24,7 @@
  * aucun fait. */
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { createElement } from "react";
-import { deriverAujourdhui, positionsFiables } from "@repere/core";
+import { deriverAujourdhui, positionsFiables, departementDeIndex } from "@repere/core";
 import {
   chargerIndex, chargerDepartement, chargerProjets, chargerDeputes, chargerCatalogueScrutins,
   chargerVotes, chargerElusRegion, chargerCalendrierSenat, chargerAgendaAN, ETATS,
@@ -69,7 +69,7 @@ export function useCommune(choix: Choix, essai: number): EtatCommune {
       if (!fiche) { setEtat({ etat: pq.donnees ? ETATS.INTROUVABLE : pq.etat, pret: false }); return; }
       if (!ix.donnees) { setEtat({ etat: ix.etat, pret: false }); return; }
       const index: Ouvert = ix.donnees;
-      const depIndex = Array.isArray(index.departements) ? index.departements.find((x: Ouvert) => x.code === dep) : null;
+      const depIndex = departementDeIndex(index, dep);
       const reg = depIndex && depIndex.region_code ? await chargerElusRegion(depIndex.region_code) : { etat: ETATS.INTROUVABLE, donnees: null };
       if (!vivant) return;
       const votesLus = arrive(de) && arrive(c) && arrive(v);
@@ -90,7 +90,9 @@ export function useCommune(choix: Choix, essai: number): EtatCommune {
         agendaLu: arrive(ca) || arrive(an),
       });
     })().catch(() => {
-      if (vivant) setEtat({ etat: ETATS.ECHEC, pret: false });
+      /* Les lectures réseau rendent un état, elles ne lèvent pas : une exception ici vient de la LECTURE des
+         fichiers arrivés, pas du réseau (27/11/2026 ; avant : « n'a pas réussi à joindre le serveur », faux). */
+      if (vivant) setEtat({ etat: ETATS.ILLISIBLE, pret: false });
     });
     return () => { vivant = false; };
   }, [choix, essai]);

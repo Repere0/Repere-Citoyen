@@ -236,7 +236,7 @@ const enVol = new Map();   /* dédoublonne les requêtes simultanées */
 export const ETATS = Object.freeze({
   ABSENT: "absent", EN_COURS: "en cours", SERVI: "servi",
   ECHEC: "echec", HORS_LIGNE: "hors ligne", INTROUVABLE: "introuvable",
-  INVALIDE: "invalide",
+  INVALIDE: "invalide", ILLISIBLE: "illisible",
 });
 
 /* Les phrases de la doctrine du vide. Chaque état a la sienne, et elles disent
@@ -266,6 +266,14 @@ export const PHRASES = Object.freeze({
     titre: "Ce département ne figure pas dans le découpage publié.",
     corps: "Le réseau fonctionne : c'est le fichier qui manque, et c'est de notre côté.",
     lien: { texte: "Voir la source officielle", url: "https://www.data.gouv.fr/" },
+  },
+  /* CINQUIÈME CAUSE (27/11/2026, audit V1) : tous les fichiers sont arrivés, mais leur lecture a levé une erreur
+     (donnée inattendue, navigateur ancien, défaut de Repère). Avant, l'écran disait « n'a pas réussi à joindre le
+     serveur » : faux, le réseau avait répondu. On ne prétend pas savoir laquelle des trois causes : on le dit. */
+  [ETATS.ILLISIBLE]: {
+    titre: "Les données de votre département sont arrivées, mais Repère n'a pas pu les lire.",
+    corps: "Le réseau fonctionne. L'erreur vient de Repère ou de ce navigateur : réessayer suffit parfois ; sinon, la signaler aide à la corriger.",
+    action: "Réessayer",
   },
   [ETATS.INVALIDE]: {
     titre: "Le serveur a répondu, mais pas avec les données attendues.",

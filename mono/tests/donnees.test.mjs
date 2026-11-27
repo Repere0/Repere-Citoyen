@@ -132,6 +132,7 @@ test("quatre causes d'echec, quatre etats, quatre phrases differentes", async ()
   assert.ok(titres.every(Boolean), "chaque etat d'echec a sa phrase");
   assert.equal(new Set(titres).size, 4, "deux causes d'absence differentes exigent deux phrases differentes (invariant 5)");
   assert.ok(!/joindre le serveur/.test(PHRASES[ETATS.INVALIDE].titre), "le serveur a repondu : ne pas dire qu'on ne l'a pas joint");
+  assert.ok(!/joindre le serveur/.test(PHRASES[ETATS.ILLISIBLE].titre) && PHRASES[ETATS.ILLISIBLE].action, "lecture en échec (27/11/2026) : le réseau a répondu, on le dit, et on propose de réessayer");
 });
 
 test("un index garde d'un autre schema est jete, pas servi", async () => {
