@@ -35,8 +35,7 @@ import { router, Stack } from "expo-router";
 import {
   dateFr, datePublication, decompte, euros, financementProjet, montantCourt, ordinal, parHabitant, phrasePosition,
   repartitionVote, texteDe,
-  titreLisible, LIBELLES, copieVoteVide, ETAT_VOTE, estParis,
-} from "@repere/core";
+  titreLisible, LIBELLES, copieVoteVide, ETAT_VOTE, estParis, departementDeIndex } from "@repere/core";
 import { Vide } from "../../lib/composants";
 import { CarteMemoire } from "../../cartes/CarteMemoire";
 import { useSelection } from "../../lib/selection";
@@ -120,7 +119,7 @@ export default function ChezVous() {
       const { d } = r;
       const nom = d.nomCommune;
       const publie = datePublication(r.index);
-      const depIndex = r.index.departements.find((x: { code: string }) => x.code === d.dep);
+      const depIndex = departementDeIndex(r.index, d.dep);
       const projet = d.dernierProjet;
       const f = projet ? financementProjet(projet.p) : null;
       const cout = f && f.cout ? montantCourt(f.cout) : null;

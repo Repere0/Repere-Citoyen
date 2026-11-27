@@ -131,3 +131,13 @@ test("la balise apple-touch-icon est explicite : 180x180, version dans l'adresse
   assert.ok(m, "balise absente ou sans sizes/version");
   assert.ok(existsSync(new URL("../public" + m[1], import.meta.url)));
 });
+
+test("sans JavaScript, le message est en français (audit V1, 27/11/2026)", async () => {
+  const { injecterBalises, manques } = await import("../scripts/pwa.mjs");
+  const app = JSON.parse(readFileSync(new URL("../app.json", import.meta.url), "utf8"));
+  const html = '<html><head><meta name="viewport" content="width=device-width"></head><body><noscript>\n      You need to enable JavaScript to run this app.\n    </noscript><div id="root"></div></body></html>';
+  const sortie = injecterBalises(html, app);
+  assert.match(sortie, /<noscript>Repère a besoin de JavaScript/);
+  assert.doesNotMatch(sortie, /You need to enable/);
+  assert.ok(manques(html, { display: "standalone", icons: [1] }).includes("message sans JavaScript en anglais"));
+});
