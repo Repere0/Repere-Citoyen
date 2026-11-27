@@ -15,7 +15,7 @@
  *
  * USAGE (depuis mono/) :
  *   node scripts/generer_resumes.mjs --liste lots.json [--mock] [--modele mistral-small-latest] [--essai]
- *   (lots de lois : textes-officiels.mjs ; budgets et votes : sources-explications.mjs, champ `type` et `cle`)
+ *   (lots de lois : textes-officiels.mjs ; votes : sources-explications.mjs, champ `type` et `cle`)
  *   lots.json : [{ "dossier": "DLR5L17N51670", "texte": "chemin/vers/officiel.txt", "url": "https://www.assemblee-nationale.fr/...",
  *                  "titre": "…", "scrutins": ["9759"] }, …]
  *   --mock   : aucun appel réseau ; le « modèle » renvoie les deux premières phrases du texte officiel (pour éprouver
@@ -38,15 +38,10 @@ export const CONSIGNE = [
 ].join(" ");
 
 /* AU-DELÀ DES LOIS (porteur, 27/11/2026 : « un traducteur universel »). Même consigne de fond, et un complément par
-   type de donnée. Les sources viennent de scripts/sources-explications.mjs ; les contrôles refusent en plus, pour un
-   budget ou un vote, tout mot qui juge un chiffre (JUGEMENT_CHIFFRES). */
+   type de donnée. Les sources des votes viennent de scripts/sources-explications.mjs ; les contrôles refusent en plus, pour
+   un vote, tout mot qui juge un chiffre (JUGEMENT_CHIFFRES). */
 export const CONSIGNES = {
   loi: CONSIGNE,
-  budget: [
-    "Explique ces comptes de commune à un jeune de 15 ans, en 3 phrases maximum, sans aucun jugement de valeur, en te basant UNIQUEMENT sur les montants présents dans ce texte.",
-    "Dis simplement ce que la commune a encaissé, ce qu'elle a dépensé et ce qu'elle doit ; reprends les montants tels qu'ils sont écrits, sans en calculer d'autres ;",
-    "n'emploie aucun mot qui qualifie un montant (élevé, faible, beaucoup, peu, trop) et ne compare à rien qui ne soit pas dans le texte ; écris en français courant ; réponds par l'explication seule.",
-  ].join(" "),
   vote: [
     "Explique ce vote à un jeune de 15 ans, en 3 phrases maximum, sans aucun jugement de valeur, en te basant UNIQUEMENT sur les faits présents dans ce texte.",
     "Dis ce qui était soumis au vote, en mots simples, puis le résultat avec les nombres tels qu'ils sont écrits ; n'en calcule pas d'autres ;",
@@ -56,7 +51,7 @@ export const CONSIGNES = {
 
 /* Le message envoyé au modèle : la consigne du type, puis le texte officiel tel quel, délimité. */
 export function messages(texteOfficiel, type = "loi") {
-  if (!CONSIGNES[type]) throw new Error(`type inconnu : ${type} (loi, budget ou vote)`);
+  if (!CONSIGNES[type]) throw new Error(`type inconnu : ${type} (loi ou vote ; pas de budget : décision du 27/11/2026)`);
   return [
     { role: "system", content: CONSIGNES[type] },
     { role: "user", content: `Texte officiel :\n"""\n${String(texteOfficiel).trim()}\n"""` },

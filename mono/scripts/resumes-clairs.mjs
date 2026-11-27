@@ -31,14 +31,12 @@ import { FAITS_RESUME, JUGEMENT_CHIFFRES, JUGEMENT_RESUME } from "../packages/da
 const ICI = path.dirname(fileURLToPath(import.meta.url));
 export const DOSSIER = path.join(ICI, "..", "..", "data", "resumes");
 export const REF = /^DLR5L\d+N\d+$/;
-/* LES CLÉS D'EXPLICATION (27/11/2026) : la loi par sa référence de dossier ; un budget par « budget:<code INSEE> » ;
-   un vote par « scrutin:<numéro> ». Le fichier de brouillon remplace « : » par « - » (Windows n'en veut pas). */
+/* LES CLÉS D'EXPLICATION (27/11/2026) : la loi par sa référence de dossier ; un vote par « scrutin:<numéro> ». Le fichier de brouillon remplace « : » par « - » (Windows n'en veut pas). */
 export const CLES = {
   loi: { motif: REF, producteur: "Assemblée nationale" },
-  budget: { motif: /^budget:(\d{5}|2[AB]\d{3})$/, producteur: "Observatoire des finances et de la gestion publique locales (OFGL)" },
   vote: { motif: /^scrutin:\d+$/, producteur: "Assemblée nationale" },
 };
-export const typeDeCle = cle => (REF.test(cle) ? "loi" : /^budget:/.test(cle) ? "budget" : /^scrutin:/.test(cle) ? "vote" : null);
+export const typeDeCle = cle => (REF.test(cle) ? "loi" : /^scrutin:/.test(cle) ? "vote" : null);
 export const fichierDeCle = cle => String(cle).replace(/:/g, "-");
 /* Mots de jugement ou de comparaison de valeur (invariant 3, garde-fou 4) : la liste vit dans invariants.js, seul
    fichier autorise a les citer (tests/invariants.test.mjs). */
@@ -48,7 +46,7 @@ export const empreinte = texte => createHash("sha256").update(propre(texte).repl
 const plat = s => propre(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 /* REGLE PURE (garde-fous 3 et 4). Tout nombre et tout nom propre du resume doit se lire dans le texte officiel. */
-/* `type` (27/11/2026) : « loi » (défaut), « budget » ou « vote ». Pour un budget ou un vote, les mots qui jugent un chiffre
+/* `type` (27/11/2026) : « loi » (défaut) ou « vote ». Pour un vote, les mots qui jugent un chiffre
    (JUGEMENT_CHIFFRES) sont refusés en plus. */
 export function controlerResume(resume, texteOfficiel, { type = "loi" } = {}) {
   const r = propre(resume), source = plat(texteOfficiel);
@@ -95,7 +93,7 @@ export function etat(r, texteOfficiel) {
 
 export function brouillon({ dossier, cle = dossier, texte, resume, url, titre = null, scrutins = [], jour, sortie = DOSSIER, voie = "session", producteur = null }) {
   const type = typeDeCle(cle);
-  if (!type || !CLES[type].motif.test(cle)) throw new Error(`reference ou clé mal formée : ${cle} (attendu : DLR5L17N…, budget:<INSEE> ou scrutin:<numéro>)`);
+  if (!type || !CLES[type].motif.test(cle)) throw new Error(`reference ou clé mal formée : ${cle} (attendu : DLR5L17N… ou scrutin:<numéro>)`);
   if (!/^https:\/\//.test(url || "")) throw new Error("--url : l'adresse https du texte officiel est obligatoire (invariant 4)");
   if (!String(texte || "").trim()) throw new Error("texte officiel vide");
   const c = controlerResume(resume, texte, { type });
