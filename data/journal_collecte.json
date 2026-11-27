@@ -1,15 +1,15 @@
 {
- "execute_le": "2026-11-26T15:49:33Z",
+ "execute_le": "2026-11-27T15:38:08Z",
  "sources": [
   {
    "cle": "agenda_an",
    "titre": "Assemblee nationale — reunions (seance, commissions, enquetes)",
    "url": "https://data.assemblee-nationale.fr/static/openData/repository/17/vp/reunions/Agenda.json.zip",
-   "tentee_le": "2026-11-26T15:49:33Z",
+   "tentee_le": "2026-11-27T15:38:08Z",
    "http": 200,
-   "octets": 8911215,
-   "empreinte": "4b693d3a496eee43",
-   "secondes": 1.3,
+   "octets": 8943296,
+   "empreinte": "88ddf288f1eaa415",
+   "secondes": 0.3,
    "ok": true,
    "tentatives": [
     "ok"
@@ -19,11 +19,11 @@
    "cle": "senateurs",
    "titre": "Senat — base Senateurs (dernier etat connu, ODSEN_GENERAL)",
    "url": "https://data.senat.fr/data/senateurs/ODSEN_GENERAL.csv",
-   "tentee_le": "2026-11-26T15:49:35Z",
+   "tentee_le": "2026-11-27T15:38:08Z",
    "http": 200,
    "octets": 443302,
    "empreinte": "365ec05e8c8a6014",
-   "secondes": 2.9,
+   "secondes": 1.6,
    "ok": true,
    "tentatives": [
     "ok"
@@ -33,11 +33,11 @@
    "cle": "organes_an",
    "titre": "Assemblee nationale — acteurs, mandats et organes (historique)",
    "url": "https://data.assemblee-nationale.fr/static/openData/repository/17/amo/tous_acteurs_mandats_organes_xi_legislature/AMO30_tous_acteurs_tous_mandats_tous_organes_historique.json.zip",
-   "tentee_le": "2026-11-26T15:49:38Z",
+   "tentee_le": "2026-11-27T15:38:10Z",
    "http": 200,
-   "octets": 13751610,
-   "empreinte": "cca9071b03708a10",
-   "secondes": 1.1,
+   "octets": 13753722,
+   "empreinte": "66119b62003b9a26",
+   "secondes": 0.6,
    "ok": true,
    "tentatives": [
     "ok"
@@ -47,11 +47,11 @@
    "cle": "questions_gouvernement",
    "titre": "Assemblée nationale — Questions au Gouvernement",
    "url": "https://data.assemblee-nationale.fr/static/openData/repository/17/questions/questions_gouvernement/Questions_gouvernement.json.zip",
-   "tentee_le": "2026-11-26T15:49:39Z",
+   "tentee_le": "2026-11-27T15:38:11Z",
    "http": 200,
    "octets": 5887962,
-   "empreinte": "333094a99cee07a0",
-   "secondes": 4.7,
+   "empreinte": "5e5f0685f84bf432",
+   "secondes": 0.4,
    "ok": true,
    "tentatives": [
     "ok"
@@ -61,11 +61,11 @@
    "cle": "scrutins_an",
    "titre": "Assemblee nationale — scrutins publics",
    "url": "https://data.assemblee-nationale.fr/static/openData/repository/17/loi/scrutins/Scrutins.json.zip",
-   "tentee_le": "2026-11-26T15:49:44Z",
+   "tentee_le": "2026-11-27T15:38:11Z",
    "http": 200,
-   "octets": 31258455,
-   "empreinte": "88e1407bc958585a",
-   "secondes": 1.1,
+   "octets": 31417025,
+   "empreinte": "38744d546806e565",
+   "secondes": 0.3,
    "ok": true,
    "tentatives": [
     "ok"
@@ -75,11 +75,11 @@
    "cle": "dossiers_an",
    "titre": "Assemblee nationale — dossiers legislatifs",
    "url": "https://data.assemblee-nationale.fr/static/openData/repository/17/loi/dossiers_legislatifs/Dossiers_Legislatifs.json.zip",
-   "tentee_le": "2026-11-26T15:49:46Z",
+   "tentee_le": "2026-11-27T15:38:12Z",
    "http": 200,
-   "octets": 11446276,
-   "empreinte": "88887a71c18d9d7d",
-   "secondes": 1.0,
+   "octets": 11451485,
+   "empreinte": "5269d3a7175771e7",
+   "secondes": 0.3,
    "ok": true,
    "tentatives": [
     "ok"
@@ -89,11 +89,11 @@
    "cle": "circos_min",
    "titre": "Communes et cantons par circonscription legislative (ministere de l'Interieur, 2017)",
    "url": "https://www.data.gouv.fr/api/1/datasets/r/4d0b70e1-7757-43cc-882b-5c3b04fe38b4",
-   "tentee_le": "2026-11-26T15:49:47Z",
+   "tentee_le": "2026-11-27T15:38:12Z",
    "http": 200,
    "octets": 1682216,
    "empreinte": "46ff9b58d8ee4cb6",
-   "secondes": 2.7,
+   "secondes": 11.2,
    "ok": true,
    "tentatives": [
     "ok"
@@ -103,11 +103,11 @@
    "cle": "circos_bv",
    "titre": "Bureaux de vote et leur circonscription legislative (derive des resultats 2022)",
    "url": "https://www.data.gouv.fr/api/1/datasets/r/ed6c2f24-2b83-4a26-a1a2-14c928b58b0b",
-   "tentee_le": "2026-11-26T15:49:50Z",
+   "tentee_le": "2026-11-27T15:38:24Z",
    "http": 200,
    "octets": 5302597,
    "empreinte": "49cf4eeff6b6f9b6",
-   "secondes": 2.5,
+   "secondes": 1.8,
    "ok": true,
    "tentatives": [
     "ok"
