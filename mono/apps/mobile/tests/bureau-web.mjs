@@ -37,7 +37,8 @@ const ouvrir = async (largeur, hauteur, profil, commune = null) => {
   /* Porteur, 26/11/2026 : barre de 240 px, dix entrées dans l'ordre donné ; sans commune, logo et carte d'IDF. */
   verifier(Math.round((await page.getByTestId("barre-laterale").boundingBox()).width) === 240, "la barre latérale fait 240 px");
   const entrees = await page.locator('[data-testid="barre-laterale"] [data-testid^="barre-"][role="link"]').evaluateAll(l => l.map(e => e.getAttribute("aria-label")));
-  verifier(JSON.stringify(entrees) === JSON.stringify(["Accueil", "Commune", "Qui décide", "Finances", "Parlement", "Calendrier", "Quiz", "Dictionnaire", "Réglages", "Soutenir"]), "les dix entrées, dans l'ordre : " + entrees.join(", "));
+  /* 27/11/2026 (porteur) : « Outils », le Hub des outils citoyens, après le Dictionnaire : onze entrées. */
+  verifier(JSON.stringify(entrees) === JSON.stringify(["Accueil", "Commune", "Qui décide", "Finances", "Parlement", "Calendrier", "Quiz", "Dictionnaire", "Outils", "Réglages", "Soutenir"]), "les onze entrées, dans l'ordre : " + entrees.join(", "));
   verifier(await page.getByTestId("hero-logo").isVisible(), "première visite : le logo en tête");
   verifier(await page.getByTestId("widget-carte").isVisible() && await page.getByTestId("widget-budget").count() === 0, "sans commune : la carte d'IDF à la place du budget et de l'agenda");
   const x = async id => (await page.getByTestId(id).boundingBox()).x;

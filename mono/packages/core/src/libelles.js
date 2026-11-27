@@ -25,5 +25,7 @@ export const LIBELLES = Object.freeze({
   /* Maquettes Stitch (09/11/2026) : l'onglet du budget, sur le téléphone. L'écran garde son titre. */
   finances: "Finances",
   calendrier: "Le calendrier",
+  /* 27/11/2026 (porteur) : le Hub des outils citoyens. */
+  outils: "Outils",
   sources: "Sources",
 });
