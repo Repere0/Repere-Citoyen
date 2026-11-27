@@ -115,8 +115,15 @@ des jetons. Un menu `mode` (26/11/2026, pour lancer depuis un téléphone) :
 Et `limite` (5 dossiers par défaut). Secret : `MISTRAL_API_KEY`. Les textes extraits et le compte rendu restent
 7 jours en artefact du run.
 
-Le brancher sur la collecte quotidienne : possible (même archive, même runner), **pas fait**, et à ne faire qu'après
-une semaine de lancements manuels relus : une erreur qui part chaque matin coûte chaque matin.
+**Le lot hebdomadaire (porteur, 27/11/2026 : « générer les brouillons en batch sans que j'aie à cliquer »)** :
+chaque **dimanche à 04:23 UTC**, le workflow part seul en mode `brouillons`, 10 textes au plus. Les brouillons
+vivent sur une branche fixe, `brouillons/resumes`, avec **une** pull request ouverte qui s'enrichit chaque semaine ;
+chaque lancement repart de cette branche (main y est fusionnée d'abord) et saute les textes déjà en brouillon
+(`--deja`) : un texte n'est jamais payé deux fois. Le porteur relit dans la PR, pose `valide: true`, fusionne, puis
+publie (`resumes-clairs.mjs --publier`). **Coût** : signalé avant activation ; de l'ordre de quelques centimes par
+semaine au tarif affiché par Mistral pour `mistral-small-latest` (**non vérifié** ici) ; le nombre réel de jetons
+s'écrit à la fin de chaque run. Pour arrêter le lot : Actions > « Résumés en clair » > « … » > Disable workflow
+(le lancement à la main reste possible après réactivation). Garde : `mono/tests/workflow-resumes.test.mjs`.
 
 ## Ce qui n'est pas fait (et pourquoi)
 
@@ -125,3 +132,10 @@ une semaine de lancements manuels relus : une erreur qui part chaque matin coût
 - **Finances** : **décision du porteur le 26/11/2026 : non**, pas de résumé IA des budgets pour l'instant. L'écran
   garde ses phrases claires calculées sans IA ; le code qui afficherait un résumé `budget:<insee>` validé reste
   inerte (aucun fichier ne le nourrit).
+  **Confirmé le 27/11/2026 (décision 1)** : l'explication d'un budget sera calculée par Repère, sans IA.
+- **Votes** (27/11/2026) : `scripts/sources-explications.mjs --donnees data --sortie <dossier> --depuis <date>`
+  écrit le texte officiel de chaque scrutin (fiche publiée) et `lots.json`, que lit `generer_resumes.mjs` (consigne
+  « vote » ; contrôles des mots qui jugent un chiffre, `JUGEMENT_CHIFFRES`). Clé `scrutin:<n>`, fichier
+  `scrutin-<n>.json`. Une panne de l'API (401, 402, 429) arrête le lot et rend le run rouge.
+- **Groupes parlementaires** : pas d'IA (décision 2, 27/11/2026), faits officiels seulement.
+- **Calendrier** : pas de texte propre ; un événement lié à un dossier montre l'explication de ce dossier (décision 4).

@@ -161,7 +161,7 @@ export default function Vote() {
             <Text style={[TYPO.corps, { color: couleurs.lien, fontWeight: "600" }]}>Partager ce vote ›</Text>
           </Pressable>
 
-          {/* « En clair » (12/11/2026) : aucun résumé validé n'existe pour ce texte, le bloc le dit et renvoie au dossier officiel. */}
+          {/* « Expliquer simplement » (27/11/2026) : seulement si une explication validée est publiée pour ce texte. */}
           <ResumeClairDuVote dossier={dossier ? dossier.ref : null} scrutin={vote.sc.n} lienOfficiel={dossier && dossier.url && /^https:\/\//.test(dossier.url) ? dossier.url : undefined} />
 
           {/* DE QUOI PARLE CE TEXTE (05/11/2026) : l'intitulé officiel du dossier et qui a demandé

@@ -26,11 +26,18 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { resumeAffichable } from "../packages/core/src/resumes.js";
-import { FAITS_RESUME, JUGEMENT_RESUME } from "../packages/data-utils/src/invariants.js";
+import { FAITS_RESUME, JUGEMENT_CHIFFRES, JUGEMENT_RESUME } from "../packages/data-utils/src/invariants.js";
 
 const ICI = path.dirname(fileURLToPath(import.meta.url));
 export const DOSSIER = path.join(ICI, "..", "..", "data", "resumes");
 export const REF = /^DLR5L\d+N\d+$/;
+/* LES CLÉS D'EXPLICATION (27/11/2026) : la loi par sa référence de dossier ; un vote par « scrutin:<numéro> ». Le fichier de brouillon remplace « : » par « - » (Windows n'en veut pas). */
+export const CLES = {
+  loi: { motif: REF, producteur: "Assemblée nationale" },
+  vote: { motif: /^scrutin:\d+$/, producteur: "Assemblée nationale" },
+};
+export const typeDeCle = cle => (REF.test(cle) ? "loi" : /^scrutin:/.test(cle) ? "vote" : null);
+export const fichierDeCle = cle => String(cle).replace(/:/g, "-");
 /* Mots de jugement ou de comparaison de valeur (invariant 3, garde-fou 4) : la liste vit dans invariants.js, seul
    fichier autorise a les citer (tests/invariants.test.mjs). */
 export { JUGEMENT_RESUME as JUGEMENT };
@@ -39,7 +46,9 @@ export const empreinte = texte => createHash("sha256").update(propre(texte).repl
 const plat = s => propre(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
 /* REGLE PURE (garde-fous 3 et 4). Tout nombre et tout nom propre du resume doit se lire dans le texte officiel. */
-export function controlerResume(resume, texteOfficiel) {
+/* `type` (27/11/2026) : « loi » (défaut) ou « vote ». Pour un vote, les mots qui jugent un chiffre
+   (JUGEMENT_CHIFFRES) sont refusés en plus. */
+export function controlerResume(resume, texteOfficiel, { type = "loi" } = {}) {
   const r = propre(resume), source = plat(texteOfficiel);
   /* Les nombres : les espaces entre chiffres ne comptent pas (« 1 500 » = « 1500 »), les bords si (« 45 » n'est pas dans « 1945 »). */
   const chiffresSource = source.replace(/(\d)\s+(?=\d)/g, "$1");
@@ -52,7 +61,8 @@ export function controlerResume(resume, texteOfficiel) {
     mots.slice(1).forEach(m => { const mot = m.replace(/^[«"'(\[]+|[»"'),.;:!?\]]+$/g, "").replace(/^[ldLD]'/, ""); if (/^\p{Lu}[\p{L}-]+$/u.test(mot)) noms.add(mot); });
   }
   const nomsAbsents = [...noms].filter(n => !new RegExp(`(?<![a-z0-9])${plat(n).replace(/[-]/g, "[- ]")}(?![a-z0-9])`).test(source));
-  const jugements = [...new Set((r.replace(FAITS_RESUME, " ").match(JUGEMENT_RESUME) || []).map(m => m.toLowerCase()))];
+  const sansFaits = r.replace(FAITS_RESUME, " ");
+  const jugements = [...new Set([...(sansFaits.match(JUGEMENT_RESUME) || []), ...(type !== "loi" ? sansFaits.match(JUGEMENT_CHIFFRES) || [] : [])].map(m => m.toLowerCase()))];
   const longueur = r.trim().length;
   const erreurs = [
     ...nombresAbsents.map(n => `nombre absent du texte officiel : ${n}`),
@@ -70,34 +80,36 @@ const fichiers = dossier => (fs.existsSync(dossier) ? fs.readdirSync(dossier).fi
 /* L'etat d'un fichier de resume : publiable, brouillon, ou en defaut (et pourquoi). */
 export function etat(r, texteOfficiel) {
   const defauts = [];
-  if (!r || !REF.test(r.dossier || "")) defauts.push("reference de dossier absente ou mal formee");
+  const cle = r ? r.cle || r.dossier || "" : "", type = typeDeCle(cle);
+  if (!r || !type || !CLES[type].motif.test(cle)) defauts.push("reference de dossier absente ou mal formee");
   if (texteOfficiel == null) defauts.push("texte officiel absent (data/resumes/textes/) : impossible de recontroler");
   else {
     if (empreinte(texteOfficiel) !== (r.source || {}).sha256) defauts.push("le texte officiel a change depuis le brouillon (empreinte differente)");
-    defauts.push(...controlerResume(r.resume, texteOfficiel).erreurs);
+    defauts.push(...controlerResume(r.resume, texteOfficiel, { type: type || "loi" }).erreurs);
   }
   if (r && r.valide === true && !resumeAffichable(r)) defauts.push("valide mais non affichable (source https et date de releve obligatoires)");
   return { valide: !!r && r.valide === true, defauts };
 }
 
-export function brouillon({ dossier, texte, resume, url, titre = null, scrutins = [], jour, sortie = DOSSIER, voie = "session" }) {
-  if (!REF.test(dossier)) throw new Error(`reference de dossier mal formee : ${dossier} (attendu : DLR5L17N…)`);
+export function brouillon({ dossier, cle = dossier, texte, resume, url, titre = null, scrutins = [], jour, sortie = DOSSIER, voie = "session", producteur = null }) {
+  const type = typeDeCle(cle);
+  if (!type || !CLES[type].motif.test(cle)) throw new Error(`reference ou clé mal formée : ${cle} (attendu : DLR5L17N… ou scrutin:<numéro>)`);
   if (!/^https:\/\//.test(url || "")) throw new Error("--url : l'adresse https du texte officiel est obligatoire (invariant 4)");
   if (!String(texte || "").trim()) throw new Error("texte officiel vide");
-  const c = controlerResume(resume, texte);
+  const c = controlerResume(resume, texte, { type });
   if (!c.ok) throw Object.assign(new Error("brouillon refuse :\n  - " + c.erreurs.join("\n  - ")), { erreurs: c.erreurs });
   fs.mkdirSync(path.join(sortie, "textes"), { recursive: true });
-  fs.writeFileSync(path.join(sortie, "textes", dossier + ".txt"), propre(texte).replace(/\r\n/g, "\n").trim() + "\n");
+  fs.writeFileSync(path.join(sortie, "textes", fichierDeCle(cle) + ".txt"), propre(texte).replace(/\r\n/g, "\n").trim() + "\n");
   const fiche = {
-    dossier, scrutins: scrutins.map(String),
-    source: { producteur: "Assemblée nationale", url, releve_le: jour, sha256: empreinte(texte) },
+    ...(type === "loi" ? { dossier } : { cle, type }), scrutins: scrutins.map(String),
+    source: { producteur: producteur || CLES[type].producteur, url, releve_le: jour, sha256: empreinte(texte) },
     titre_officiel: titre,
     resume: propre(resume).trim(),
     /* 26/11/2026 : « session » (rédigé en session) ou « ia:<modèle> » (scripts/generer_resumes.mjs). */
     methode: { voie, controles: ["nombres", "noms", "vocabulaire", "longueur"] },
     valide: false, valide_le: null,
   };
-  fs.writeFileSync(path.join(sortie, dossier + ".json"), JSON.stringify(fiche, null, 1) + "\n");
+  fs.writeFileSync(path.join(sortie, fichierDeCle(cle) + ".json"), JSON.stringify(fiche, null, 1) + "\n");
   return fiche;
 }
 
@@ -115,8 +127,9 @@ export function publier(dossierData, { dossier = DOSSIER, jour } = {}) {
   const inv = inventaire(dossier);
   const resumes = {};
   for (const x of inv.filter(x => x.valide && !x.defauts.length)) {
-    const fiche = { dossier: x.r.dossier, resume: x.r.resume, source: { producteur: x.r.source.producteur, url: x.r.source.url, releve_le: x.r.source.releve_le }, valide: true, valide_le: x.r.valide_le || null };
-    resumes[x.r.dossier] = fiche;
+    const cle = x.r.cle || x.r.dossier;
+    const fiche = { ...(x.r.dossier ? { dossier: x.r.dossier } : { cle }), resume: x.r.resume, source: { producteur: x.r.source.producteur, url: x.r.source.url, releve_le: x.r.source.releve_le }, valide: true, valide_le: x.r.valide_le || null, ...(/^ia:/.test((x.r.methode && x.r.methode.voie) || "") ? { modele: x.r.methode.voie } : {}) };
+    resumes[cle] = fiche;
     for (const n of x.r.scrutins || []) resumes["scrutin:" + n] = fiche;
   }
   fs.writeFileSync(path.join(dossierData, "resumes-clairs.json"), JSON.stringify({ v: 1, genere_le: jour, resumes }));
