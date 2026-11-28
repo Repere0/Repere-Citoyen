@@ -17,6 +17,8 @@ genere: true
 
 ### 15 derniers commits de main
 
+- [`172c3d2`](https://github.com/Repere0/Repere-Citoyen/commit/172c3d269ebd67ae2a9083b42625336ad8d47115) 2026-11-28 — Collecte du 28/11/2026
+- [`aebe936`](https://github.com/Repere0/Repere-Citoyen/commit/aebe936a21d2a97e6c52ee49d078999eb6ec2b50) 2026-11-28 — Coffre Obsidian : synchro du 28/11/2026
 - [`d27edac`](https://github.com/Repere0/Repere-Citoyen/commit/d27edacb7454278049d24a932df78b40f388629c) 2026-11-28 — Merge pull request #34 from Repere0/docs/coffre-obsidian
 - [`bec513e`](https://github.com/Repere0/Repere-Citoyen/commit/bec513ecbece4c0d387a3b3b383e3b6c8260db13) 2026-11-28 — docs : coffre Obsidian de la documentation (docs/obsidian) et sa synchro GitHub
 - [`ae5eea9`](https://github.com/Repere0/Repere-Citoyen/commit/ae5eea9e2e1070f5bd92549b6416e2679533f7f1) 2026-11-27 — Merge pull request #33 from Repere0/feat/ux-finances-hub
@@ -30,6 +32,4 @@ genere: true
 - [`7d20672`](https://github.com/Repere0/Repere-Citoyen/commit/7d20672a15bc6a6626a05f1158e0bc85a702e9a3) 2026-11-27 — Collecte du 27/11/2026
 - [`8c2ae5c`](https://github.com/Repere0/Repere-Citoyen/commit/8c2ae5c48d0c93e4aa9fa98cf57ac81ad3cf0a66) 2026-11-27 — Merge pull request #28 from Repere0/feat/avis-thematique
 - [`cf21f75`](https://github.com/Repere0/Repere-Citoyen/commit/cf21f758c539328bdd4b81c781d33da73cf4f68c) 2026-11-27 — Merge pull request #27 from Repere0/feat/hub-outils-citoyens
-- [`20b10bd`](https://github.com/Repere0/Repere-Citoyen/commit/20b10bdcd7b22ece95ccb2aaf62d7bb7ada9e414) 2026-11-27 — Merge remote-tracking branch 'origin/main' into feat/hub-outils-citoyens
-- [`cd6d898`](https://github.com/Repere0/Repere-Citoyen/commit/cd6d89801482a110f2c552d74aa452c83dcf42d2) 2026-11-27 — Merge pull request #29 from Repere0/feat/expliquer-simplement
 
