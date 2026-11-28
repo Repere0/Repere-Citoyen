@@ -46,8 +46,10 @@ const neuf = async (init) => {
   await page.waitForTimeout(1200);
   if (CAP) await page.screenshot({ path: `${CAP}/webkit-logo.png` });
   const vu = await page.evaluate(() => {
-    const h = [...document.querySelectorAll("[data-testid=barriere-bienvenue] h1,[data-testid=barriere-bienvenue] h2,[data-testid=barriere-bienvenue] [role=heading]")].find(e => /Repère/.test(e.textContent || ""));
-    const bloc = h && h.parentElement;
+    /* 28/11/2026 (hotfix H2) : plus d'écran de bienvenue au premier lancement ; le logo se lit dans l'en-tête de l'accueil,
+       à côté du titre « Repère » (même composant Logo, mêmes trois éléments). */
+    const h = [...document.querySelectorAll("h1,h2,[role=heading]")].find(e => (e.textContent || "").trim() === "Repère");
+    const bloc = h && h.parentElement && h.parentElement.parentElement;
     if (!bloc) return null;
     const ronds = [...bloc.querySelectorAll("div")].map(e => {
       const c = getComputedStyle(e), r = e.getBoundingClientRect();
@@ -70,38 +72,29 @@ const neuf = async (init) => {
   await ctx.close();
 }
 
-/* ───── 2. L'ONBOARDING : la question du prenom s'affiche-t-elle ? ───── */
+/* ───── 2. L'ONBOARDING (28/11/2026, hotfix H2) : l'accueil EST l'onboarding ───── */
 {
   const { ctx, page, erreurs } = await neuf();
   await page.goto(BASE + "/", { waitUntil: "load" });
   await page.waitForTimeout(4000);
   const url = page.url();
   dit("adresse apres 4 s : " + url);
-  const voile = await page.getByTestId("demarrage").count();
-  dit("voile de demarrage encore present : " + voile);
-  ok(await page.getByTestId("barriere-bienvenue").isVisible(), `onboarding : sans prénom, la barrière de bienvenue couvre l'application (adresse : ${url.replace(BASE, "") || "/"})`);
-  const bouton = page.getByTestId("continuer-0");
-  ok(await bouton.count() === 1, "onboarding : le bouton de l'ecran 1 est present");
-  if (await bouton.count()) {
-    dit("libelle du bouton : « " + (await bouton.innerText()).trim() + " »");
-    const b = await bouton.boundingBox();
-    dit("bouton : " + JSON.stringify(b && { x: Math.round(b.x), y: Math.round(b.y), l: Math.round(b.width), h: Math.round(b.height) }));
-    ok(b && b.y + b.height <= IPHONE.viewport.height, "onboarding : le bouton est dans l'ecran, sans defiler");
-    await bouton.tap();
-    await page.waitForTimeout(1200);
-    const champ = page.getByLabel(/Votre prénom/);
-    ok(await champ.count() === 1, "onboarding : le clic sur « Commencer » amene la question du prenom");
-    if (await champ.count()) {
-      await champ.fill("Inès");
-      await page.getByTestId("continuer-1").tap();
-      await page.waitForTimeout(900);
-      ok(await page.getByRole("heading", { name: "Ce que Repère ne fait pas" }).count() === 1, "onboarding : l'ecran des valeurs suit");
-      await page.getByTestId("continuer-2").tap();
-      await page.waitForTimeout(2000);
-      const prenom = await page.evaluate(() => (JSON.parse(localStorage.getItem("repere.profil") || "null") || {}).prenom);
-      dit("prenom garde : " + JSON.stringify(prenom));
-      ok(prenom === "Inès", "onboarding : le prenom est garde sur l'appareil");
-      ok(await page.getByTestId("bonjour").count() === 1, "onboarding : l'accueil dit bonjour");
+  ok(!(await page.getByTestId("barriere-bienvenue").isVisible().catch(() => false)), `onboarding : sans prénom, aucune barrière ne couvre l'accueil (adresse : ${url.replace(BASE, "") || "/"})`);
+  ok(await page.getByTestId("accroche").count() === 1, "onboarding : l'accroche A est affichée");
+  const champ = page.getByLabel(/Où habitez-vous/);
+  const b = await champ.boundingBox();
+  dit("recherche : " + JSON.stringify(b && { x: Math.round(b.x), y: Math.round(b.y), l: Math.round(b.width), h: Math.round(b.height) }));
+  ok(b && b.y + b.height <= IPHONE.viewport.height, "onboarding : la recherche de commune est dans l'ecran, sans defiler");
+  if (b) {
+    await champ.tap();
+    await champ.fill("Melun");
+    const melun = page.getByRole("button", { name: /^Melun,/ }).first();
+    await melun.waitFor({ timeout: 15000 }).catch(() => {});
+    ok(await melun.count() === 1, "onboarding : taper « Melun » propose la commune");
+    if (await melun.count()) {
+      await melun.tap();
+      await page.waitForTimeout(2500);
+      ok(/chez-vous/.test(page.url()), "onboarding : un toucher mene a la page de la commune (" + page.url().replace(BASE, "") + ")");
     }
   }
   if (CAP) await page.screenshot({ path: `${CAP}/webkit-onboarding.png` });

@@ -12,7 +12,12 @@ const PROFIL = { prenom: "Test", niveauZoom: "france", tailleTexte: 16, espaceme
   animationsReduites: true, modeDaltonien: false, masquerImages: false, themes: [], mode: "clair" };
 const nouveau = async () => {
   const contexte = await navigateur.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-  await contexte.addInitScript(p => { if (!localStorage.getItem("repere.profil")) localStorage.setItem("repere.profil", JSON.stringify(p)); }, PROFIL);
+  /* 28/11/2026 (hotfix H2) : la proposition vit sur la page de la commune ; sur l'accueil sans commune, elle demandait de
+     « choisir mes sujets » avant même d'en avoir une (audit du 28/11 ; garde dans hotfix-ux-web.mjs). */
+  await contexte.addInitScript(p => {
+    if (!localStorage.getItem("repere.profil")) localStorage.setItem("repere.profil", JSON.stringify(p));
+    if (!localStorage.getItem("repere.departement")) localStorage.setItem("repere.departement", JSON.stringify({ d: "77", c: "77288" }));
+  }, PROFIL);
   const page = await contexte.newPage();
   const erreurs = []; page.on("pageerror", e => erreurs.push(String(e.message || e).slice(0, 160)));
   return { contexte, page, erreurs };
@@ -21,7 +26,7 @@ const profil = page => page.evaluate(() => JSON.parse(localStorage.getItem("repe
 
 {
   const { contexte, page, erreurs } = await nouveau();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/chez-vous", { waitUntil: "networkidle" });
   await page.getByTestId("alertes-proposition").waitFor({ timeout: 15000 });
   verifier(true, "jamais demandé : la proposition est sur l'accueil");
   await page.getByTestId("alertes-refuser").click(); await page.waitForTimeout(400);
@@ -33,13 +38,13 @@ const profil = page => page.evaluate(() => JSON.parse(localStorage.getItem("repe
 }
 {
   const { contexte, page, erreurs } = await nouveau();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/chez-vous", { waitUntil: "networkidle" });
   await page.getByTestId("alertes-choisir").click();
   await page.getByRole("switch", { name: /^Budgets/ }).waitFor({ timeout: 10000 });
   verifier(JSON.stringify((await profil(page)).alertes) === JSON.stringify(["votes", "budgets", "elections", "actus"]), "« Choisir mes sujets » : les quatre sujets, puis les Réglages");
   await page.getByRole("switch", { name: /^Budgets/ }).click(); await page.waitForTimeout(300);
   verifier(JSON.stringify((await profil(page)).alertes) === JSON.stringify(["votes", "elections", "actus"]), "décocher « Budgets » le retire de repere.profil");
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/chez-vous", { waitUntil: "networkidle" });
   await page.getByTestId("alertes-bandeau").waitFor({ timeout: 15000 });
   const texte = await page.getByTestId("alertes-bandeau").innerText();
   verifier(/nouveauté|Rien de nouveau/.test(texte) && /Aucune notification n.est envoyée/.test(texte), "le bandeau dit ce qu'il a trouvé, et qu'il n'envoie rien");

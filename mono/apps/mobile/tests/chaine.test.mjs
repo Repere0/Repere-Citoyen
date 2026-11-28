@@ -159,7 +159,8 @@ test("la bienvenue ne couvre que l'accueil ou la demande du lecteur, jamais un l
   const corps = /export function bienvenueDressee[^{]*\{([\s\S]*?)\n\}/.exec(src);
   assert.ok(corps, "bienvenueDressee introuvable");
   const f = new Function("barriere", "chemin", "demandee", corps[1]);
-  assert.equal(f(true, "/", false), true, "accueil sans prénom : bienvenue");
+  /* 28/11/2026 (porteur, hotfix H2) : l'accueil EST l'onboarding ; plus de barrière à la première ouverture. */
+  assert.equal(f(true, "/", false), false, "accueil sans prénom : l'accroche et la recherche, pas de barrière");
   assert.equal(f(true, "/finances", false), false, "lien partagé sans prénom : le contenu d'abord");
   assert.equal(f(true, "/confidentialite", false), false, "confidentialité lisible avant le prénom");
   assert.equal(f(true, "/finances", true), true, "« Personnaliser » : bienvenue");

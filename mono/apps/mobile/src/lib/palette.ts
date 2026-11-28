@@ -184,7 +184,22 @@ export const COULEURS_VOTE_DALTONIEN = Object.freeze({
 export const COULEURS_GROUPES: Readonly<Record<string, string>> = Object.freeze({
   LFI: "#E63946", RN: "#2236B8", EPR: "#FFC83D", "LÉ": "#2DB55D", LR: "#3FA2F6", SOC: "#FF6FAE",
   HOR: "#12B5CB", DEM: "#F28C28", LIOT: "#9B6DF5", GDR: "#8F1D3F", NI: "#A0A5AD", Inconnu: "#5B6270",
+  /* 28/11/2026 (porteur, hotfix H5) : UDR avait le gris « Inconnu », comme trois autres groupes. Treizième teinte
+     (ADR 0001 amendé) : bleu de la famille de droite, à 68 de distance RVB de LR (la plus proche) ; contraste
+     4,8:1 sur la carte claire, 3,5:1 sur la carte sombre. Identification des élus seulement. */
+  UDR: "#5864E8",
 });
+
+/* LES SIGLES DE LA 17E LÉGISLATURE (28/11/2026, hotfix H5). L'Assemblée publie « DR », « EcoS » et « Dem » ; la palette
+   les connaissait sous leurs anciens sigles. Résultat mesuré en production le 28/11 : EcoS, Dem, DR et UDR avaient tous le
+   gris « Inconnu » (rgb(91, 98, 112)) dans l'hémicycle. La correspondance est écrite ici, une fois, comme pour le Sénat :
+   même famille, même couleur (décisions du porteur, 13/10 et 20/10/2026). Un sigle absent reste gris : rien n'est deviné. */
+export const SIGLES_EQUIVALENTS: Readonly<Record<string, string>> = Object.freeze({ DR: "LR", EcoS: "LÉ", Dem: "DEM" });
+
+/* LA couleur d'un groupe de l'Assemblée, à partir de son sigle publié. Une seule fonction pour tous les écrans. */
+export function couleurDuGroupe(sigle: string): string {
+  return COULEURS_GROUPES[sigle] ?? COULEURS_GROUPES[SIGLES_EQUIVALENTS[sigle] ?? ""] ?? COULEURS_GROUPES.Inconnu;
+}
 
 /* Point d'une étape de la Timeline (05/11/2026, demande du porteur). Gris neutre : il ne code
    ni un vote ni une opinion. 09/11/2026 : l'ardoise des métadonnées de Stitch (l'ancien gris était

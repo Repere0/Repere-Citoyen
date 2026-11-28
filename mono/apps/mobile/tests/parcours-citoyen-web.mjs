@@ -25,15 +25,9 @@ page.on("request", r => demandees.push(r.url()));
 
 /* 1. Arrivée */
 await page.goto(BASE + "/", { waitUntil: "networkidle" });
-const bienvenue = page.getByTestId("barriere-bienvenue");
-if (await bienvenue.isVisible().catch(() => false)) {
-  await page.getByTestId("continuer-0").click();
-  await page.getByLabel(/Votre prénom/).fill("Sam");
-  await page.getByTestId("continuer-1").click();
-  await page.getByTestId("continuer-2").click();
-}
-await page.getByTestId("bonjour").waitFor({ timeout: 15000 });
-verifier(true, "arrivée : bienvenue passée, l'accueil dit bonjour");
+/* 28/11/2026 (hotfix H2) : plus de bienvenue à la première ouverture ; l'accueil dit l'accroche A. */
+await page.getByTestId("accroche").waitFor({ timeout: 15000 });
+verifier(true, "arrivée : l'accueil s'ouvre directement, avec l'accroche");
 
 /* 2. Recherche d'une ville */
 if (!(await page.getByLabel(/Où habitez-vous/).isVisible())) await page.getByRole("button", { name: "Chercher une commune" }).first().click();

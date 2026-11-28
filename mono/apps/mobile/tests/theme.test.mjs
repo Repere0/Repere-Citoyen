@@ -344,10 +344,23 @@ test("groupes — aucune paire de couleurs trop proche (distance RVB >= 60), sin
   const { COULEURS_GROUPES } = await import("../src/lib/palette.ts");
   const rvb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
   const noms = Object.keys(COULEURS_GROUPES);
-  assert.equal(noms.length, 12);
+  /* 28/11/2026 (porteur, hotfix H5, ADR 0001 amendé) : treize teintes, UDR a la sienne. */
+  assert.equal(noms.length, 13);
   for (let i = 0; i < noms.length; i++) for (let j = i + 1; j < noms.length; j++) {
     const a = rvb(COULEURS_GROUPES[noms[i]]), b = rvb(COULEURS_GROUPES[noms[j]]);
     const d = Math.hypot(...a.map((v, k) => v - b[k]));
     assert.ok(d >= 60, `${noms[i]} et ${noms[j]} sont trop proches (${d.toFixed(0)})`);
   }
+});
+
+/* ---- 28/11/2026 (porteur, hotfix H5) : les sigles de la 17e législature ont leur couleur ---- */
+test("groupes — EcoS, Dem, DR et UDR ont chacun une couleur, distincte, jamais le gris « Inconnu »", async () => {
+  const { couleurDuGroupe, COULEURS_GROUPES } = await import("../src/lib/palette.ts");
+  const vus = ["EcoS", "Dem", "DR", "UDR"].map(s => couleurDuGroupe(s));
+  for (const c of vus) assert.notEqual(c, COULEURS_GROUPES.Inconnu);
+  assert.equal(new Set(vus).size, 4, "quatre couleurs distinctes : " + vus.join(" "));
+  assert.equal(couleurDuGroupe("DR"), COULEURS_GROUPES.LR, "DR est la famille LR (même couleur, décision du 20/10)");
+  assert.equal(couleurDuGroupe("EcoS"), COULEURS_GROUPES["LÉ"], "EcoS est la famille écologiste (vert, décision du 13/10)");
+  assert.equal(couleurDuGroupe("Dem"), COULEURS_GROUPES.DEM, "Dem est la famille centre (orange, décision du 20/10)");
+  assert.equal(couleurDuGroupe("Sigle inventé"), COULEURS_GROUPES.Inconnu, "un sigle inconnu reste gris, rien n'est deviné");
 });

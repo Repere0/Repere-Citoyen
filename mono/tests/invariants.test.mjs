@@ -147,7 +147,8 @@ test("invariant 7 — palette gelée ; couleurs de groupes seulement dans palett
   }
   const bloc = (lire("apps/mobile/src/lib/palette.ts").match(/COULEURS_GROUPES[\s\S]*?\}\);/) || [""])[0];
   const groupes = [...bloc.matchAll(/#[0-9a-fA-F]{6}\b/g)].map(m => m[0].toLowerCase());
-  assert.equal(groupes.length, 12, "la table des groupes doit porter 12 couleurs (ADR 0001)");
+  /* 28/11/2026 (porteur, hotfix H5) : ADR 0001 amendé, treize couleurs (UDR a la sienne). */
+  assert.equal(groupes.length, 13, "la table des groupes doit porter 13 couleurs (ADR 0001, amendé le 28/11/2026)");
   /* Complement D24 (30/10/2026, ADR 0003) : trois couleurs de vote, dans palette.ts seulement. */
   const blocVote = (lire("apps/mobile/src/lib/palette.ts").match(/export const COULEURS_VOTE[\s\S]*?\}\);/) || [""])[0];
   const votes = [...blocVote.matchAll(/#[0-9a-fA-F]{6}\b/g)].map(m => m[0].toLowerCase());

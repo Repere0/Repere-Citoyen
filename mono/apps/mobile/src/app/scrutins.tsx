@@ -509,7 +509,7 @@ export default function Scrutins() {
                   style={({ pressed }) => [s.selectionCard, x.n === selection && s.selectionCardActive, pressed && enfonce(true)]}
                 >
                   <Text style={TYPO.micro}>{dateFr(x.d)} · n° {x.n}</Text>
-                  <Text numberOfLines={3} style={s.selectionTitre}>{titreLisible(x.t)}</Text>
+                  <Text numberOfLines={2} style={s.selectionTitre}>{titreLisible(x.t)}</Text>
                 </Pressable>
               ))}
             </ScrollView>

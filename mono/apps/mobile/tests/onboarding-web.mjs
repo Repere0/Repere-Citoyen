@@ -1,4 +1,7 @@
-/* PREMIER LANCEMENT : l'écran de démarrage, puis la question du prénom (13/11/2026, ADR 0009).
+/* PREMIER LANCEMENT (28/11/2026, porteur, hotfix H2 ; avant : 13/11/2026, ADR 0009).
+ * L'accueil EST l'onboarding : l'accroche A et la recherche de commune, sans barrière, sans rien garder sur l'appareil.
+ * Le prénom, facultatif, se donne à la demande (Réglages, « Personnaliser ») ; ses gardes restent : nettoyé, refusé
+ * s'il n'en est pas un, jamais dans une adresse demandée (invariant 2). Ancien en-tête, pour l'histoire :
  * Sans profil, l'accueil laisse la place à « Bienvenue sur Repère ». On vérifie : le voile de démarrage disparaît en
  * 1,5 s au plus et ne capte aucun geste ; tout tient sur un écran d'iPhone sans défiler ; un prénom refusé (chiffres)
  * n'est pas gardé ; un prénom donné est gardé, nettoyé, et l'accueil dit bonjour ; « Passer » n'en garde aucun ;
@@ -23,42 +26,28 @@ const nouveau = async () => {
 };
 const lireProfil = page => page.evaluate(() => JSON.parse(localStorage.getItem("repere.profil") || "null"));
 
-/* 1. Démarrage, puis prénom donné */
+/* 1. Première ouverture : l'accueil, l'accroche, la recherche ; rien de gardé */
+{
+  const { contexte, page, erreurs } = await nouveau();
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.getByTestId("accroche").waitFor({ timeout: 10000 });
+  verifier(!(await page.getByTestId("barriere-bienvenue").isVisible().catch(() => false)), "première ouverture : aucune barrière de bienvenue");
+  verifier((await page.getByTestId("accroche").innerText()).trim() === "De votre mairie à l'Assemblée.", "première ouverture : l'accroche A");
+  verifier(await page.getByLabel(/Où habitez-vous/).isVisible(), "première ouverture : la recherche de commune est là");
+  verifier(!(await page.getByTestId("bandeau-decouverte").isVisible().catch(() => false)), "ouverture directe : pas de bandeau « Personnaliser » (réservé aux liens partagés)");
+  verifier(await lireProfil(page) === null, "première ouverture : rien n'est gardé sur l'appareil");
+  if (CAP) await page.screenshot({ path: `${CAP}/accueil-premiere.png` });
+  verifier(erreurs.length === 0, "première ouverture : aucune erreur JavaScript" + (erreurs.length ? " (" + erreurs[0] + ")" : ""));
+  await contexte.close();
+}
+
+/* 2. Le prénom, à la demande (Réglages) : refusé s'il n'en est pas un, nettoyé, jamais transmis */
 {
   const { contexte, page, erreurs, demandees } = await nouveau();
-  await page.goto(BASE + "/", { waitUntil: "commit" });
-  /* 13/11/2026 (porteur) : AU PREMIER LANCEMENT, AUCUN VOILE. L'écran 1 de la bienvenue montre déjà le
-     logo, avec un bouton : deux logos à la suite se lisaient comme un blocage. */
-  await page.waitForTimeout(1800);
-  verifier(await page.getByTestId("demarrage").count() === 0, "premier lancement : pas de voile de démarrage, l'écran 1 de la bienvenue le remplace");
-
+  await page.goto(BASE + "/reglages", { waitUntil: "networkidle" });
+  await page.getByTestId("changer-prenom").click();
   await page.getByTestId("barriere-bienvenue").waitFor({ state: "visible", timeout: 10000 });
-  /* ÉCRAN 1 : le logo et un bouton. Rien ici ne dépend d'une animation : un lecteur bloqué est impossible. */
-  await page.getByTestId("continuer-0").waitFor({ timeout: 10000 });
-  verifier(await page.getByRole("heading", { name: "Repère" }).count() === 1, "écran 1 : le logo et le nom");
-  /* LE LOGO OFFICIEL : trois éléments concentriques (cercle ivoire, anneau gris, point ivoire). Une
-     teinte sans gris réduisait le logo à un cercle et un point — défaut vu par le porteur le 13/11. */
-  const ronds = await page.evaluate(() => {
-    const h = [...document.querySelectorAll("[data-testid=barriere-bienvenue] h1,[data-testid=barriere-bienvenue] h2,[data-testid=barriere-bienvenue] [role=heading]")].find(e => /Repère/.test(e.textContent || ""));
-    const bloc = h && h.parentElement;
-    if (!bloc) return { n: -1, couleurs: [] };
-    const cercles = [...bloc.querySelectorAll("div")].filter(e => {
-      const c = getComputedStyle(e); const r = e.getBoundingClientRect();
-      return r.width > 8 && parseFloat(c.borderRadius) >= r.width / 2 - 1;
-    });
-    return { n: cercles.length, couleurs: cercles.map(e => { const c = getComputedStyle(e); return c.borderTopColor !== "rgba(0, 0, 0, 0)" ? c.borderTopColor : c.backgroundColor; }) };
-  });
-  verifier(ronds.n === 3, "écran 1 : le logo a ses TROIS éléments concentriques (" + ronds.n + ")");
-  verifier(ronds.couleurs.includes("rgb(156, 163, 175)"), "écran 1 : l'anneau intermédiaire est bien gris (" + ronds.couleurs.join(" / ") + ")");
-  verifier((await page.getByTestId("continuer-0").innerText()).trim() === "Commencer", "écran 1 : le bouton dit « Commencer »");
-  if (CAP) await page.screenshot({ path: `${CAP}/bienvenue-0.png` });
-  await page.getByTestId("continuer-0").click();
-  /* ÉCRAN 2 : le prénom. */
-  await page.waitForTimeout(500);
-  if (CAP) await page.screenshot({ path: `${CAP}/bienvenue.png` });
-  verifier(await page.getByText("Comment souhaitez-vous qu'on vous appelle ?").count() === 1, "écran 2 : la question est posée");
-  const bas = await page.getByRole("button", { name: /^Passer, sans/ }).boundingBox();
-  verifier(bas && bas.y + bas.height <= 844, "bienvenue : tout tient sur l'écran sans défiler (« Passer » finit à " + (bas && Math.round(bas.y + bas.height)) + " px sur 844)");
+  verifier(await page.getByText("Comment souhaitez-vous qu'on vous appelle ?").count() === 1, "à la demande : la question du prénom, un seul écran");
   for (const nom of [/^Continuer$/, /^Passer, sans/]) {
     const b = await page.getByRole("button", { name: nom }).boundingBox();
     verifier(b && b.height >= 44, `bienvenue : cible tactile de 44 px au moins (${String(nom)} : ${b && Math.round(b.height)} px)`);
@@ -67,70 +56,47 @@ const lireProfil = page => page.evaluate(() => JSON.parse(localStorage.getItem("
   await champ.fill("R2-D2 <script>");
   verifier(await page.getByText("Un prénom : des lettres", { exact: false }).count() === 1, "bienvenue : une saisie refusée est dite au lecteur");
   await champ.fill("  marie-Hélène  ");
+  if (CAP) await page.screenshot({ path: `${CAP}/bienvenue.png` });
   await page.getByTestId("continuer-1").click();
-  /* ÉCRAN 3 : ce que Repère ne fait pas. */
-  await page.waitForTimeout(500);
-  verifier(await page.getByRole("heading", { name: "Ce que Repère ne fait pas" }).count() === 1, "écran 3 : les valeurs sont annoncées");
-  for (const t of ["Zéro traceur", "Pas de compte", "Des faits, leurs sources"]) verifier(await page.getByText(t, { exact: false }).count() >= 1, `écran 3 : « ${t} »`);
-  if (CAP) await page.screenshot({ path: `${CAP}/bienvenue-2.png` });
-  verifier(await page.getByTestId("continuer-2").innerText() === "C'est parti, marie-Hélène", "écran 3 : le bouton reprend le prénom donné");
-  await page.getByTestId("continuer-2").click();
-  await page.getByTestId("bonjour").waitFor({ timeout: 10000 });
+  await page.getByTestId("barriere-bienvenue").waitFor({ state: "detached", timeout: 10000 });
   const profil = await lireProfil(page);
-  verifier(profil && profil.prenom === "marie-Hélène", "« C'est parti » garde le prénom, nettoyé, dans repere.profil (" + JSON.stringify(profil && profil.prenom) + ")");
-  verifier((await page.getByTestId("bonjour").innerText()).trim() === "Bonjour marie-Hélène", "accueil : « Bonjour marie-Hélène »");
+  verifier(profil && profil.prenom === "marie-Hélène", "« Continuer » garde le prénom, nettoyé, dans repere.profil (" + JSON.stringify(profil && profil.prenom) + ")");
+  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.getByTestId("bonjour").waitFor({ timeout: 10000 });
+  verifier((await page.getByTestId("bonjour").innerText()).trim() === "Bonjour marie-Hélène", "accueil : « Bonjour marie-Hélène » remplace l'accroche");
   const cles = await page.evaluate(() => Object.keys(localStorage));
   verifier(cles.every(k => k === "repere.profil" || k === "repere.departement"), "aucune autre clé de stockage (" + cles.join(", ") + ")");
   verifier(!demandees.some(u => /marie|H%C3%A9l/i.test(u)), "le prénom n'apparaît dans aucune adresse demandée (" + demandees.length + " requêtes)");
-  /* AU LANCEMENT SUIVANT, le voile reprend son rôle : il n'y a plus d'onboarding à afficher. */
+  /* AU LANCEMENT SUIVANT, le voile de démarrage : bref, et il ne capte aucun geste. */
   await page.goto(BASE + "/", { waitUntil: "commit" });
   const voile = page.getByTestId("demarrage");
   await voile.waitFor({ state: "attached", timeout: 10000 });
   const pointeur = await voile.evaluate(e => getComputedStyle(e).pointerEvents);
-  const fond = await voile.evaluate(e => getComputedStyle(e).backgroundColor);
   const vu = Date.now();
   await voile.waitFor({ state: "detached", timeout: 5000 });
   const duree = Date.now() - vu;
   verifier(pointeur === "none", "lancement suivant : le voile ne capte aucun geste (pointer-events " + pointeur + ")");
-  verifier(fond === "rgb(13, 17, 23)", "lancement suivant : fond #0D1117 (" + fond + ")");
   verifier(duree <= 1500, "lancement suivant : le voile part en 1,5 s au plus (" + duree + " ms)");
-  await page.waitForTimeout(1200);
-  verifier(await page.getByTestId("barriere-bienvenue").count() === 0 && await page.getByTestId("bonjour").count() === 1, "au lancement suivant : pas de question, le bonjour est là");
   verifier(erreurs.length === 0, "aucune erreur JavaScript" + (erreurs.length ? " (" + erreurs[0] + ")" : ""));
   await contexte.close();
 }
 
-/* 2. « Passer » : aucun prénom ; une saisie refusée n'est pas gardée */
-{
+/* 3. « Passer », et une saisie refusée : « Citoyen », avec les réglages par défaut */
+for (const [saisie, quoi] of [[null, "« Passer »"], ["12345", "une saisie refusée"]]) {
   const { contexte, page } = await nouveau();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
+  await page.goto(BASE + "/reglages", { waitUntil: "networkidle" });
+  await page.getByTestId("changer-prenom").click();
   await page.getByTestId("barriere-bienvenue").waitFor({ state: "visible", timeout: 10000 });
-  await page.getByTestId("continuer-0").click();
-  await page.getByLabel(/Votre prénom/).fill("12345");
-  await page.getByTestId("continuer-1").click();
-  await page.getByTestId("continuer-2").click();
+  if (saisie === null) await page.getByRole("button", { name: /^Passer, sans/ }).click();
+  else { await page.getByLabel(/Votre prénom/).fill(saisie); await page.getByTestId("continuer-1").click(); }
   await page.getByTestId("barriere-bienvenue").waitFor({ state: "detached", timeout: 10000 });
-  await page.waitForTimeout(800);
-  let profil = await lireProfil(page);
-  verifier(profil && profil.prenom === "Citoyen" && profil.tailleTexte === 16, "une saisie refusée n'est pas gardée : le prénom par défaut « Citoyen » l'est, avec les réglages par défaut");
-  await contexte.close();
-}
-{
-  const { contexte, page } = await nouveau();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
-  await page.getByTestId("barriere-bienvenue").waitFor({ state: "visible", timeout: 10000 });
-  await page.getByTestId("continuer-0").click();
-  await page.getByRole("button", { name: /^Passer, sans/ }).click();
-  await page.getByTestId("continuer-2").click();
-  await page.getByTestId("barriere-bienvenue").waitFor({ state: "detached", timeout: 10000 });
+  await page.waitForTimeout(500);
   const profil = await lireProfil(page);
-  verifier(profil && profil.prenom === "Citoyen", "« Passer » donne le prénom « Citoyen »");
-  verifier((await page.getByTestId("bonjour").innerText()).trim() === "Bonjour Citoyen", "accueil : « Bonjour Citoyen »");
+  verifier(profil && profil.prenom === "Citoyen" && profil.tailleTexte === 16, `${quoi} : le prénom « Citoyen », avec les réglages par défaut (${JSON.stringify(profil && profil.prenom)})`);
   await contexte.close();
 }
 
-/* 3. Un lien partagé ouvre son contenu (23/11/2026, porteur, ADR 0012, qui amende l'ADR 0011 du 14/11).
-   Mesuré avant : « /finances#melun » ouvert par un nouveau visiteur montrait trois écrans de bienvenue avant Finances. */
+/* 4. Un lien partagé ouvre son contenu (23/11/2026, porteur, ADR 0012). */
 {
   const { contexte, page } = await nouveau();
   await page.goto(BASE + "/finances#melun", { waitUntil: "networkidle" });
@@ -145,40 +111,6 @@ const lireProfil = page => page.evaluate(() => JSON.parse(localStorage.getItem("
   verifier(await page.getByTestId("barriere-bienvenue").isVisible(), "« Personnaliser » pose la bienvenue par-dessus la page");
   await passerBienvenue(page);
   verifier(page.url().includes("/finances") && !(await page.getByTestId("bandeau-decouverte").isVisible().catch(() => false)), "après la bienvenue : on reste sur Finances, le bandeau a disparu");
-  await contexte.close();
-}
-
-/* 3 bis. L'ouverture directe (l'accueil) garde la bienvenue complète. */
-{
-  const { contexte, page } = await nouveau();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
-  await page.waitForTimeout(1500);
-  verifier(await page.getByTestId("barriere-bienvenue").isVisible(), "accueil sans profil : la bienvenue couvre l'écran (ouverture directe)");
-  verifier(!(await page.getByTestId("bonjour").isVisible().catch(() => false)), "sans prénom : l'accueil n'est pas visible");
-  await contexte.close();
-}
-
-/* 4. 14/11/2026 : la barrière tient à UN fait (pas de prénom) ; « Changer de prénom » la relève pour tester */
-{
-  const { contexte, page } = await nouveau();
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
-  await passerBienvenue(page);
-  await page.getByTestId("bonjour").waitFor({ timeout: 10000 });
-  verifier((await page.getByTestId("bonjour").innerText()).trim() === "Bonjour Citoyen", "après « Passer » : « Bonjour Citoyen »");
-  /* L'accueil n'a pas d'en-tête : le bouton des réglages est dans les onglets. */
-  /* Step Up (25/11/2026) : les réglages sont un écran. */
-  await page.goto(BASE + "/reglages", { waitUntil: "networkidle" });
-  await page.getByTestId("changer-prenom").click();
-  await page.getByTestId("barriere-bienvenue").waitFor({ state: "visible", timeout: 10000 });
-  verifier(await page.getByLabel(/Votre prénom/).count() === 1, "« Changer de prénom » : la question du prénom revient, sans refaire le logo");
-  verifier(await page.getByTestId("bonjour").count() === 0 || !(await page.getByTestId("bonjour").isVisible()), "« Changer de prénom » : l'accueil est de nouveau masqué");
-  await page.getByLabel(/Votre prénom/).fill("Zoé");
-  await page.getByTestId("continuer-1").click();
-  await page.getByTestId("continuer-2").click();
-  await page.getByTestId("barriere-bienvenue").waitFor({ state: "detached", timeout: 10000 });
-  await page.goto(BASE + "/", { waitUntil: "networkidle" });
-  await page.getByTestId("bonjour").waitFor({ timeout: 10000 });
-  verifier((await page.getByTestId("bonjour").innerText()).trim() === "Bonjour Zoé", "nouveau prénom : « Bonjour Zoé »");
   await contexte.close();
 }
 

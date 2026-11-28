@@ -42,6 +42,7 @@ import { BoutonPartageTexte, ligneSource } from "../../ui/partage/partager-texte
 import { enfonce } from "../../ui/mouvement";
 import { niveauTitre } from "../../ui/titre";
 import { ExpliquerDesDossiers, useResumesClairs } from "../../ui/resume-clair";
+import { TitreDepliable } from "../../ui/titre-depliable";
 
 type Ev = { titre: string; debut: string; institution: string; categorie?: string; lieu?: string; description?: string; source: Record<string, string> };
 type Groupe = { jour: string; institution: string; titre: string; debut: string; debuts: string[]; fins?: (string | null)[]; seances: number;
@@ -110,7 +111,8 @@ function Ligne({ g, resumes }: { g: Groupe; resumes: unknown }) {
       <View style={{ flex: 1, gap: 2, paddingTop: PAS, paddingBottom: PAS * 4 }}>
       {/* Retour iPhone (11/11/2026) : l'heure ne doit plus écraser le titre. Le titre (17 px, encre) se lit
           d'abord ; l'heure passe dessous, en 13 px gris. */}
-      <Text style={TYPO.reponse}>{g.titre}</Text>
+      {/* 28/11/2026 (hotfix H3) : deux lignes au plus, « Lire tout » déplie (titres de 4 à 11 lignes mesurés). */}
+      <TitreDepliable testID="cal-titre" style={TYPO.reponse} texte={g.titre} />
       <Text style={[TYPO.donnee, { color: couleurs.sourd }]}>{heures || "Heure non publiée"}</Text>
       <Text style={TYPO.note}>
         {[g.institution, g.categorie, g.lieu, g.seances > 1 ? `${g.seances} séances ce jour-là` : null].filter(Boolean).join(" · ")}
@@ -263,7 +265,7 @@ export default function AVenir() {
                     style={{ gap: PAS * 2, padding: PAS * 6, borderRadius: RAYON.carte + 4, backgroundColor: couleurs.carte }}>
                     <Text style={TYPO.etiquette}>Prochain rendez-vous</Text>
                     <Text style={[TYPO.affiche, { fontSize: 28, lineHeight: 40 }]}>{quandCourt}</Text>
-                    <Text style={TYPO.reponse} numberOfLines={3}>{g.titre}</Text>
+                    <Text style={TYPO.reponse} numberOfLines={2}>{g.titre}</Text>
                     <Text style={TYPO.note}>{[majuscule(jourFr(g.jour) || ""), heure ? heure.replace(/ /g, "\u00a0") : null, g.institution].filter(Boolean).join(" · ")}</Text>
                   </View>
                 );

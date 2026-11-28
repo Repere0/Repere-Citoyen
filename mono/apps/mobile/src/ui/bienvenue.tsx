@@ -1,33 +1,22 @@
-/* LA BIENVENUE, COMPOSANT (14/11/2026, décision du porteur : « barrière physique », ADR 0011).
+/* LA BIENVENUE, COMPOSANT (14/11/2026, ADR 0011 ; 23/11/2026, ADR 0012 ; 28/11/2026, hotfix H2).
  *
- * Ce n'est plus une page vers laquelle on redirige : c'est un écran que la coquille (_layout.tsx) pose PAR-DESSUS
- * toute l'application tant qu'aucun prénom n'est gardé. Aucun ordre de navigation n'est donné, donc aucun ne peut se
- * perdre — c'était la panne de l'iPhone du porteur, « corrigée » cinq fois du côté de la navigation.
- *
- * 1. le logo, et « Commencer » (seulement au tout premier lancement, quand aucun profil n'est gardé) ;
- * 2. le prénom, et « Continuer » / « Passer » — « Passer » donne le prénom « Citoyen » (porteur, 14/11) ;
- * 3. ce que Repère ne fait pas.
+ * 28/11/2026 (porteur, accroche A) : la première ouverture ne passe plus par ici. L'accueil EST l'onboarding (l'accroche,
+ * puis la recherche de commune) : l'audit du jour mesurait trois écrans avant toute valeur, et la commune toujours pas
+ * choisie à la fin. Cet écran ne se pose plus que si le lecteur le demande (« Personnaliser » sur un lien partagé,
+ * Réglages) : une seule question, le prénom, facultatif. « Passer » donne « Citoyen » (porteur, 14/11).
  *
  * Les réglages déjà gardés sur l'appareil (lecture, thèmes, points) ne sont PAS remis à zéro : seul le prénom change.
- * Le prénom reste sur l'appareil, jamais transmis (invariant 2). Ce qui n'est pas un prénom n'est pas gardé. */
+ * Le prénom reste sur l'appareil, jamais transmis (invariant 2). Ce qui n'est pas un prénom n'est pas gardé.
+ * L'ancien écran « Ce que Repère ne fait pas » a disparu, et sa phrase inexacte avec lui (« Personne ne sait que vous
+ * êtes là » : les hébergeurs reçoivent l'adresse IP de chaque visite). */
 import { useState } from "react";
 import { Animated, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from "react-native";
-import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { nettoyerPrenom, PRENOM_MAX, PROFIL_DEFAUT } from "@repere/core";
 import { MODE_INITIAL, useProfil } from "../lib/profil";
 import { ACCENTS, CIBLE, couleurs, PAS, POLICE, RAYON, TYPO } from "../lib/theme";
 import { enfonce, useApparition } from "./mouvement";
-import { Logo } from "./logo";
 import { niveauTitre } from "./titre";
-
-/* Ce que Repère ne fait pas. Chaque ligne est vérifiable dans l'application : aucune promesse en l'air. */
-const VALEURS: { icone: keyof typeof Ionicons.glyphMap; titre: string; corps: string }[] = [
-  { icone: "eye-off-outline", titre: "Zéro traceur", corps: "Aucun cookie publicitaire, aucune mesure d'audience. Personne ne sait que vous êtes là." },
-  { icone: "person-outline", titre: "Pas de compte", corps: "Aucune adresse e-mail, aucun numéro de téléphone, aucun mot de passe ne vous est demandé." },
-  { icone: "document-text-outline", titre: "Des faits, leurs sources", corps: "Chaque chiffre porte son producteur et sa date. Aucune opinion, aucun jugement." },
-];
 
 /* Le prénom donné à qui passe la question (porteur, 14/11/2026). */
 export const PRENOM_PAR_DEFAUT = "Citoyen";
@@ -35,8 +24,6 @@ export const PRENOM_PAR_DEFAUT = "Citoyen";
 export function Bienvenue() {
   const { enregistrer, profil } = useProfil();
   const marges = useSafeAreaInsets();
-  /* Un appareil qui garde déjà un profil (réglages, points) arrive droit sur la question du prénom. */
-  const [etape, setEtape] = useState(profil ? 1 : 0);
   const [saisie, setSaisie] = useState("");
   const apparition = useApparition();
   const prenom = nettoyerPrenom(saisie);
@@ -63,33 +50,17 @@ export function Bienvenue() {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1, backgroundColor: couleurs.sol }}>
-      <Animated.View testID={`bienvenue-${etape}`} style={{ flex: 1, paddingHorizontal: PAS * 6, paddingTop: marges.top + PAS * 6, paddingBottom: marges.bottom + PAS * 6,
+      <Animated.View testID="bienvenue-prenom" style={{ flex: 1, paddingHorizontal: PAS * 6, paddingTop: marges.top + PAS * 6, paddingBottom: marges.bottom + PAS * 6,
         justifyContent: "center", gap: PAS * 6, maxWidth: 520, width: "100%", alignSelf: "center",
         opacity: apparition, transform: [{ translateY: apparition.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) }] }}>
 
-        {etape === 0 ? (
-          <>
-            <View style={{ alignItems: "center", gap: PAS * 4 }}>
-              {/* Le logo officiel, ses trois éléments : cercle ivoire, anneau gris, point ivoire.
-                  La variante « mono » n'en a que deux — elle est faite pour les petits formats. */}
-              <Logo size={120} variant="sombre" />
-              <Text style={[TYPO.affiche, { textAlign: "center" }]} {...niveauTitre(1)}>Repère</Text>
-              <Text style={[TYPO.corps, { textAlign: "center", fontSize: 16, lineHeight: 26 }]}>
-                Qui décide chez vous, et où va votre argent. Deux questions, des réponses sourcées.
-              </Text>
-            </View>
-            {bouton("Commencer", () => setEtape(1), "continuer-0")}
-          </>
-        ) : null}
-
-        {etape === 1 ? (
-          <>
+        <>
             <View style={{ alignItems: "center", gap: PAS * 4 }}>
               <Text style={[TYPO.affiche, { textAlign: "center" }]} {...niveauTitre(1)}>Comment souhaitez-vous qu'on vous appelle ?</Text>
             </View>
             <View style={{ gap: PAS * 2 }}>
               <TextInput value={saisie} onChangeText={setSaisie} maxLength={PRENOM_MAX} autoCapitalize="words" autoCorrect={false} autoComplete="given-name"
-                returnKeyType="done" onSubmitEditing={() => setEtape(2)} placeholder="Votre prénom" placeholderTextColor={couleurs.sourd}
+                returnKeyType="done" onSubmitEditing={() => terminer(prenom)} placeholder="Votre prénom" placeholderTextColor={couleurs.sourd}
                 accessibilityLabel="Votre prénom"
                 style={{ minHeight: CIBLE + 12, borderRadius: RAYON.bloc, borderWidth: 1, borderColor: refuse ? couleurs.encre : couleurs.trait, backgroundColor: couleurs.carte,
                   paddingHorizontal: PAS * 6, fontSize: 20, fontFamily: POLICE.titre, color: couleurs.encre, textAlign: "center" }} />
@@ -98,34 +69,11 @@ export function Bienvenue() {
               </Text>
             </View>
             <View style={{ gap: PAS * 2 }}>
-              {bouton("Continuer", () => setEtape(2), "continuer-1")}
-              {discret("Passer", "Passer, sans donner de prénom", () => { setSaisie(PRENOM_PAR_DEFAUT); setEtape(2); })}
+              {bouton("Continuer", () => terminer(prenom), "continuer-1")}
+              {discret("Passer", "Passer, sans donner de prénom", () => terminer(PRENOM_PAR_DEFAUT))}
             </View>
-          </>
-        ) : null}
+        </>
 
-        {etape === 2 ? (
-          <>
-            <View style={{ gap: PAS * 4 }}>
-              <Text style={[TYPO.affiche, { textAlign: "center" }]} {...niveauTitre(1)}>Ce que Repère ne fait pas</Text>
-              <View style={{ gap: PAS * 4 }}>
-                {VALEURS.map(v => (
-                  <View key={v.titre} style={{ flexDirection: "row", gap: PAS * 4, alignItems: "flex-start" }}>
-                    <Ionicons name={v.icone} size={24} color={couleurs.encre} accessible={false} importantForAccessibility="no" />
-                    <View style={{ flex: 1, gap: 2 }}>
-                      <Text style={[TYPO.corps, { fontFamily: POLICE.titre }]}>{v.titre}</Text>
-                      <Text style={TYPO.note}>{v.corps}</Text>
-                    </View>
-                  </View>
-                ))}
-              </View>
-            </View>
-            <View style={{ gap: PAS * 2 }}>
-              {bouton(prenom ? `C'est parti, ${prenom}` : "C'est parti", () => terminer(prenom), "continuer-2")}
-              {discret("Confidentialité", "Lire la page Confidentialité", () => router.push("/confidentialite"))}
-            </View>
-          </>
-        ) : null}
       </Animated.View>
     </KeyboardAvoidingView>
   );

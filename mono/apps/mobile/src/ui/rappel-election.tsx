@@ -38,7 +38,7 @@ export function RappelElection({ aujourdhui = new Date() }: { aujourdhui?: Date 
   const compte = useCompte(trouve ? trouve.jours : 0);
   if (!trouve) return null;
   const { election, jours } = trouve;
-  const titre = election.type === "presidentielle" ? "Élections présidentielles" : "Élections législatives";
+  const titre = election.type === "presidentielle" ? "Élection présidentielle" : "Élections législatives";
   const quand = jours === 0 ? "aujourd'hui" : jours === 1 ? "dans 1 jour" : `dans ${jours} jours`;
   const date = dateFr(election.date);
   return (

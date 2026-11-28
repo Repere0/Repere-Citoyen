@@ -596,9 +596,21 @@ export default function Accueil() {
                 « Bonjour » : le prénom vient de repere.profil, jamais du réseau ; sans prénom, « Citoyen ». */}
             {/* 17/11/2026 : en mode démo, une ligne discrète au-dessus de tout, avec « Laisser un avis ». */}
             <BandeauDemo />
+            {/* 28/11/2026 (porteur, hotfix H2, accroche A) : à la première ouverture, plus de trois écrans avant la valeur.
+                L'accueil EST l'onboarding, comme sur grand écran depuis le 25/11 : l'accroche, puis la recherche de commune.
+                Le prénom reste facultatif (Réglages) ; tant qu'il n'est pas donné, l'accroche remplace « Bonjour ». */}
             <View style={[{ gap: PAS }, bureau && { display: "none" }]}>
-              <Text style={s.bonjour} testID="bonjour" {...niveauTitre(1)}>Bonjour {prenom || "Citoyen"}</Text>
-              <Text style={s.sousTitre}>Ce qui se passe chez vous, expliqué simplement.</Text>
+              {prenom ? (
+                <>
+                  <Text style={s.bonjour} testID="bonjour" {...niveauTitre(1)}>Bonjour {prenom}</Text>
+                  <Text style={s.sousTitre}>Ce qui se passe chez vous, expliqué simplement.</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={s.accrocheA} testID="accroche" {...niveauTitre(1)}>De votre mairie à l'Assemblée.</Text>
+                  <Text style={s.sousTitre}>Qui décide, qui vote quoi, où va l'argent public. Chaque fait avec sa source.</Text>
+                </>
+              )}
             </View>
             <Text style={s.titreCache} nativeID="question">Où habitez-vous ?</Text>
             {/* Bureau : la recherche vit dans le bloc d'accueil (ui/bureau/hero.tsx), la même logique. */}
@@ -639,8 +651,20 @@ export default function Accueil() {
                   </Carte>
                 ) : null}
 
-                {/* ADR 0013 (25/11/2026) : les alertes locales, à l'ouverture ; une proposition douce tant que rien n'est choisi. */}
-                <BandeauAlertes insee={retenue ? retenue.c : null} />
+                {/* 28/11/2026 (hotfix H2) : sans commune, la ligne de confidentialité sous la recherche, et PAS de carte
+                    d'alertes : elle proposait de « choisir mes sujets » avant même d'avoir une commune (audit du jour). */}
+                {premiere ? (
+                  <View style={{ flexDirection: "row", alignItems: "center", flexWrap: "wrap", columnGap: PAS * 2 }}>
+                    <Text style={s.note}>Sans compte, sans traceur publicitaire.</Text>
+                    <Pressable onPress={() => router.push("/confidentialite")} accessibilityRole="link" accessibilityLabel="Lire la page Confidentialité"
+                      style={({ pressed }) => ({ minHeight: CIBLE, justifyContent: "center", ...enfonce(pressed) })}>
+                      <Text style={[s.note, { color: D.lien, fontFamily: POLICE.texteMoyen }]}>Confidentialité</Text>
+                    </Pressable>
+                  </View>
+                ) : (
+                  /* ADR 0013 (25/11/2026) : les alertes locales, à l'ouverture ; une proposition douce tant que rien n'est choisi. */
+                  <BandeauAlertes insee={retenue ? retenue.c : null} />
+                )}
 
                 {/* Le quiz : une carte pleine largeur, à part des quatre accès (fond civique, bordure d'accent).
                     Sans commune (17/11/2026), il devient l'une des quatre cartes. */}
@@ -858,6 +882,8 @@ const s = feuille(() => StyleSheet.create({
   note: { fontFamily: POLICE.texte, fontSize: 14, lineHeight: 22, color: D.sourd },
   /* Polish (porteur, 25/11/2026) : un bonjour discret, aligné à gauche, plus un grand titre centré. */
   bonjour: { fontFamily: POLICE.section, fontSize: 20, lineHeight: 28, letterSpacing: -0.2, color: D.encre },
+  /* Accroche A (porteur, 28/11/2026) : 28 px, de l'échelle ECHELLE_TYPO, sur deux lignes au plus à 390 px. */
+  accrocheA: { fontFamily: POLICE.affiche, fontSize: 28, lineHeight: 36, letterSpacing: -0.4, color: D.encre },
   sousTitre: { fontFamily: POLICE.texte, fontSize: 16, lineHeight: 24, color: D.sourd },
   jouer: { minHeight: 36, paddingHorizontal: PAS * 4, borderRadius: 999, backgroundColor: D.encre, alignItems: "center", justifyContent: "center" },
   jouerTexte: { fontFamily: POLICE.titre, fontSize: 16, color: D.sol },

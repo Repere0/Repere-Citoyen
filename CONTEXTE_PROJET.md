@@ -358,8 +358,9 @@ PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers node test_repere.mjs site_v18_20/index
   à lire dans le journal de la collecte.
 - **Premier lancement iPhone : jamais de redirection** (14/11/2026) : cinq correctifs par navigation (`router.replace`,
   `<Redirect>`) ont échoué sur iPhone alors que Chromium restait vert. La question du prénom est une BARRIÈRE posée par
-  `_layout.tsx` (`testID="barriere-bienvenue"`) tant que `repere.profil.prenom` est vide ; aucune adresse `/bienvenue`.
-  Tout banc navigateur qui pose un profil à la main y met un prénom, sinon la barrière couvre l'application.
+  `_layout.tsx` (`testID="barriere-bienvenue"`) ; aucune adresse `/bienvenue`. Depuis le 28/11/2026 (porteur, hotfix
+  H2) elle ne se pose plus qu'À LA DEMANDE (« Personnaliser », Réglages) : à la première ouverture, l'accueil EST
+  l'onboarding (accroche A, recherche de commune), et rien n'est gardé tant que le lecteur n'a rien choisi.
 - **Fiche d'un député : la date vient de LUI** (14/11/2026) : elle était lue dans la chaîne de la commune choisie
   (`niveauDuDepute`, core, corrige). Les législatures (`legislatures`) n'existent qu'après une collecte du runner
   avec `mono_donnees.py` à jour ; `deputes.json` est ignoré par git, la production n'a pas pu être lue depuis le conteneur.
