@@ -56,21 +56,21 @@ une seule fois sont reprises a part, plus bas.
 | `acteur.adresses.adresse[].ville` | texte/vide | 2805 | Paris 07 SP · Cenon |
 | `acteur.adresses.adresse[].valElec` | texte/vide | 6200 | 01 40 63 75 53 · 01 40 63 79 37 |
 | `acteur.mandats.mandat[]` | liste | 2995 | de 2 a 814 entrees |
-| `acteur.mandats.mandat[].@xmlns:xsi` | texte | 98291 | http://www.w3.org/2001/XMLSchema-instance |
-| `acteur.mandats.mandat[].@xsi:type` | texte | 98291 | MandatSimple_Type · MandatMission_Type |
-| `acteur.mandats.mandat[].uid` | texte | 98291 | PM391145 · PM15423365 |
-| `acteur.mandats.mandat[].acteurRef` | texte | 98291 | PA1001 · PA1002 |
-| `acteur.mandats.mandat[].legislature` | texte/vide | 98291 | 13 · 14 |
-| `acteur.mandats.mandat[].typeOrgane` | texte | 98291 | DELEGBUREAU · GOUVERNEMENT |
-| `acteur.mandats.mandat[].dateDebut` | texte | 98291 | 2007-06-28 · 2010-03-22 |
-| `acteur.mandats.mandat[].datePublication` | texte/vide | 98291 | 2010-03-23 · 2012-06-27 |
-| `acteur.mandats.mandat[].dateFin` | texte/vide | 98291 | 2008-10-08 · 2010-11-13 |
-| `acteur.mandats.mandat[].preseance` | texte/vide | 98291 | 24 · 50 |
-| `acteur.mandats.mandat[].nominPrincipale` | texte | 98291 | 0 · 1 |
-| `acteur.mandats.mandat[].infosQualite.codeQualite` | texte/vide | 98291 | Membre · membre |
-| `acteur.mandats.mandat[].infosQualite.libQualite` | texte | 98291 | Membre · membre |
-| `acteur.mandats.mandat[].infosQualite.libQualiteSex` | texte/vide | 98291 | Membre · membre |
-| `acteur.mandats.mandat[].organes.organeRef` | texte | 98170 | PO391141 · PO384206 |
+| `acteur.mandats.mandat[].@xmlns:xsi` | texte | 98292 | http://www.w3.org/2001/XMLSchema-instance |
+| `acteur.mandats.mandat[].@xsi:type` | texte | 98292 | MandatSimple_Type · MandatMission_Type |
+| `acteur.mandats.mandat[].uid` | texte | 98292 | PM391145 · PM15423365 |
+| `acteur.mandats.mandat[].acteurRef` | texte | 98292 | PA1001 · PA1002 |
+| `acteur.mandats.mandat[].legislature` | texte/vide | 98292 | 13 · 14 |
+| `acteur.mandats.mandat[].typeOrgane` | texte | 98292 | DELEGBUREAU · GOUVERNEMENT |
+| `acteur.mandats.mandat[].dateDebut` | texte | 98292 | 2007-06-28 · 2010-03-22 |
+| `acteur.mandats.mandat[].datePublication` | texte/vide | 98292 | 2010-03-23 · 2012-06-27 |
+| `acteur.mandats.mandat[].dateFin` | texte/vide | 98292 | 2008-10-08 · 2010-11-13 |
+| `acteur.mandats.mandat[].preseance` | texte/vide | 98292 | 24 · 50 |
+| `acteur.mandats.mandat[].nominPrincipale` | texte | 98292 | 0 · 1 |
+| `acteur.mandats.mandat[].infosQualite.codeQualite` | texte/vide | 98292 | Membre · membre |
+| `acteur.mandats.mandat[].infosQualite.libQualite` | texte | 98292 | Membre · membre |
+| `acteur.mandats.mandat[].infosQualite.libQualiteSex` | texte/vide | 98292 | Membre · membre |
+| `acteur.mandats.mandat[].organes.organeRef` | texte | 98171 | PO391141 · PO384206 |
 | `acteur.mandats.mandat[].libelle` | texte/vide | 6032 | Mise en place du plan de relance · L'avenir des trains d'équilibre du territoire |
 | `acteur.mandats.mandat[].missionSuivanteRef` | texte/vide | 6032 | PM773756 · PM789978 |
 | `acteur.mandats.mandat[].missionPrecedenteRef` | texte/vide | 6032 | PM769451 · PM786854 |
