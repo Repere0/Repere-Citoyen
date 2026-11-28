@@ -95,3 +95,17 @@ distinctes (distance RVB d'au moins 60 entre deux groupes, gardé par `theme.tes
 inchangé : toujours 12 couleurs, identification des élus seulement. Contrastes mesurés dans le commentaire de
 `palette.ts` : plusieurs groupes sont sous 3:1 sur l'une des cartes ; l'hémicycle cerne alors le point d'un trait gris et
 le nom du groupe est toujours écrit à côté.
+
+## Amendement du 28/11/2026 (porteur, hotfix H5) — treize couleurs, et les sigles de la 17e législature
+
+Mesuré en production le 28/11/2026 : dans l'hémicycle, EcoS, Dem, DR et UDR avaient tous le même gris
+(`rgb(91, 98, 112)`, la couleur « Inconnu »). La palette ne connaissait que les anciens sigles (`LÉ`, `DEM`, `LR`),
+et UDR n'avait aucune couleur. Décision du porteur : quatre couleurs distinctes.
+
+- `SIGLES_EQUIVALENTS` (`palette.ts`) : DR → LR, EcoS → LÉ, Dem → DEM. Même famille, même couleur (décisions du 13/10
+  et du 20/10/2026). Un sigle absent reste gris : rien n'est deviné.
+- UDR reçoit une treizième teinte, `#5864E8` (bleu, famille de droite) : 68 de distance RVB avec LR, la plus proche ;
+  contraste 4,8:1 sur la carte claire, 3,5:1 sur la carte sombre. La décision du 07/11/2026 (UDR en gris neutre en
+  attendant la charte) est remplacée.
+- La palette passe de 12 à 13 couleurs (`invariants.test.mjs` et `theme.test.mjs` mis à jour). L'usage ne change pas :
+  identifier un élu, jamais coder un vote, une opinion ou un rang.
