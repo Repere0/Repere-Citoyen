@@ -67,6 +67,7 @@ import { deputeParNom, groupeDe, useGroupes } from "../../lib/groupes";
 import { DataBadge } from "../../ui/donnees";
 import { useCouleurVote } from "../../lib/couleur-vote";
 import { niveauTitre } from "../../ui/titre";
+import { BandeauAlertes } from "../../ui/alertes";
 const MOTS_VOTE: Record<string, string> = { p: "Pour", c: "Contre", a: "Abstention" };
 
 /* LE SITE OFFICIEL DE LA MAIRIE (D28, ADR 0005) : un lien externe, lu dans l'annuaire DILA
@@ -200,6 +201,11 @@ export default function ChezVous() {
               phrase={`Les comptes de ${nom} ne permettent pas de dire combien la commune dépense par habitant.`}
               suite={{ texte: "Pourquoi ?", onPress: () => router.navigate("/finances") }} />
           )}
+
+          {/* 28/11/2026 (hotfix H2) : les alertes locales (ADR 0013) vivent ici, une fois la commune choisie, juste après la
+              réponse héros (qui reste entière dans le premier écran). Sur l'accueil, elles proposaient de « choisir mes
+              sujets » avant toute commune ; et avec une commune gardée, l'accueil renvoie ici : elles n'y étaient jamais vues. */}
+          {choix ? <BandeauAlertes insee={choix.insee} /> : null}
 
           {/* 13/11/2026 (porteur) : l'ordre suit les niveaux de décision, du plus proche au plus lointain. D'abord la
              commune (le budget, ce que l'État y finance, l'actualité locale), puis qui décide à chaque niveau, puis

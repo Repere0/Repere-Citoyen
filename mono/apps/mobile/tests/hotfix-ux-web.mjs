@@ -77,6 +77,15 @@ async function ouvrir(chemin, { profil = null, commune = null } = {}) {
   await contexte.close();
 }
 
+/* ── H2 ter : les alertes (ADR 0013) restent visibles, sur la page de la commune ─────────────────────────────────── */
+{
+  const { contexte, page } = await ouvrir("/chez-vous", { profil: PROFIL, commune: { d: COMMUNE.d, c: COMMUNE.c } });
+  verifier(await page.getByTestId("alertes-proposition").first().isVisible().catch(() => false), "H2 ter · page Commune : la proposition d'alertes est visible");
+  const heros = await page.evaluate(() => { const r = [...document.querySelectorAll('[data-testid="reponse"]')].filter(e => e.offsetParent)[0]; return r ? Math.round(r.getBoundingClientRect().bottom) : null; });
+  verifier(heros !== null && heros <= 844, `H2 ter · la réponse héros reste dans le premier écran (${heros} px)`);
+  await contexte.close();
+}
+
 /* ── H1 : la répartition dit « sur 100 € » à l'œil ───────────────────────────────────────────────── */
 for (const chemin of ["/chez-vous", "/finances"]) {
   const { contexte, page } = await ouvrir(chemin, { profil: PROFIL, commune: { d: COMMUNE.d, c: COMMUNE.c } });
