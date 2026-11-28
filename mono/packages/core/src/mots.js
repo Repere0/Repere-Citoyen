@@ -65,7 +65,7 @@ export const GLOSSAIRE = {
   },
   abstention: {
     titre: "Abstention",
-    corps: "Fait de ne pas prendre parti dans un vote. Pour un député, c'est voter ni pour ni contre ; pour un électeur, c'est ne pas aller voter.",
+    corps: "Fait de ne pas prendre parti dans un vote. Pour un député, c'est ne voter ni pour ni contre ; pour un électeur, c'est ne pas aller voter.",
   },
   "conseil des ministres": {
     titre: "Conseil des ministres",

@@ -71,9 +71,18 @@ export function BarreBudget({ parts }: { parts: { sal: number; inv: number; aut:
     { cle: "aut", mot: "Autres", valeur: parts.aut, couleur: JAUGE.autres },
   ];
   return (
-    <View style={{ gap: PAS * 4 }}>
-      <BarreSegments hauteur={12} segments={lignes}
-        etiquette={`Sur 100 euros dépensés : ${parts.sal} de salaires, ${parts.inv} d'investissements, ${parts.aut} d'autres dépenses.`} />
+    <View style={{ gap: PAS * 2 }}>
+      {/* 28/11/2026 (hotfix H1, audit du jour) : sans cette mention, « Salaires 49 € » sous « 2 215 € par habitant » se
+          lisait 49 € par habitant. Le lecteur d'écran l'entend déjà dans l'étiquette de la barre : ici, c'est pour l'œil.
+          Sur la LIGNE de la barre, pas au-dessous : la réponse héros de la page Commune finissait à 842 px pour un pli à 844
+          (Variante A, 11/11) ; une ligne de plus la poussait à 880. */}
+      <View style={{ flexDirection: "row", alignItems: "center", gap: PAS * 3 }}>
+        <Text testID="barre-budget-sur-100" style={TYPO.micro} accessibilityElementsHidden importantForAccessibility="no">Sur 100 € dépensés</Text>
+        <View style={{ flex: 1 }}>
+          <BarreSegments hauteur={12} segments={lignes}
+            etiquette={`Sur 100 euros dépensés : ${parts.sal} de salaires, ${parts.inv} d'investissements, ${parts.aut} d'autres dépenses.`} />
+        </View>
+      </View>
       <View style={{ flexDirection: "row", gap: PAS * 3 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         {lignes.map(x => (
           <View key={x.cle} style={{ flex: 1, gap: PAS }}>

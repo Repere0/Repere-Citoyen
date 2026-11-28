@@ -5,7 +5,7 @@
 import { useEffect, useState } from "react";
 import { memeNom } from "@repere/core";
 import { chargerDeputesGroupes, chargerHemicyclePlan } from "./donnees";
-import { COULEURS_GROUPES, NEUTRES_PAR_MODE, rapportContraste } from "./palette";
+import { couleurDuGroupe, NEUTRES_PAR_MODE, rapportContraste } from "./palette";
 
 export const GROUPE_INCONNU = "Inconnu";
 
@@ -69,7 +69,8 @@ export function groupeDe(acteurRef?: string | null, table?: TableGroupes | null)
 
 /* Couleur du badge : celle du groupe, ou le gris « Inconnu » (jamais une couleur inventee). */
 export function couleurGroupe(groupe: string): string {
-  return COULEURS_GROUPES[groupe] ?? COULEURS_GROUPES[GROUPE_INCONNU];
+  /* 28/11/2026 (hotfix H5) : la règle vit dans palette.ts (sigles de la 17e législature compris). */
+  return couleurDuGroupe(groupe);
 }
 
 /* Texte encre ou blanc, celui qui lit le mieux sur la couleur du badge. */

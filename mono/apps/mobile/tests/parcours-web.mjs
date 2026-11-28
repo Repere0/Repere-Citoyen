@@ -126,19 +126,13 @@ for (const largeur of [360, 390, 430]) {
   page.on("request", r => demandees.push(r.url()));
   await page.goto(BASE + "/", { waitUntil: "networkidle" });
 
-  /* 13/11/2026 (ADR 0009) : premier lancement sans profil -> la question du prénom, avant l'accueil. On répond,
-     puis on vérifie que le prénom est gardé sur l'appareil, et là seulement, et que l'accueil dit bonjour. */
-  await page.getByTestId("barriere-bienvenue").waitFor({ state: "visible", timeout: 10000 });
-  await page.getByTestId("continuer-0").click();
-  await page.getByLabel(/Votre prénom/).fill("  Léa-Rose ");
-  await page.getByTestId("continuer-1").click();
-  await page.getByTestId("continuer-2").click();
-  await page.getByTestId("bonjour").waitFor({ timeout: 10000 });
-  const profil = await page.evaluate(() => localStorage.getItem("repere.profil"));
-  verifier(profil && JSON.parse(profil).prenom === "Léa-Rose",
-    "bienvenue : le prénom est gardé dans repere.profil, nettoyé (" + profil + ")");
-  verifier((await page.getByTestId("bonjour").innerText()).trim() === "Bonjour Léa-Rose", "accueil : « Bonjour Léa-Rose »");
-  verifier(!demandees.some(u => /L%C3%A9a|Léa|Lea-Rose/i.test(u)), "bienvenue : le prénom n'apparaît dans aucune adresse demandée");
+  /* 28/11/2026 (porteur, hotfix H2) : premier lancement sans profil -> l'accueil EST l'onboarding. Pas de barrière,
+     l'accroche A, et rien n'est gardé sur l'appareil tant que le lecteur n'a rien choisi. Le prénom, facultatif, se
+     donne à la demande (onboarding-web.mjs le vérifie). */
+  await page.getByTestId("accroche").waitFor({ timeout: 10000 });
+  verifier(!(await page.getByTestId("barriere-bienvenue").isVisible().catch(() => false)), "premier lancement : pas de barrière, l'accueil d'abord");
+  verifier((await page.getByTestId("accroche").innerText()).trim() === "De votre mairie à l'Assemblée.", "accueil : l'accroche A");
+  verifier(await page.evaluate(() => localStorage.getItem("repere.profil")) === null, "premier lancement : rien n'est gardé sur l'appareil");
 
   await chercher(page, COMMUNE.saisie);
   const resultat = page.getByRole("button", { name: new RegExp("^" + COMMUNE.nom + ",") }).first();

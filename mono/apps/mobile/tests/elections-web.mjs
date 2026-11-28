@@ -45,7 +45,7 @@ try {
   const a = await accueilA(navigateur, [2026, 10, 31]);
   const n = jours(2026, 10, 31);
   verifier(n === 169, `calcul attendu : ${n} jours entre le 31/10/2026 et le 18/04/2027`);
-  verifier(a.texte.includes("Élections présidentielles"), "31/10/2026 : la carte « Élections présidentielles » s'affiche");
+  verifier(a.texte.includes("Élection présidentielle"), "31/10/2026 : la carte « Élection présidentielle » s'affiche");
   /* 07/11/2026 : la durée s'affiche en grand, la date à côté (« 169 » puis « jours · 18 avril 2027 »). */
   verifier(a.texte.replace(/\s+/g, " ").includes(`${n} jours · 18 avril 2027`), `31/10/2026 : « ${n} jours · 18 avril 2027 »`);
   verifier(a.texte.includes("Comment voter ?"), "31/10/2026 : le lien « Comment voter ? » est présent");
@@ -55,7 +55,7 @@ try {
   /* 1er octobre 2026 : 199 jours, au-delà des 180 : la carte est masquée. */
   const b = await accueilA(navigateur, [2026, 10, 1]);
   verifier(jours(2026, 10, 1) > 180, "calcul : 1er octobre 2026 est au-delà de 180 jours");
-  verifier(!b.texte.includes("Élections présidentielles"), "01/10/2026 (au-delà de 180 jours) : la carte est masquée");
+  verifier(!b.texte.includes("Élection présidentielle"), "01/10/2026 (au-delà de 180 jours) : la carte est masquée");
   await b.contexte.close();
 
   /* 18 avril 2027 : le jour du scrutin. */

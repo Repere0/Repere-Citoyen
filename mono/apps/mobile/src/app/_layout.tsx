@@ -97,7 +97,9 @@ export default function Coquille() {
   const reduit = !!etatProfil.profil?.animationsReduites;
   useEffect(() => { fondreEcran(cheminAvant.current, chemin, reduit); cheminAvant.current = chemin; }, [chemin, reduit]);
   const dressee = bienvenueDressee(barriere, chemin, demandee) && (!bureau || demandee);
-  const bienvenue = useMemo(() => ({ ouvrir: () => setDemandee(true) }), []);
+  /* 28/11/2026 (hotfix H2) : le premier chemin de la session dit si le lecteur est arrivé par un lien partagé. */
+  const [premierChemin] = useState(chemin);
+  const bienvenue = useMemo(() => ({ ouvrir: () => setDemandee(true), parLien: premierChemin !== "/" }), [premierChemin]);
   const [polices, erreur] = useFonts({ Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold });
   if (!polices && !erreur) return null;
   return (

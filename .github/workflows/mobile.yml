@@ -130,6 +130,7 @@ jobs:
           node apps/mobile/tests/partage-image-web.mjs http://localhost:8811
           node apps/mobile/tests/entetes-montants-web.mjs http://localhost:8811
           node apps/mobile/tests/onboarding-web.mjs http://localhost:8811
+          node apps/mobile/tests/hotfix-ux-web.mjs http://localhost:8811
           node apps/mobile/tests/fix-web-web.mjs http://localhost:8811
           node apps/mobile/tests/adresse-web.mjs http://localhost:8811
           node apps/mobile/tests/en-clair-web.mjs http://localhost:8811

@@ -33,13 +33,10 @@ await page.getByText("Aller plus loin").first().waitFor({ timeout: 15000 });
   const ctxSouris = await navigateur.newContext({ viewport: { width: 390, height: 844 } });
   const p2 = await ctxSouris.newPage();
   await p2.goto(BASE + "/", { waitUntil: "networkidle" });
-  /* Les trois écrans de bienvenue, puis le retour d'appui sur le dernier bouton. */
-  await p2.getByTestId("continuer-0").click();
-  await p2.getByRole("button", { name: /^Passer, sans/ }).click();
-  const note = p2.getByText("Zéro traceur", { exact: false }).first();
-  await note.waitFor({ timeout: 10000 });
-  verifier(await note.evaluate(e => getComputedStyle(e).fontSize) === "16px", "texte de l'écran des valeurs : 16 px (Step Up)");
-  const terminer = p2.getByTestId("continuer-2");
+  /* 28/11/2026 (hotfix H2) : plus d'écrans de bienvenue au premier lancement ; le retour d'appui se vérifie sur le lien
+     « Confidentialité » de l'accueil, posé avec la même règle (enfonce). */
+  const terminer = p2.getByRole("link", { name: "Lire la page Confidentialité" });
+  await terminer.waitFor({ timeout: 10000 });
   await terminer.scrollIntoViewIfNeeded();
   const boite = await terminer.boundingBox();
   await p2.mouse.move(boite.x + boite.width / 2, boite.y + boite.height / 2);

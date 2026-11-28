@@ -11,8 +11,9 @@ import { enfonce } from "./mouvement";
 
 export function BandeauDecouverte() {
   const { profil } = useProfil();
-  const { ouvrir } = useBienvenue();
-  if (profil && profil.prenom) return null;
+  const { ouvrir, parLien } = useBienvenue();
+  /* 28/11/2026 (hotfix H2) : seulement pour qui est arrivé par un lien (ADR 0012), pas pour tout lecteur sans prénom. */
+  if ((profil && profil.prenom) || !parLien) return null;
   return (
     <View testID="bandeau-decouverte" style={{ width: "100%", marginBottom: PAS * 2, flexDirection: "row", alignItems: "center", gap: PAS * 3, padding: PAS * 3, borderRadius: RAYON.bloc, backgroundColor: couleurs.voile }}>
       <Text style={[TYPO.note, { flex: 1, color: couleurs.encre }]}>Vous découvrez Repère : qui décide chez vous, où va votre argent, avec leurs sources.</Text>
