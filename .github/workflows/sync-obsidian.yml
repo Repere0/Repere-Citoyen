@@ -1,0 +1,95 @@
+# =============================================================================
+# SYNCHRO DU COFFRE OBSIDIAN — 28/11/2026, decision du porteur.
+#
+# A chaque push sur main : scripts/sync-obsidian.sh met a jour docs/obsidian
+# (copie des ADR, bloc GitHub du journal du jour, etat du depot, fiches des
+# retours deposes en issue), puis ce workflow enregistre le resultat sur main.
+#
+# PAS DE BOUCLE : le commit du coffre ne touche que docs/obsidian/**, ignore
+# par paths-ignore ci-dessous.
+#
+# PROTECTION DE MAIN : comme la collecte, l'enregistrement passe par l'App
+# repere-collecte (seule dans la liste de contournement). Elle ne doit porter
+# que des sorties generees : tout chemin hors docs/obsidian est refuse.
+# Sans les secrets de l'App, le jeton du workflow est refuse si main est protegee.
+# =============================================================================
+
+name: Synchro du coffre Obsidian
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/obsidian/**"
+  workflow_dispatch:
+    inputs:
+      jour:
+        description: "Jour a synchroniser (AAAA-MM-JJ, heure de Paris). Vide = aujourd'hui."
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+  issues: read
+  pull-requests: read
+
+# Deux fusions rapprochees : la seconde attend la premiere, aucune n'est perdue.
+concurrency:
+  group: sync-obsidian
+  cancel-in-progress: false
+
+jobs:
+  synchro:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      COLLECTE_APP_ID: ${{ secrets.COLLECTE_APP_ID }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - name: Mettre le coffre a jour
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPOT: ${{ github.repository }}
+          JOUR: ${{ inputs.jour }}
+        run: |
+          [ -n "$JOUR" ] || unset JOUR
+          bash scripts/sync-obsidian.sh
+
+      - name: Jeton de l'App repere-collecte
+        id: jeton
+        if: env.COLLECTE_APP_ID != ''
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.COLLECTE_APP_ID }}
+          private-key: ${{ secrets.COLLECTE_APP_KEY }}
+
+      - name: Enregistrer sur main
+        env:
+          JETON_BOT: ${{ steps.jeton.outputs.token }}
+        run: |
+          set -e
+          git config user.name "Collecte Repere"
+          git config user.email "repere0@protonmail.com"
+          git add -A docs/obsidian
+          hors_coffre="$(git -c core.quotePath=false diff --cached --name-only | grep -v '^docs/obsidian/' || true)"
+          if [ -n "$hors_coffre" ]; then
+            echo "::error::La synchro refuse d'enregistrer hors de docs/obsidian : $hors_coffre"
+            exit 1
+          fi
+          if git diff --cached --quiet; then
+            echo "Coffre deja a jour."
+            exit 0
+          fi
+          if [ -n "$JETON_BOT" ]; then
+            git config --unset-all http.https://github.com/.extraheader || true
+            git remote set-url origin "https://x-access-token:${JETON_BOT}@github.com/${{ github.repository }}.git"
+          else
+            echo "::warning::Secrets de l'App repere-collecte absents : le push sera refuse si main est protegee."
+          fi
+          git commit -m "Coffre Obsidian : synchro du $(TZ=Europe/Paris date +%d/%m/%Y)"
+          # Une fusion a pu arriver pendant la synchro : on se remet a jour avant de pousser.
+          git pull --rebase origin main
+          git push origin HEAD:main

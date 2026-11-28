@@ -80,3 +80,11 @@ Claude outputs/
 
 # Etat local de l emulateur Cloudflare (wrangler pages dev), jamais versionne
 .wrangler/
+
+# Coffre Obsidian de la documentation (docs/obsidian) : meme regle que data/.
+# Les extensions (dont Obsidian Git) s installent sur chaque poste : leur code
+# tiers n a rien a faire dans le depot, et leur reglage est propre a la machine.
+docs/obsidian/.obsidian/workspace.json
+docs/obsidian/.obsidian/workspace-mobile.json
+docs/obsidian/.obsidian/plugins/
+docs/obsidian/.trash/

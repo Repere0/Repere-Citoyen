@@ -1,0 +1,10 @@
+{
+  "showFrontmatter": true,
+  "propertiesInDocument": "visible",
+  "readableLineLength": true,
+  "livePreview": true,
+  "newFileLocation": "current",
+  "alwaysUpdateLinks": true,
+  "attachmentFolderPath": "00-Meta/Pieces-jointes",
+  "userIgnoreFilters": [".obsidian/"]
+}

@@ -1,0 +1,9 @@
+{
+  "items": [
+    { "type": "file", "path": "00-Meta/Conventions.md", "title": "Conventions" },
+    { "type": "file", "path": "00-Meta/github-etat.md", "title": "État GitHub (généré)" },
+    { "type": "search", "query": "tag:#retour/a-trier", "title": "Retours à trier" },
+    { "type": "search", "query": "[statut:propose]", "title": "ADR proposés" },
+    { "type": "search", "query": "[statut:soumise]", "title": "Specs à valider" }
+  ]
+}
